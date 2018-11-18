@@ -32,6 +32,8 @@ val rand = Random()
 
 fun randRange(min: Float, max: Float) = min + rand.nextFloat() * (max - min)
 
-val tau = 2 * PI
+const val tau = 2 * PI
 
 fun s2(x: Double) = Math.min(1.0, x - Math.sin(tau * x) / tau)
+
+fun s2Line(x: Double) = if (x < 0.5) s2(x) else x

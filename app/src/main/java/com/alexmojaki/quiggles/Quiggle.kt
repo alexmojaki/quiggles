@@ -91,8 +91,8 @@ class Quiggle {
 
     fun draw(canvas: Canvas, metrics: DisplayMetrics) {
         if (state != Quiggle.State.Drawing) {
-            val elapsed = (System.currentTimeMillis() - drawnTime) / 1000f
-            val rotations = elapsed / rotationPeriod
+            val elapsed = (System.currentTimeMillis() - drawnTime) / 1000.0
+            val rotations = s2Line(elapsed / rotationPeriod)
             val centerProportion = s2(elapsed / 3.0).toFloat()
 
             val center = center().toFloat()
