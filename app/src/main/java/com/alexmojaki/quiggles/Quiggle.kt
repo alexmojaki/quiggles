@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.util.DisplayMetrics
 import java.util.*
 
 class Quiggle {
@@ -83,8 +84,14 @@ class Quiggle {
     }
 
 
-    fun draw(canvas: Canvas) {
-        canvas.save()
+    fun draw(canvas: Canvas, metrics: DisplayMetrics) {
+        if (state != Quiggle.State.Drawing) {
+            val center = center().toFloat()
+            canvas.translate(
+                metrics.widthPixels / 2 - center.x,
+                metrics.heightPixels / 2 - center.y
+            )
+        }
         val p1 = points.first()
         val p2 = points.last()
         for (i in 0..numPaths) {
@@ -93,8 +100,6 @@ class Quiggle {
             p1.rotate(canvas, idealAngle)
         }
         canvas.drawPath(partialPath, paint)
-
-        canvas.restore()
     }
 
     fun update() {

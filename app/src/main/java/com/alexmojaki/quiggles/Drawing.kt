@@ -16,14 +16,7 @@ class Drawing {
 
         for (quiggle in quiggles) {
             canvas.save()
-            if (quiggle.state != Quiggle.State.Drawing) {
-                val center = quiggle.center().toFloat()
-                canvas.translate(
-                    metrics.widthPixels / 2 - center.x,
-                    metrics.heightPixels / 2 - center.y
-                )
-            }
-            quiggle.draw(canvas)
+            quiggle.draw(canvas, metrics)
             canvas.restore()
         }
     }
