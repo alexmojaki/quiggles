@@ -7,7 +7,6 @@ import android.graphics.Path
 import android.util.DisplayMetrics
 import java.util.*
 import kotlin.math.PI
-import kotlin.math.min
 
 class Quiggle {
     enum class State { Drawing, Completing, Complete }
@@ -94,7 +93,7 @@ class Quiggle {
         if (state != Quiggle.State.Drawing) {
             val elapsed = (System.currentTimeMillis() - drawnTime) / 1000f
             val rotations = elapsed / rotationPeriod
-            val centerProportion = min(elapsed / 3f, 1f)
+            val centerProportion = s2(elapsed / 3.0).toFloat()
 
             val center = center().toFloat()
             canvas.translate(
