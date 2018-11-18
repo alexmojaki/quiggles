@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.util.DisplayMetrics
 import java.util.*
+import kotlin.math.PI
 
 class Quiggle {
     enum class State { Drawing, Completing, Complete }
@@ -19,6 +20,8 @@ class Quiggle {
     var idealAngle = 0.0
     var numVertices = -1
     val paint: Paint = Paint()
+    var drawnTime: Long = 0
+    var rotationPeriod = randRange(5f, 20f)
 
     init {
         with(paint) {
@@ -62,6 +65,8 @@ class Quiggle {
         val (idealAngle, numVertices) = star(angle)
         this.idealAngle = idealAngle
         this.numVertices = numVertices
+
+        drawnTime = System.currentTimeMillis()
     }
 
     fun center(): Point {
@@ -91,7 +96,12 @@ class Quiggle {
                 metrics.widthPixels / 2 - center.x,
                 metrics.heightPixels / 2 - center.y
             )
+
+            val elapsed = System.currentTimeMillis() - drawnTime
+            val rotations = elapsed / 1000f / rotationPeriod
+            center().rotate(canvas, rotations * 2 * PI)
         }
+
         val p1 = points.first()
         val p2 = points.last()
         for (i in 0..numPaths) {
