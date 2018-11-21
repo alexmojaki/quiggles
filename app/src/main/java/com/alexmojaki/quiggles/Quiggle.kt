@@ -22,6 +22,8 @@ class Quiggle {
     val paint: Paint = Paint()
     var drawnTime: Long = 0
     var rotationPeriod = randRange(5f, 20f)
+    val randomScaleFactor = randRange(0.85f, 1f)
+    var outerRadius: Double = 0.0
 
     init {
         with(paint) {
@@ -67,6 +69,9 @@ class Quiggle {
         this.numVertices = numVertices
 
         drawnTime = System.currentTimeMillis()
+
+        val center = center()
+        outerRadius = points.asSequence().map { it.distance(center) }.max()!!
     }
 
     fun center(): Point {
@@ -93,13 +98,24 @@ class Quiggle {
         if (state != Quiggle.State.Drawing) {
             val elapsed = (System.currentTimeMillis() - drawnTime) / 1000.0
             val rotations = s2Line(elapsed / rotationPeriod)
-            val centerProportion = s2(elapsed / 3.0).toFloat()
+            val transition = s2(elapsed / 3.0).toFloat()
 
             val center = center().toFloat()
-            canvas.translate(
-                centerProportion * (metrics.widthPixels / 2 - center.x),
-                centerProportion * (metrics.heightPixels / 2 - center.y)
-            )
+            val scx = metrics.widthPixels / 2
+            val scy = metrics.heightPixels / 2
+            val translationX = transition * (scx - center.x)
+            val translationY = transition * (scy - center.y)
+            canvas.translate(translationX, translationY)
+
+            if (scy < outerRadius) {
+                val factor = (1 - transition * (1 - randomScaleFactor * scy / outerRadius)).toFloat()
+                canvas.scale(
+                    factor,
+                    factor,
+                    scx - translationX,
+                    scy - translationY
+                )
+            }
 
             center().rotate(canvas, rotations * 2 * PI)
         }
