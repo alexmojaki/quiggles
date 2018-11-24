@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.util.DisplayMetrics
 import kotlin.math.PI
-import kotlin.math.min
 
 class Drawing {
 
@@ -22,26 +21,17 @@ class Drawing {
         for (i in 0 until quiggles.size - 1) {
             centers.add(o.pointInDirection(PI / 2 + i * PI / 3, 2.0))
         }
-        val minx = centers.asSequence().map { it.x }.min()!! - 1
-        val maxx = centers.asSequence().map { it.x }.max()!! + 1
-        val miny = centers.asSequence().map { it.y }.min()!! - 1
-        val maxy = centers.asSequence().map { it.y }.max()!! + 1
 
-        val boxCenter = Point((minx + maxx) / 2, (miny + maxy) / 2)
-        val width = maxx - minx
-        val height = maxy - miny
+        val packing = Packing(centers)
 
         val swidth = metrics.widthPixels
         val sheight = metrics.heightPixels
         val scenter = Point(swidth / 2f, sheight / 2f)
-        val scale = min(
-            swidth / width,
-            sheight / height
-        ).toFloat()
+        val scale = packing.scale(metrics)
 
         for ((c, quiggle) in centers.zip(quiggles)) {
             val matrix = Matrix()
-            val tc = (scenter - boxCenter).toFloat()
+            val tc = (scenter - packing.boxCenter).toFloat()
             matrix.postTranslate(tc.x, tc.y)
             matrix.postScale(scale, scale, scenter.xf, scenter.yf)
 
