@@ -4,6 +4,11 @@ import android.graphics.Canvas
 
 data class Point(val x: Double, val y: Double) : TwoComponents<Double, Double> {
     constructor(x: Float, y: Float) : this(x.toDouble(), y.toDouble())
+    constructor(x: Int, y: Int) : this(x.toDouble(), y.toDouble())
+
+    val xf: Float get() = x.toFloat()
+    val yf: Float get() = y.toFloat()
+
     fun direction(other: Point) =
         Math.atan2(other.y - y, other.x - x)
 
@@ -17,13 +22,18 @@ data class Point(val x: Double, val y: Double) : TwoComponents<Double, Double> {
         )
 
     operator fun minus(other: Point) = Point(x - other.x, y - other.y)
+    operator fun plus(other: Point) = Point(x + other.x, y + other.y)
+    operator fun times(f: Double) = Point(x * f, y * f)
+    operator fun div(f: Double) = Point(x / f, y / f)
 
     fun translate(canvas: Canvas) = spreadF(canvas::translate)
+
     fun rotate(canvas: Canvas, radians: Double) = canvas.rotate(
         Math.toDegrees(radians).toFloat(),
-        x.toFloat(),
-        y.toFloat())
+        xf, yf
+    )
 
-    fun toFloat() = FloatPoint(x.toFloat(), y.toFloat())
+    fun scale(canvas: Canvas, scale: Float) = canvas.scale(scale, scale, xf, yf)
 
+    fun toFloat() = FloatPoint(xf, yf)
 }

@@ -4,7 +4,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
-import android.util.DisplayMetrics
 import java.util.*
 import kotlin.math.PI
 
@@ -19,25 +18,11 @@ class Quiggle {
     var index = 0
     var idealAngle = 0.0
     var numVertices = -1
-    val paint: Paint = Paint()
     var drawnTime: Long = 0
     var rotationPeriod = randRange(5f, 20f)
-    val randomScaleFactor = randRange(0.85f, 1f)
+    //    val randomScaleFactor = randRange(0.85f, 1f)
     var outerRadius: Double = 0.0
-
-    init {
-        with(paint) {
-            isAntiAlias = true
-            isDither = true
-            color = Color.HSVToColor(listOf(360.0f * Random().nextFloat(), 1f, 1f).toFloatArray())
-            style = Paint.Style.STROKE
-            strokeJoin = Paint.Join.ROUND
-            strokeCap = Paint.Cap.ROUND
-            strokeWidth = 4f
-            xfermode = null
-            alpha = 0xff
-        }
-    }
+    val color = Color.HSVToColor(listOf(360.0f * Random().nextFloat(), 1f, 1f).toFloatArray())
 
     fun start(x: Float, y: Float) {
         points.add(Point(x, y))
@@ -94,30 +79,51 @@ class Quiggle {
     }
 
 
-    fun draw(canvas: Canvas, metrics: DisplayMetrics) {
+    fun draw(canvas: Canvas, scale: Float, circleCenter: Point) {
+        val paint = Paint()
+
+        with(paint) {
+            isAntiAlias = true
+            isDither = true
+            color = this@Quiggle.color
+            style = Paint.Style.STROKE
+            strokeJoin = Paint.Join.ROUND
+            strokeCap = Paint.Cap.ROUND
+            strokeWidth = 4f
+            xfermode = null
+            alpha = 0xff
+        }
+
         if (state != Quiggle.State.Drawing) {
             val elapsed = (System.currentTimeMillis() - drawnTime) / 1000.0
             val rotations = s2Line(elapsed / rotationPeriod)
-            val transition = s2(elapsed / 3.0).toFloat()
+            val transition = s2(elapsed / 3.0)
 
-            val center = center().toFloat()
-            val scx = metrics.widthPixels / 2
-            val scy = metrics.heightPixels / 2
-            val translationX = transition * (scx - center.x)
-            val translationY = transition * (scy - center.y)
-            canvas.translate(translationX, translationY)
+            val center = center()
+//            val scx = metrics.widthPixels / 2
+//            val scy = metrics.heightPixels / 2
+//            val translationX = transition * (scx - center.x)
+//            val translationY = transition * (scy - center.y)
+            val translationPoint = (circleCenter - center) * transition
+            translationPoint.translate(canvas)
 
-            if (scy < outerRadius) {
-                val factor = (1 - transition * (1 - randomScaleFactor * scy / outerRadius)).toFloat()
-                canvas.scale(
-                    factor,
-                    factor,
-                    scx - translationX,
-                    scy - translationY
-                )
-            }
+//            if (scy < outerRadius) {
+//                val factor = (1 - transition * (1 - randomScaleFactor * scy / outerRadius)).toFloat()
+//                canvas.scale(
+//                    factor,
+//                    factor,
+//                    scx - translationX,
+//                    scy - translationY
+//                )
+//            }
+
+            val factor = (1 - transition * (1 - scale / outerRadius)).toFloat()
+
+            (circleCenter - translationPoint).scale(canvas, factor)
 
             center().rotate(canvas, rotations * 2 * PI)
+
+            paint.strokeWidth /= factor
         }
 
         val p1 = points.first()
