@@ -19,3 +19,7 @@ fun <R> TwoComponents<Double, Double>.spreadF(f: (Float, Float) -> R): R =
         component1().toFloat(),
         component2().toFloat()
     )
+
+fun Any.oneOf(vararg vals: Any): Boolean {
+    return vals.any { this == it }
+}

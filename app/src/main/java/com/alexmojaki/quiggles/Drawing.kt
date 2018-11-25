@@ -4,7 +4,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.util.DisplayMetrics
-import kotlin.math.PI
 
 class Drawing {
 
@@ -14,22 +13,18 @@ class Drawing {
 
     fun draw(canvas: Canvas) {
         canvas.drawColor(DEFAULT_BG_COLOR)
-
-        val centers = ArrayList<Point>()
-        val o = Point(0, 0)
-        centers.add(o)
-        for (i in 0 until quiggles.size - 1) {
-            centers.add(o.pointInDirection(PI / 2 + i * PI / 3, 2.0))
+        if (quiggles.isEmpty()) {
+            return
         }
 
-        val packing = Packing(centers)
+        val packing = packing(quiggles.size)
 
         val swidth = metrics.widthPixels
         val sheight = metrics.heightPixels
         val scenter = Point(swidth / 2f, sheight / 2f)
         val scale = packing.scale(metrics)
 
-        for ((c, quiggle) in centers.zip(quiggles)) {
+        for ((c, quiggle) in packing.centers.zip(quiggles)) {
             val matrix = Matrix()
             val tc = (scenter - packing.boxCenter).toFloat()
             matrix.postTranslate(tc.x, tc.y)

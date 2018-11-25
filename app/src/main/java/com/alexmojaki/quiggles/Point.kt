@@ -1,6 +1,7 @@
 package com.alexmojaki.quiggles
 
 import android.graphics.Canvas
+import android.graphics.Matrix
 
 data class Point(val x: Double, val y: Double) : TwoComponents<Double, Double> {
     constructor(x: Float, y: Float) : this(x.toDouble(), y.toDouble())
@@ -37,3 +38,5 @@ data class Point(val x: Double, val y: Double) : TwoComponents<Double, Double> {
 
     fun toFloat() = FloatPoint(xf, yf)
 }
+
+fun Matrix.transform(point: Point): Point = transform(point.toFloat()).toDouble()
