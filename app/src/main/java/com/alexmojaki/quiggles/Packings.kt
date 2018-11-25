@@ -108,7 +108,7 @@ o o o o
 
    o
 o o o o
- o   o
+ o   o   * 30
 o o o o
    o
 
@@ -124,7 +124,7 @@ ooo
 
    o
 o o o o
- o o o
+ o o o   * 30
 o o o o
    o
 
@@ -137,17 +137,6 @@ o o o o o * 90
 o o o o
  o o o
   o o
-
-ooo
-ooo
-ooo
-ooo
-ooo
-
-oooo
-oooo
-oooo
-oooo
 """
             val regex = Regex("""\*\s*(\d+)""")
             var n = 1
@@ -185,5 +174,17 @@ fun grid(s: String): Packing {
 }
 
 fun packing(n: Int): Packing {
-    return Packing.packings[n]!![0]
+    Packing.packings[n]?.let { return it[0] }
+
+    val result = ArrayList<Point>()
+    for (row in 0..n) {
+        for (col in 0 until sqrt(n.toDouble()).toInt()) {
+            result.add(Point(col * 2, row * 2))
+            if (result.size == n) {
+                return Packing(result)
+            }
+        }
+    }
+
+    throw Exception("that's not supposed to happen...")
 }
