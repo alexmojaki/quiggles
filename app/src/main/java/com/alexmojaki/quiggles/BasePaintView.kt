@@ -26,7 +26,7 @@ abstract class BasePaintView @JvmOverloads constructor(context: Context, attrs: 
         if (when (event.action) {
                 MotionEvent.ACTION_DOWN -> drawing.touchStart(x, y)
                 MotionEvent.ACTION_MOVE -> drawing.touchMove(x, y)
-                MotionEvent.ACTION_UP -> drawing.touchUp()
+                MotionEvent.ACTION_UP -> drawing.touchUp(x, y)
                 else -> null
             } != null
         ) {

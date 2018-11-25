@@ -23,7 +23,7 @@ data class Packing(val centers: List<Point>) {
     fun rotate(angle: Int): Packing {
         val matrix = Matrix()
         matrix.setRotate(angle.toFloat())
-        return Packing(centers.map(matrix::transform))
+        return Packing(centers.map(matrix::times))
     }
 
     companion object {

@@ -8,8 +8,12 @@ import android.util.DisplayMetrics
 class Drawing {
 
     val quiggles = ArrayList<Quiggle>()
-    lateinit var metrics: DisplayMetrics
+    var selectedQuiggles: List<Quiggle> = emptyList()
 
+    lateinit var metrics: DisplayMetrics
+    val swidth by lazy { metrics.widthPixels }
+    val sheight by lazy { metrics.heightPixels }
+    val scenter by lazy { Point(swidth / 2f, sheight / 2f) }
 
     fun draw(canvas: Canvas) {
         canvas.drawColor(DEFAULT_BG_COLOR)
@@ -17,24 +21,25 @@ class Drawing {
             return
         }
 
-        val packing = packing(quiggles.size)
+        if (selectedQuiggles.isEmpty()) {
+            for (quiggle in quiggles) {
+                quiggle.draw(canvas, scenter, sheight)
+            }
+        } else {
+            for (quiggle in quiggles - selectedQuiggles) {
+                quiggle.draw(canvas, scenter, sheight, brightness = 0.3f)
+            }
 
-        val swidth = metrics.widthPixels
-        val sheight = metrics.heightPixels
-        val scenter = Point(swidth / 2f, sheight / 2f)
-        val scale = packing.scale(metrics)
+            val packing = packing(selectedQuiggles.size)
+            val scale = packing.scale(metrics)
 
-        for ((c, quiggle) in packing.centers.zip(quiggles)) {
-            val matrix = Matrix()
-            val tc = (scenter - packing.boxCenter).toFloat()
-            matrix.postTranslate(tc.x, tc.y)
-            matrix.postScale(scale, scale, scenter.xf, scenter.yf)
-
-            canvas.save()
-            quiggle.draw(canvas, scale, matrix.transform(c.toFloat()).toDouble())
-            canvas.restore()
+            for ((c, quiggle) in packing.centers.zip(selectedQuiggles)) {
+                val matrix = Matrix()
+                (scenter - packing.boxCenter).translate(matrix)
+                scenter.scale(matrix, scale)
+                quiggle.draw(canvas, matrix * c, sheight, scale = scale)
+            }
         }
-
     }
 
     fun touchStart(x: Float, y: Float) {
@@ -47,10 +52,16 @@ class Drawing {
         quiggles.last().addPoint(x, y)
     }
 
-    fun touchUp() {
+    fun touchUp(x: Float, y: Float) {
         val quiggle = quiggles.last()
         if (quiggle.points.size < 5) {
             quiggles.remove(quiggle)
+            selectedQuiggles = if (selectedQuiggles.isEmpty()) {
+                val dist = Point(x, y).distance(scenter)
+                quiggles.filter { -50 + it.innerRadius <= dist && dist <= it.outerRadius + 50 }
+            } else {
+                emptyList()
+            }
         } else {
             quiggle.finishDrawing()
         }

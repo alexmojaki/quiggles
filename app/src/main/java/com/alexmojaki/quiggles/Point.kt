@@ -28,6 +28,7 @@ data class Point(val x: Double, val y: Double) : TwoComponents<Double, Double> {
     operator fun div(f: Double) = Point(x / f, y / f)
 
     fun translate(canvas: Canvas) = spreadF(canvas::translate)
+    fun translate(matrix: Matrix) = spreadF(matrix::postTranslate)
 
     fun rotate(canvas: Canvas, radians: Double) = canvas.rotate(
         Math.toDegrees(radians).toFloat(),
@@ -35,8 +36,9 @@ data class Point(val x: Double, val y: Double) : TwoComponents<Double, Double> {
     )
 
     fun scale(canvas: Canvas, scale: Float) = canvas.scale(scale, scale, xf, yf)
+    fun scale(matrix: Matrix, scale: Float) = matrix.postScale(scale, scale, xf, yf)
 
     fun toFloat() = FloatPoint(xf, yf)
 }
 
-fun Matrix.transform(point: Point): Point = transform(point.toFloat()).toDouble()
+operator fun Matrix.times(point: Point): Point = transform(point.toFloat()).toDouble()
