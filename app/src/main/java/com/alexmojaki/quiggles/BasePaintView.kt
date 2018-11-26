@@ -15,7 +15,6 @@ abstract class BasePaintView @JvmOverloads constructor(context: Context, attrs: 
 
     open fun init(metrics: DisplayMetrics) {
         drawing.metrics = metrics
-        systemUiVisibility = SYSTEM_UI_FLAG_IMMERSIVE_STICKY or SYSTEM_UI_FLAG_FULLSCREEN or SYSTEM_UI_FLAG_HIDE_NAVIGATION
     }
 
     @SuppressLint("ClickableViewAccessibility")
