@@ -21,6 +21,7 @@ data class Packing(val centers: List<Point>) {
 
     companion object {
         val packings = HashMap<Int, MutableList<Packing>>()
+        val indices = HashMap<Int, Int>()
 
         init {
             val grids = """
@@ -142,6 +143,7 @@ o o o o
                 require(packing.n.oneOf(n, n + 1))
                 n = packing.n
                 packings.getOrPut(n) { ArrayList() }.add(packing)
+                indices.put(n, 0)
             }
 
         }
@@ -167,7 +169,11 @@ fun grid(s: String): Packing {
 }
 
 fun packing(n: Int): Packing {
-    Packing.packings[n]?.let { return it[0] }
+    Packing.packings[n]?.let {
+        val i = Packing.indices[n]!!
+        Packing.indices[n] = i + 1
+        return it[i % it.size]
+    }
 
     val result = ArrayList<Point>()
     for (row in 0..n) {
