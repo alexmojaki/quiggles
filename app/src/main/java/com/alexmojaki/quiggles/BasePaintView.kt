@@ -20,13 +20,12 @@ abstract class BasePaintView @JvmOverloads constructor(context: Context, attrs: 
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val x = event.x
-        val y = event.y
+        val point = Point(event.x, event.y)
 
         if (when (event.action) {
-                MotionEvent.ACTION_DOWN -> drawing.touchStart(x, y)
-                MotionEvent.ACTION_MOVE -> drawing.touchMove(x, y)
-                MotionEvent.ACTION_UP -> drawing.touchUp(x, y)
+                MotionEvent.ACTION_DOWN -> drawing.touchStart(point)
+                MotionEvent.ACTION_MOVE -> drawing.touchMove(point)
+                MotionEvent.ACTION_UP -> drawing.touchUp(point)
                 else -> null
             } != null
         ) {

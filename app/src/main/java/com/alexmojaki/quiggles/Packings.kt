@@ -1,8 +1,6 @@
 package com.alexmojaki.quiggles
 
 import android.graphics.Matrix
-import android.util.DisplayMetrics
-import kotlin.math.min
 import kotlin.math.sqrt
 
 data class Packing(val centers: List<Point>) {
@@ -14,11 +12,6 @@ data class Packing(val centers: List<Point>) {
     val boxCenter = Point((minx + maxx) / 2, (miny + maxy) / 2)
     val width = maxx - minx
     val height = maxy - miny
-
-    fun scale(metrics: DisplayMetrics) = min(
-        metrics.widthPixels / width.toFloat(),
-        metrics.heightPixels / height.toFloat()
-    )
 
     fun rotate(angle: Int): Packing {
         val matrix = Matrix()

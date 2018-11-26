@@ -22,20 +22,18 @@ class Quiggle {
     var innerRadius: Double = 0.0
     val hue = randRange(0f, 360f)
 
-    fun start(x: Float, y: Float) {
-        points.add(Point(x, y))
-        fullPath.moveTo(x, y)
+    fun start(point: Point) {
+        points.add(point)
+        fullPath.moveTo(point.xf, point.yf)
     }
 
-    fun addPoint(x: Float, y: Float) {
-        val p = points.last().toFloat()
-
-        val dx = Math.abs(x - p.x)
-        val dy = Math.abs(y - p.y)
-
-        if (dx >= Drawing.TOUCH_TOLERANCE || dy >= Drawing.TOUCH_TOLERANCE) {
-            fullPath.quadTo(p.x, p.y, (x + p.x) / 2, (y + p.y) / 2)
-            points.add(Point(x, y))
+    fun addPoint(point: Point) {
+        require(state == State.Drawing)
+        val p = points.last()
+        if (point.distance(p) >= Drawing.TOUCH_TOLERANCE) {
+            val mid = (p + point) / 2.0
+            fullPath.quadTo(p.xf, p.yf, mid.xf, mid.yf)
+            points.add(point)
         }
     }
 
