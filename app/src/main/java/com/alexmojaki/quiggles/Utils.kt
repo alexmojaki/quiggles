@@ -32,3 +32,13 @@ operator fun Matrix.times(path: Path): Path {
     result.transform(this)
     return result
 }
+
+fun <T> prn(x: T): T {
+    println(x)
+    return x
+}
+
+fun <T> prn(label: String, x: T): T {
+    println("$label: $x")
+    return x
+}

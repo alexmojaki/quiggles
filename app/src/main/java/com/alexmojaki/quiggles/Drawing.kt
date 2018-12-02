@@ -4,6 +4,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.util.DisplayMetrics
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
+import android.widget.ImageButton
 import kotlin.math.min
 
 class Drawing {
@@ -17,6 +20,7 @@ class Drawing {
     val swidth by lazy { metrics.widthPixels }
     val sheight by lazy { metrics.heightPixels }
     val scenter by lazy { Point(swidth / 2f, sheight / 2f) }
+    lateinit var buttons: List<ImageButton>
 
     inner class ScreenPacking(packing: Packing) {
         val scale = min(
@@ -108,12 +112,27 @@ class Drawing {
                 selectedQuiggles = emptyList()
             }
         }
+
+        updateButtons()
+    }
+
+    fun updateButtons() {
+        for (button in buttons) {
+            button.visibility = if (selectedQuiggle == null) INVISIBLE else VISIBLE
+        }
     }
 
     fun update() {
         for (quiggle in quiggles) {
             quiggle.update()
         }
+    }
+
+    fun deleteSelectedQuiggle() {
+        quiggles.remove(selectedQuiggle)
+        selectedQuiggle = null
+        selectedQuiggles = emptyList()
+        updateButtons()
     }
 
     companion object {

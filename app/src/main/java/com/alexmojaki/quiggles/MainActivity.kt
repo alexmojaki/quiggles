@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.Window
+import android.widget.ImageButton
 
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +22,11 @@ class MainActivity : AppCompatActivity() {
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
         paintView.init(metrics)
+
+        val deleteButton: ImageButton = findViewById(R.id.deleteButton)
+        deleteButton.setOnClickListener { paintView.drawing.deleteSelectedQuiggle() }
+
+        paintView.drawing.buttons = listOf(deleteButton)
     }
 
     override fun onResume() {

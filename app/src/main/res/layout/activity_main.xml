@@ -12,4 +12,14 @@
             android:id="@+id/paintView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+    <ImageButton
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            app:srcCompat="@android:drawable/ic_menu_delete"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/deleteButton"
+            style="@android:style/Widget.DeviceDefault.ImageButton"
+            android:visibility="invisible"
+            android:background="@drawable/round_button_background"/>
 </RelativeLayout>
