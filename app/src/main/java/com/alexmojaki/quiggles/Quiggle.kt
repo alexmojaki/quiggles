@@ -15,9 +15,21 @@ class Quiggle {
     var index = 0
     var idealAngle = 0.0
     var numVertices = -1
-    var drawnTime: Long = 0
-    var rotationPeriod = randRange(5f, 20f)
-    val randomScaleFactor = randRange(0.85f, 1f)
+
+    lateinit var centerAnimation: Animated<Point>
+    lateinit var scaleAnimation: Animated<Double>
+    lateinit var rotationAnimation: Animated<Double>
+
+    val center by lazy {
+        val vertices = vertices()
+        Point(
+            vertices.asSequence().map { it.x }.average(),
+            vertices.asSequence().map { it.y }.average()
+        )
+    }
+
+    val randomScaleFactor = randRange(0.85f, 1f).toDouble()
+
     var outerRadius: Double = 0.0
     var innerRadius: Double = 0.0
     val hue = randRange(0f, 360f)
@@ -37,7 +49,7 @@ class Quiggle {
         }
     }
 
-    fun finishDrawing() {
+    fun finishDrawing(swidth: Int, sheight: Int) {
         val p = points.last().toFloat()
         fullPath.lineTo(p.x, p.y)
         state = State.Completing
@@ -49,20 +61,31 @@ class Quiggle {
         this.idealAngle = idealAngle
         this.numVertices = numVertices
 
-        drawnTime = System.currentTimeMillis()
-
-        val center = center()
         val distances = points.asSequence().map { it.distance(center) }
         outerRadius = distances.max()!!
         innerRadius = distances.min()!!
-    }
 
-    fun center(): Point {
-        val vertices = vertices()
+        rotationAnimation = Animated(
+            "double",
+            0.0,
+            2 * PI,
+            period = randRange(5f, 20f).toDouble(),
+            easingFunction = ::s2Line
+        )
 
-        return Point(
-            vertices.asSequence().map { it.x }.average(),
-            vertices.asSequence().map { it.y }.average()
+        scaleAnimation = Animated(
+            "double",
+            1.0,
+            if (sheight / 2 < outerRadius) randomScaleFactor * sheight / 2 / outerRadius
+            else 1.0,
+            3.0
+        )
+
+        centerAnimation = Animated(
+            "point",
+            center,
+            Point(swidth / 2, sheight / 2),
+            3.0
         )
     }
 
@@ -76,11 +99,27 @@ class Quiggle {
         return vertices
     }
 
+    fun setPosition(position: Point, scale: Double, period: Double) {
+        scaleAnimation = Animated(
+            "double",
+            scaleAnimation.currentValue(),
+            scale,
+            period
+        )
+
+        centerAnimation = Animated(
+            "point",
+            centerAnimation.currentValue(),
+            position,
+            period
+        )
+    }
+
+    fun isSelected(point: Point) =
+        point.distance(centerAnimation.currentValue()) <= scaleAnimation.currentValue() * outerRadius
+
     fun draw(
         canvas: Canvas,
-        circleCenter: Point,
-        screenHeight: Int,
-        scale: Float = 1f,
         brightness: Float = 1f
     ) {
         canvas.save()
@@ -101,27 +140,9 @@ class Quiggle {
         val matrix = Matrix()
 
         if (state != Quiggle.State.Drawing) {
-            val center = center()
-            val elapsed = (System.currentTimeMillis() - drawnTime) / 1000.0
-            val rotations = s2Line(elapsed / rotationPeriod)
-            val transition = s2(elapsed / 3.0)
-
-            val translationPoint = (circleCenter - center) * transition
-            translationPoint.translate(canvas)
-
-            val factor: Float
-            factor = if (scale == 1f) {
-                (if (screenHeight / 2 < outerRadius)
-                    (1 - transition * (1 - randomScaleFactor * screenHeight / 2 / outerRadius)).toFloat()
-                else 1f)
-            } else {
-                (1 - transition * (1 - scale / outerRadius)).toFloat()
-            }
-
-//            (circleCenter - translationPoint).scale(matrix, factor)
-            center.scale(matrix, factor)
-
-            center().rotate(canvas, rotations * 2 * PI)
+            (centerAnimation.currentValue() - center).translate(canvas)
+            center.scale(matrix, scaleAnimation.currentValue().toFloat())
+            center.rotate(canvas, rotationAnimation.currentValue())
         }
 
         val p1 = points.first()
