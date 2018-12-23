@@ -20,4 +20,26 @@ class Animated<T>(
         }
     }
 
+    fun change(
+        endValue: T,
+        period: Double,
+        easingFunction: ((Double) -> Double)? = null
+    ): Animated<T> {
+        return Animated(
+            type,
+            currentValue(),
+            endValue,
+            period,
+            easingFunction ?: this.easingFunction
+        )
+    }
+
+}
+
+fun <T> still(
+    type: String,
+    value: T,
+    easingFunction: (Double) -> Double = ::s2
+): Animated<T> {
+    return Animated(type, value, value, 1.0, easingFunction)
 }

@@ -19,6 +19,7 @@ class Quiggle {
     lateinit var centerAnimation: Animated<Point>
     lateinit var scaleAnimation: Animated<Double>
     lateinit var rotationAnimation: Animated<Double>
+    var brightnessAnimation: Animated<Double> = still("double", 1.0)
 
     val center by lazy {
         val vertices = vertices()
@@ -100,28 +101,23 @@ class Quiggle {
     }
 
     fun setPosition(position: Point, scale: Double, period: Double) {
-        scaleAnimation = Animated(
-            "double",
-            scaleAnimation.currentValue(),
-            scale,
-            period
-        )
+        scaleAnimation = scaleAnimation.change(scale, period)
+        centerAnimation = centerAnimation.change(position, period)
+    }
 
-        centerAnimation = Animated(
-            "point",
-            centerAnimation.currentValue(),
-            position,
-            period
-        )
+    fun setBrightness(brightness: Double, period: Double) {
+        brightnessAnimation = brightnessAnimation.change(brightness, period)
     }
 
     fun isSelected(point: Point) =
         point.distance(centerAnimation.currentValue()) <= scaleAnimation.currentValue() * outerRadius
 
-    fun draw(
-        canvas: Canvas,
-        brightness: Float = 1f
-    ) {
+    fun draw(canvas: Canvas) {
+        val brightness = brightnessAnimation.currentValue().toFloat()
+        if (brightness == 0f) {
+            return
+        }
+
         canvas.save()
         val paint = Paint()
 

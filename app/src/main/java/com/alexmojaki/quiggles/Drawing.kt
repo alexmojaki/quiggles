@@ -25,33 +25,13 @@ class Drawing {
     fun draw(canvas: Canvas) {
         canvas.drawColor(DEFAULT_BG_COLOR)
 
-        if (quiggles.isEmpty()) {
-            return
-        }
-
-        if (selectedQuiggles.isEmpty()) {
-            for (quiggle in quiggles) {
-                quiggle.draw(canvas)
-            }
-            return
-        }
-
-        if (selectedQuiggle != null) {
-            selectedQuiggle!!.draw(canvas)
-            return
-        }
-
-        for (quiggle in quiggles - selectedQuiggles) {
-            quiggle.draw(canvas, brightness = 0.3f)
-        }
-
-        for (quiggle in selectedQuiggles) {
+        for (quiggle in quiggles.sortedBy { it.brightnessAnimation.currentValue() }) {
             quiggle.draw(canvas)
         }
     }
 
     fun touchStart(point: Point) {
-        if (selectedQuiggles.isNotEmpty())
+        if (selectedQuiggle != null)
             return
         val quiggle = Quiggle()
         quiggle.start(point)
@@ -59,7 +39,7 @@ class Drawing {
     }
 
     fun touchMove(point: Point) {
-        if (selectedQuiggles.isNotEmpty())
+        if (selectedQuiggle != null)
             return
         quiggles.last().addPoint(point)
     }
@@ -70,14 +50,16 @@ class Drawing {
         selectedQuiggles = emptyList()
 
         for (quiggle in quiggles) {
+            val period = 1.2
             with(quiggle) {
                 setPosition(
                     scenter,
                     if (sheight / 2 < outerRadius) randomScaleFactor * sheight / 2 / outerRadius
                     else 1.0,
-                    1.2
+                    period
                 )
             }
+            quiggle.setBrightness(1.0, period)
         }
     }
 
@@ -96,7 +78,12 @@ class Drawing {
         }
         selectedQuiggle = quiggle
 
-        quiggle.setPosition(scenter, swidth / 2 / quiggle.outerRadius, 0.7)
+        val period = 0.7
+        quiggle.setPosition(scenter, swidth / 2 / quiggle.outerRadius, period)
+
+        for (other in quiggles - quiggle) {
+            other.setBrightness(0.0, period)
+        }
     }
 
     fun selectMany(selection: List<Quiggle>) {
@@ -113,17 +100,18 @@ class Drawing {
             return
         }
 
-        if (packing == null) {
+        if (packing == null || packing!!.n != selectedQuiggles.size) {
             packing = packing(selectedQuiggles.size)
         }
 
         val packing = packing!!
-        assert(packing.n == selectedQuiggles.size)
 
         val scale = min(
             swidth / packing.width.toFloat(),
             sheight / packing.height.toFloat()
         )
+
+        val period = 0.7
 
         val matrix = Matrix()
         (scenter - packing.boxCenter).translate(matrix)
@@ -132,28 +120,39 @@ class Drawing {
             quiggle.setPosition(
                 matrix * c,
                 scale / quiggle.outerRadius,
-                0.7
+                period
             )
+            quiggle.setBrightness(1.0, period)
         }
 
+        for (quiggle in quiggles - selectedQuiggles) {
+            quiggle.setBrightness(0.3, period)
+        }
     }
 
     fun touchUp(point: Point) {
-        if (selectedQuiggles.isEmpty()) {
-            val quiggle = quiggles.last()
-            if (quiggle.points.size < 5) {
-                quiggles.remove(quiggle)
+        val quiggle = quiggles.last()
+        if (quiggle.points.size < 5) {
+            quiggles.remove(quiggle)
 
-                val dist = point.distance(scenter)
-                selectMany(quiggles.filter {
-                    val d = dist / it.scaleAnimation.currentValue()
-                    -50 + it.innerRadius <= d && d <= it.outerRadius + 50
-                })
-            } else {
-                quiggle.finishDrawing(swidth, sheight)
+            when {
+                selectedQuiggles.isEmpty() -> {
+                    val dist = point.distance(scenter)
+                    selectMany(quiggles.filter {
+                        val d = dist / it.scaleAnimation.currentValue()
+                        -50 + it.innerRadius <= d && d <= it.outerRadius + 50
+                    })
+                }
+                selectedQuiggle == null ->
+                    selectOne(selectedQuiggles.singleOrNull { it.isSelected(point) })
+                else ->
+                    unselectOne()
             }
         } else if (selectedQuiggle == null) {
-            selectOne(selectedQuiggles.singleOrNull { it.isSelected(point) })
+            quiggle.finishDrawing(swidth, sheight)
+            if (selectedQuiggles.isNotEmpty()) {
+                selectMany(selectedQuiggles + quiggle)
+            }
         } else {
             unselectOne()
         }
