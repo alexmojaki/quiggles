@@ -25,7 +25,7 @@ class Drawing {
     fun draw(canvas: Canvas) {
         canvas.drawColor(DEFAULT_BG_COLOR)
 
-        for (quiggle in quiggles.sortedBy { it.brightnessAnimation.currentValue() }) {
+        for (quiggle in quiggles.sortedBy { it.brightness() }) {
             quiggle.draw(canvas)
         }
     }
@@ -138,7 +138,8 @@ class Drawing {
             when {
                 selectedQuiggles.isEmpty() -> {
                     val dist = point.distance(scenter)
-                    selectMany(quiggles.filter {
+                    val fullyVisible = nonTransitioning(includeCompleting = true).second
+                    selectMany(fullyVisible.filter {
                         val d = dist / it.scaleAnimation.currentValue()
                         -50 + it.innerRadius <= d && d <= it.outerRadius + 50
                     })
@@ -166,10 +167,52 @@ class Drawing {
         }
     }
 
+    fun nonTransitioning(includeCompleting: Boolean): Triple<List<Quiggle>, List<Quiggle>, List<Quiggle>> {
+        val notTransitioning = quiggles.filter {
+            (it.state == Quiggle.State.Complete ||
+                    it.state == Quiggle.State.Completing &&
+                    includeCompleting) &&
+                    it.visibilityAnimation.elapsedRatio() > 1
+        }
+
+        val (fullyVisible, fullyInvisible) = notTransitioning
+            .partition {
+                it.visibilityAnimation.endValue == 1.0
+            }
+
+        return Triple(notTransitioning, fullyVisible, fullyInvisible)
+    }
+
     fun update() {
         for (quiggle in quiggles) {
             quiggle.update()
         }
+
+        if (selectedQuiggles.isNotEmpty()) return
+
+        val (notTransitioning, fullyVisible, fullyInvisible) = nonTransitioning(includeCompleting = false)
+
+        fun switchOne(part: List<Quiggle>, visibility: Double) {
+            part
+                .sortedBy { it.visibilityAnimation.startTime }
+                .take(Math.ceil(part.size / 2.0).toInt())
+                .shuffled()[0]
+                .setVisibility(visibility, 2.5)
+        }
+
+        fun hideOne() = switchOne(fullyVisible, 0.0)
+        fun showOne() = switchOne(fullyInvisible, 1.0)
+
+        if (fullyVisible.size > 10) {
+            hideOne()
+        } else {
+            if (notTransitioning.size == quiggles.size && fullyInvisible.isNotEmpty()) {
+                hideOne()
+                showOne()
+            }
+        }
+
+
     }
 
     fun deleteSelectedQuiggle() {

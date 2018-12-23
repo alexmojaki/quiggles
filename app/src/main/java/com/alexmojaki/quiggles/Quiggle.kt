@@ -19,7 +19,8 @@ class Quiggle {
     lateinit var centerAnimation: Animated<Point>
     lateinit var scaleAnimation: Animated<Double>
     lateinit var rotationAnimation: Animated<Double>
-    var brightnessAnimation: Animated<Double> = still("double", 1.0)
+    var brightnessAnimation: Animated<Double> = still("double", 1.0, ::linear)
+    var visibilityAnimation: Animated<Double> = still("double", 1.0, ::linear)
 
     val center by lazy {
         val vertices = vertices()
@@ -109,11 +110,15 @@ class Quiggle {
         brightnessAnimation = brightnessAnimation.change(brightness, period)
     }
 
+    fun setVisibility(visibility: Double, period: Double) {
+        visibilityAnimation = visibilityAnimation.change(visibility, period)
+    }
+
     fun isSelected(point: Point) =
         point.distance(centerAnimation.currentValue()) <= scaleAnimation.currentValue() * outerRadius
 
     fun draw(canvas: Canvas) {
-        val brightness = brightnessAnimation.currentValue().toFloat()
+        val brightness = brightness().toFloat()
         if (brightness == 0f) {
             return
         }
@@ -151,6 +156,9 @@ class Quiggle {
         canvas.drawPath(matrix * partialPath, paint)
         canvas.restore()
     }
+
+    fun brightness() = brightnessAnimation.currentValue() *
+            visibilityAnimation.currentValue()
 
     fun update() {
         if (state != State.Completing) return
