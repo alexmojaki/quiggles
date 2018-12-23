@@ -4,7 +4,7 @@ import java.util.*
 import kotlin.math.PI
 
 val angleToPoints = TreeMap<Double, Int>().apply {
-    for (points in 3..9) {
+    for (points in 4..9) {
         for (revolutions in 1 until points) {
             if (gcd(points, revolutions) == 1) {
                 val angle = 2 * PI * revolutions / points
