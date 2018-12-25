@@ -34,7 +34,7 @@ class Quiggle {
 
     var outerRadius: Double = 0.0
     var innerRadius: Double = 0.0
-    val hue = randRange(0f, 360f)
+    val hue = nextHue().toFloat()
 
     fun start(point: Point) {
         points.add(point)
