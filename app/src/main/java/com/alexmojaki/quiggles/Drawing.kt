@@ -203,13 +203,17 @@ class Drawing {
         fun hideOne() = switchOne(fullyVisible, 0.0)
         fun showOne() = switchOne(fullyInvisible, 1.0)
 
-        if (fullyVisible.size > 10) {
+        val maxQuiggles = 10
+        if (fullyVisible.size > maxQuiggles) {
             hideOne()
-        } else {
-            if (notTransitioning.size == quiggles.size && fullyInvisible.isNotEmpty()) {
+        } else if (
+            notTransitioning.size == quiggles.size
+            && fullyInvisible.isNotEmpty()
+        ) {
+            if (fullyVisible.size == maxQuiggles) {
                 hideOne()
-                showOne()
             }
+            showOne()
         }
 
 
