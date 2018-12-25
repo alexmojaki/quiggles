@@ -10,8 +10,8 @@ class Quiggle {
     var state = State.Drawing
     val points: MutableList<Point> = ArrayList()
     var numPaths = 0
-    var fullPath = Path()
-    var partialPath = Path()
+    var fullPath = QuadraticPath()
+    var partialPath = QuadraticPath()
     var index = 0
     var idealAngle = 0.0
     var numVertices = -1
@@ -38,22 +38,19 @@ class Quiggle {
 
     fun start(point: Point) {
         points.add(point)
-        fullPath.moveTo(point.xf, point.yf)
+        fullPath.start(point)
     }
 
     fun addPoint(point: Point) {
         require(state == State.Drawing)
-        val p = points.last()
-        if (point.distance(p) >= Drawing.TOUCH_TOLERANCE) {
-            val mid = (p + point) / 2.0
-            fullPath.quadTo(p.xf, p.yf, mid.xf, mid.yf)
+        if (point.distance(points.last()) >= Drawing.TOUCH_TOLERANCE) {
+            fullPath.add(point)
             points.add(point)
         }
     }
 
     fun finishDrawing(swidth: Int, sheight: Int) {
-        val p = points.last().toFloat()
-        fullPath.lineTo(p.x, p.y)
+        fullPath.complete()
         state = State.Completing
         numPaths--
         update()
@@ -149,11 +146,11 @@ class Quiggle {
         val p1 = points.first()
         val p2 = points.last()
         for (i in 0..numPaths) {
-            canvas.drawPath(matrix * fullPath, paint)
+            canvas.drawPath(matrix * fullPath.path, paint)
             (p2 - p1).translate(canvas)
             p1.rotate(canvas, idealAngle)
         }
-        canvas.drawPath(matrix * partialPath, paint)
+        canvas.drawPath(matrix * partialPath.path, paint)
         canvas.restore()
     }
 
@@ -162,16 +159,16 @@ class Quiggle {
 
     fun update() {
         if (state != State.Completing) return
-        val p = points[index].toFloat()
+        val p = points[index]
         if (index == 0) {
             numPaths++
-            partialPath.reset()
-            partialPath.moveTo(p.x, p.y)
+            partialPath = QuadraticPath()
+            partialPath.start(p)
             if (numPaths == numVertices) {
                 state = State.Complete
             }
         } else {
-            partialPath.lineTo(p.x, p.y)
+            partialPath.add(p)
         }
         index = (index + 1) % points.size
     }
