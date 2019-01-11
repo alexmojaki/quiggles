@@ -7,6 +7,7 @@ import android.util.DisplayMetrics
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.ImageButton
+import java.util.*
 import kotlin.math.min
 
 class Drawing {
@@ -89,7 +90,8 @@ class Drawing {
     fun selectMany(selection: List<Quiggle>) {
         selectedQuiggles = selection
 
-        if (selectedQuiggles.size == 1) {
+        val n = selectedQuiggles.size
+        if (n == 1) {
             selectOne(selectedQuiggles[0])
             return
         }
@@ -100,8 +102,8 @@ class Drawing {
             return
         }
 
-        if (packing == null || packing!!.n != selectedQuiggles.size) {
-            packing = packing(selectedQuiggles.size)
+        if (packing == null || packing!!.n != n) {
+            packing = packing(n)
         }
 
         val packing = packing!!
@@ -116,9 +118,20 @@ class Drawing {
         val matrix = Matrix()
         (scenter - packing.boxCenter).translate(matrix)
         scenter.scale(matrix, scale)
-        packing.centers.zip(selectedQuiggles).map { (c, quiggle) ->
+
+        val oldCenters = selectedQuiggles.map { it.centerAnimation.currentValue() }
+        var newCenters = packing.centers.map { matrix * it }
+        if (n <= 7) {
+            val permutations: Iterable<IntArray> = Permutations(n)
+            newCenters = permutations.asSequence().map { it.map { i -> newCenters[i] } }.minBy {
+                val distances = it.zip(oldCenters).map { (newC, oldC) -> newC.distance(oldC) }
+                distances.average() * distances.max()!!
+            }!!
+        }
+
+        newCenters.zip(selectedQuiggles).map { (center, quiggle) ->
             quiggle.setPosition(
-                matrix * c,
+                center,
                 scale / quiggle.outerRadius,
                 period
             )
