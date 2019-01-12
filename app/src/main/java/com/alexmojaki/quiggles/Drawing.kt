@@ -4,9 +4,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.util.DisplayMetrics
+import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import android.widget.ImageButton
 import java.util.*
 import kotlin.math.min
 
@@ -21,7 +21,7 @@ class Drawing {
     val swidth by lazy { metrics.widthPixels }
     val sheight by lazy { metrics.heightPixels }
     val scenter by lazy { Point(swidth / 2f, sheight / 2f) }
-    lateinit var buttons: List<ImageButton>
+    lateinit var buttons: View
 
     fun draw(canvas: Canvas) {
         canvas.drawColor(DEFAULT_BG_COLOR)
@@ -175,9 +175,7 @@ class Drawing {
     }
 
     fun updateButtons() {
-        for (button in buttons) {
-            button.visibility = if (selectedQuiggle == null) INVISIBLE else VISIBLE
-        }
+        buttons.visibility = if (selectedQuiggle == null) INVISIBLE else VISIBLE
     }
 
     fun nonTransitioning(includeCompleting: Boolean): Triple<List<Quiggle>, List<Quiggle>, List<Quiggle>> {

@@ -12,14 +12,56 @@
             android:id="@+id/paintView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-    <ImageButton
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            app:srcCompat="@android:drawable/ic_menu_delete"
+
+    <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
-            android:id="@+id/deleteButton"
-            style="@android:style/Widget.DeviceDefault.ImageButton"
+            android:max="100"
+            android:progress="50"
+            android:id="@+id/scaleBar"
             android:visibility="invisible"
-            android:background="@drawable/round_button_background"/>
+            android:layout_marginBottom="90dp"/>
+
+    <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/buttons"
+            android:visibility="invisible"
+            android:layout_alignParentBottom="true">
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+            <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    app:srcCompat="@android:drawable/ic_menu_crop"
+                    android:id="@+id/scaleButton"
+                    style="@android:style/Widget.DeviceDefault.ImageButton"
+                    android:background="@drawable/round_button_background"/>
+
+            <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="10dp"
+                    app:srcCompat="@android:drawable/ic_menu_edit"
+                    android:id="@+id/colorButton"
+                    style="@android:style/Widget.DeviceDefault.ImageButton"
+                    android:background="@drawable/round_button_background"/>
+
+            <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="10dp"
+                    app:srcCompat="@android:drawable/ic_menu_delete"
+                    android:id="@+id/deleteButton"
+                    style="@android:style/Widget.DeviceDefault.ImageButton"
+                    android:background="@drawable/round_button_background"/>
+
+        </LinearLayout>
+    </HorizontalScrollView>
 </RelativeLayout>

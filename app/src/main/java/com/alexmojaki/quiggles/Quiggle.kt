@@ -34,7 +34,19 @@ class Quiggle {
 
     var outerRadius: Double = 0.0
     var innerRadius: Double = 0.0
-    val hue = nextHue().toFloat()
+    var hue = nextHue().toFloat()
+    var saturation = 1f
+    var colorValue = 1f
+
+    var color: Int
+        get() = Color.HSVToColor(floatArrayOf(hue, saturation, colorValue))
+        set(value) {
+            val arr = FloatArray(3)
+            Color.colorToHSV(value, arr)
+            hue = arr[0]
+            saturation = arr[1]
+            colorValue = arr[2]
+        }
 
     fun start(point: Point) {
         points.add(point)
@@ -126,7 +138,7 @@ class Quiggle {
         with(paint) {
             isAntiAlias = true
             isDither = true
-            color = Color.HSVToColor(floatArrayOf(hue, 1f, brightness))
+            color = Color.HSVToColor(floatArrayOf(hue, saturation, colorValue * brightness))
             style = Paint.Style.STROKE
             strokeJoin = Paint.Join.ROUND
             strokeCap = Paint.Cap.ROUND
