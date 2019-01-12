@@ -30,7 +30,7 @@ class Quiggle {
         )
     }
 
-    val randomScaleFactor = randRange(0.85f, 1f).toDouble()
+    var usualScale = 1.0
 
     var outerRadius: Double = 0.0
     var innerRadius: Double = 0.0
@@ -84,11 +84,14 @@ class Quiggle {
             easingFunction = ::s2Line
         )
 
+        if (sheight / 2 < outerRadius) {
+            usualScale = randRange(0.85f, 1f) * sheight / 2 / outerRadius
+        }
+
         scaleAnimation = Animated(
             "double",
             1.0,
-            if (sheight / 2 < outerRadius) randomScaleFactor * sheight / 2 / outerRadius
-            else 1.0,
+            usualScale,
             3.0
         )
 

@@ -55,12 +55,11 @@ class Drawing {
             with(quiggle) {
                 setPosition(
                     scenter,
-                    if (sheight / 2 < outerRadius) randomScaleFactor * sheight / 2 / outerRadius
-                    else 1.0,
+                    usualScale,
                     period
                 )
+                setBrightness(1.0, period)
             }
-            quiggle.setBrightness(1.0, period)
         }
     }
 
