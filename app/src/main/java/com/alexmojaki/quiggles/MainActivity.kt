@@ -54,11 +54,12 @@ class MainActivity : AppCompatActivity() {
             with(drawing.selectedQuiggle!!) {
                 val original = outerRadius / (drawing.sheight / 2) * 100
                 showSeekBar(
-                    (usualScale * original).roundToInt()
-                ) { progress ->
-                    usualScale = progress / original
-                    setPosition(drawing.scenter, usualScale, 0.0)
-                }
+                    (usualScale * original).roundToInt(),
+                    { progress ->
+                        usualScale = progress / original
+                        setPosition(drawing.scenter, usualScale, 0.0)
+                    }
+                )
             }
         }
 
@@ -67,16 +68,38 @@ class MainActivity : AppCompatActivity() {
             with(drawing.selectedQuiggle!!) {
                 val max = 200
                 showSeekBar(
-                    (thickness / max * 100).roundToInt()
-                ) { progress ->
-                    thickness = progress / 100f * max
-                }
+                    (thickness / max * 100).roundToInt(),
+                    { progress ->
+                        thickness = progress / 100f * max
+                    }
+                )
             }
         }
+
+        angleButton.setOnClickListener {
+            drawing.edit()
+            val angles = angleToPoints.navigableKeySet().toList()
+            with(drawing.selectedQuiggle!!) {
+                showSeekBar(
+                    angles.indexOf(idealAngle),
+                    { progress ->
+                        setAngle(angles[progress])
+                        setPosition(drawing.scenter, usualScale, 0.0)
+                        if (state == Quiggle.State.Complete) {
+                            numPaths = numVertices
+                        }
+                    },
+                    max = angles.size - 1
+                )
+            }
+        }
+
+
     }
 
-    fun showSeekBar(progress: Int, onChange: (Int) -> Unit) {
+    fun showSeekBar(progress: Int, onChange: (Int) -> Unit, max: Int = 100) {
         seekBar.visibility = VISIBLE
+        seekBar.max = max
         seekBar.progress = progress
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {

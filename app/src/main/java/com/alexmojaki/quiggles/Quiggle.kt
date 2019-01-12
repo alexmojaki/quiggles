@@ -22,13 +22,7 @@ class Quiggle {
     var brightnessAnimation: Animated<Double> = still("double", 1.0, ::linear)
     var visibilityAnimation: Animated<Double> = still("double", 1.0, ::linear)
 
-    val center by lazy {
-        val vertices = vertices()
-        Point(
-            vertices.asSequence().map { it.x }.average(),
-            vertices.asSequence().map { it.y }.average()
-        )
-    }
+    lateinit var center: Point
 
     var usualScale = 1.0
     var thickness = 4f
@@ -62,20 +56,29 @@ class Quiggle {
         }
     }
 
+    fun setAngle(angle: Double) {
+        val (idealAngle, numVertices) = star(angle)
+        this.idealAngle = idealAngle
+        this.numVertices = numVertices
+
+        val vertices = vertices()
+        center = Point(
+            vertices.asSequence().map { it.x }.average(),
+            vertices.asSequence().map { it.y }.average()
+        )
+
+        val distances = points.asSequence().map { it.distance(center) }
+        outerRadius = distances.max()!!
+        innerRadius = distances.min()!!
+    }
+
     fun finishDrawing(swidth: Int, sheight: Int) {
         fullPath.complete()
         state = State.Completing
         numPaths--
         update()
 
-        val angle = Math.abs(points[points.size - 2].direction(points.last()) - points[0].direction(points[1]))
-        val (idealAngle, numVertices) = star(angle)
-        this.idealAngle = idealAngle
-        this.numVertices = numVertices
-
-        val distances = points.asSequence().map { it.distance(center) }
-        outerRadius = distances.max()!!
-        innerRadius = distances.min()!!
+        setAngle(Math.abs(points[points.size - 2].direction(points.last()) - points[0].direction(points[1])))
 
         rotationAnimation = Animated(
             "double",
