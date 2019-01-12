@@ -42,10 +42,16 @@ class MainActivity : AppCompatActivity() {
                 .lightnessSliderOnly()
                 .setPositiveButton(
                     "OK"
-                ) { _, selectedColor, _ -> quiggle.color = selectedColor }
-                .setNegativeButton("Cancel") { _, _ -> Unit }
+                ) { _, selectedColor, _ ->
+                    quiggle.color = selectedColor
+                    hideSystemUi()
+                }
+                .setNegativeButton("Cancel") { _, _ ->
+                    hideSystemUi()
+                }
                 .build()
                 .show()
+            hideSystemUi()
         }
 
         val scaleBar = findViewById<SeekBar>(R.id.scaleBar)
@@ -58,11 +64,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        hideSystemUi()
+    }
+
+    private fun hideSystemUi() {
         paintView.systemUiVisibility =
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
                 View.SYSTEM_UI_FLAG_FULLSCREEN or
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-
     }
 
 }
