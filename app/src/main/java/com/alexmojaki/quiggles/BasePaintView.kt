@@ -13,8 +13,11 @@ abstract class BasePaintView @JvmOverloads constructor(context: Context, attrs: 
 
     val drawing = Drawing()
 
-    open fun init(metrics: DisplayMetrics) {
+    open fun init(activity: MainActivity) {
+        val metrics = DisplayMetrics()
+        activity.windowManager.defaultDisplay.getMetrics(metrics)
         drawing.metrics = metrics
+        drawing.activity = activity
     }
 
     @SuppressLint("ClickableViewAccessibility")

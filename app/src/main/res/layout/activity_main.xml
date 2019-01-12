@@ -20,7 +20,7 @@
             android:layout_alignParentBottom="true"
             android:max="100"
             android:progress="50"
-            android:id="@+id/scaleBar"
+            android:id="@+id/seekBar"
             android:visibility="invisible"
             android:layout_marginBottom="90dp"/>
 
@@ -41,6 +41,15 @@
                     android:layout_height="70dp"
                     app:srcCompat="@android:drawable/ic_menu_crop"
                     android:id="@+id/scaleButton"
+                    style="@android:style/Widget.DeviceDefault.ImageButton"
+                    android:background="@drawable/round_button_background"/>
+
+            <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="10dp"
+                    app:srcCompat="@android:drawable/ic_media_pause"
+                    android:id="@+id/thicknessButton"
                     style="@android:style/Widget.DeviceDefault.ImageButton"
                     android:background="@drawable/round_button_background"/>
 

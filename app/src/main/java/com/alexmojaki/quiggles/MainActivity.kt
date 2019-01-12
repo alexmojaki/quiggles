@@ -2,20 +2,17 @@ package com.alexmojaki.quiggles
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.DisplayMetrics
 import android.view.View
-import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.Window
-import android.widget.ImageButton
 import android.widget.SeekBar
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity() {
-
-    lateinit var paintView: BasePaintView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,18 +20,16 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        paintView = findViewById(R.id.paintView)
-        val metrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(metrics)
-        paintView.init(metrics)
+        paintView.init(this)
+        val drawing = paintView.drawing
 
-        findViewById<ImageButton>(R.id.deleteButton).setOnClickListener {
-            paintView.drawing.deleteSelectedQuiggle()
+        deleteButton.setOnClickListener {
+            drawing.deleteSelectedQuiggle()
         }
 
+        colorButton.setOnClickListener {
+            val quiggle = drawing.selectedQuiggle!!
 
-        findViewById<ImageButton>(R.id.colorButton).setOnClickListener {
-            val quiggle = paintView.drawing.selectedQuiggle!!
             ColorPickerDialogBuilder.with(this)
                 .initialColor(quiggle.color)
                 .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
@@ -54,12 +49,47 @@ class MainActivity : AppCompatActivity() {
             hideSystemUi()
         }
 
-        val scaleBar = findViewById<SeekBar>(R.id.scaleBar)
-        findViewById<ImageButton>(R.id.scaleButton).setOnClickListener {
-            scaleBar.visibility = if (scaleBar.visibility == VISIBLE) INVISIBLE else VISIBLE
+        scaleButton.setOnClickListener {
+            drawing.edit()
+            with(drawing.selectedQuiggle!!) {
+                val original = outerRadius / (drawing.sheight / 2) * 100
+                showSeekBar(
+                    (usualScale * original).roundToInt()
+                ) { progress ->
+                    usualScale = progress / original
+                    setPosition(drawing.scenter, usualScale, 0.0)
+                }
+            }
         }
 
-        paintView.drawing.buttons = findViewById(R.id.buttons)
+        thicknessButton.setOnClickListener {
+            drawing.edit()
+            with(drawing.selectedQuiggle!!) {
+                val max = 200
+                showSeekBar(
+                    (thickness / max * 100).roundToInt()
+                ) { progress ->
+                    thickness = progress / 100f * max
+                }
+            }
+        }
+    }
+
+    fun showSeekBar(progress: Int, onChange: (Int) -> Unit) {
+        seekBar.visibility = VISIBLE
+        seekBar.progress = progress
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (!fromUser) return
+                onChange(progress)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+            }
+        })
     }
 
     override fun onResume() {

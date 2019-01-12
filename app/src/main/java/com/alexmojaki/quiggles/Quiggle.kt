@@ -31,6 +31,7 @@ class Quiggle {
     }
 
     var usualScale = 1.0
+    var thickness = 4f
 
     var outerRadius: Double = 0.0
     var innerRadius: Double = 0.0
@@ -145,7 +146,7 @@ class Quiggle {
             style = Paint.Style.STROKE
             strokeJoin = Paint.Join.ROUND
             strokeCap = Paint.Cap.ROUND
-            strokeWidth = 4f
+            strokeWidth = thickness
             xfermode = null
             alpha = 0xff
         }

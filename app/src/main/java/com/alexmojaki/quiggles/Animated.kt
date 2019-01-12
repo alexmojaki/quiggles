@@ -8,7 +8,7 @@ class Animated<T>(
     val easingFunction: (Double) -> Double = ::s2
 ) {
     val startTime = System.currentTimeMillis()
-    fun elapsedRatio() = (System.currentTimeMillis() - startTime) / (period * 1000)
+    fun elapsedRatio() = if (period == 0.0) 1.0 else (System.currentTimeMillis() - startTime) / (period * 1000)
     fun easedRatio() = easingFunction(elapsedRatio())
 
     @Suppress("UNCHECKED_CAST")

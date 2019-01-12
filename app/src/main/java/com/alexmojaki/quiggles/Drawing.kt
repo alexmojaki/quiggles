@@ -4,9 +4,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.util.DisplayMetrics
-import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
+import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.min
 
@@ -21,7 +21,8 @@ class Drawing {
     val swidth by lazy { metrics.widthPixels }
     val sheight by lazy { metrics.heightPixels }
     val scenter by lazy { Point(swidth / 2f, sheight / 2f) }
-    lateinit var buttons: View
+    lateinit var activity: MainActivity
+    var edited = false
 
     fun draw(canvas: Canvas) {
         canvas.drawColor(DEFAULT_BG_COLOR)
@@ -49,6 +50,9 @@ class Drawing {
         packing = null
         selectedQuiggle = null
         selectedQuiggles = emptyList()
+        activity.seekBar.visibility = INVISIBLE
+        edited = false
+        updateButtons()
 
         for (quiggle in quiggles) {
             val period = 1.2
@@ -142,7 +146,25 @@ class Drawing {
         }
     }
 
+    fun edit() {
+        edited = true
+        for (quiggle in quiggles) {
+            val period = 0.7
+            var scalePeriod = period
+            if (quiggle != selectedQuiggle) {
+                scalePeriod = 0.0
+                quiggle.setBrightness(0.5, period)
+            }
+            quiggle.setPosition(scenter, quiggle.usualScale, scalePeriod)
+        }
+    }
+
     fun touchUp(point: Point) {
+        if (edited) {
+            selectNone()
+            return
+        }
+
         val quiggle = quiggles.last()
         if (quiggle.points.size < 5) {
             quiggles.remove(quiggle)
@@ -174,7 +196,8 @@ class Drawing {
     }
 
     fun updateButtons() {
-        buttons.visibility = if (selectedQuiggle == null) INVISIBLE else VISIBLE
+        activity.buttons.visibility =
+                if (selectedQuiggle == null) INVISIBLE else VISIBLE
     }
 
     fun nonTransitioning(includeCompleting: Boolean): Triple<List<Quiggle>, List<Quiggle>, List<Quiggle>> {
@@ -232,7 +255,6 @@ class Drawing {
     fun deleteSelectedQuiggle() {
         quiggles.remove(selectedQuiggle)
         selectNone()
-        updateButtons()
     }
 
     companion object {
