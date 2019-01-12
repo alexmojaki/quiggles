@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         colorButton.setOnClickListener {
+            drawing.edited = true
             val quiggle = drawing.selectedQuiggle!!
 
             ColorPickerDialogBuilder.with(this)
