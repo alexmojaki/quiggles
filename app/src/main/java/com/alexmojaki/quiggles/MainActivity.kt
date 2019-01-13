@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         angleButton.setOnClickListener {
-            drawing.edit()
+            drawing.edited = true
             val angles = angleToPoints.navigableKeySet().toList()
             with(drawing.selectedQuiggle!!) {
                 showSeekBar(
