@@ -56,14 +56,8 @@ class Drawing {
 
         for (quiggle in quiggles) {
             val period = 1.2
-            with(quiggle) {
-                setPosition(
-                    scenter,
-                    usualScale,
-                    period
-                )
-                setBrightness(1.0, period)
-            }
+            resetQuigglePosition(quiggle, period)
+            quiggle.setBrightness(1.0, period)
         }
     }
 
@@ -155,7 +149,7 @@ class Drawing {
                 scalePeriod = 0.0
                 quiggle.setBrightness(0.5, period)
             }
-            quiggle.setPosition(scenter, quiggle.usualScale, scalePeriod)
+            resetQuigglePosition(quiggle, scalePeriod)
         }
     }
 
@@ -255,6 +249,14 @@ class Drawing {
     fun deleteSelectedQuiggle() {
         quiggles.remove(selectedQuiggle)
         selectNone()
+    }
+
+    fun resetQuigglePosition(quiggle: Quiggle, period: Double) {
+        quiggle.setPosition(
+            scenter,
+            quiggle.usualScale,
+            period
+        )
     }
 
     companion object {

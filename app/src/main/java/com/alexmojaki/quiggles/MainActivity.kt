@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                     (usualScale * original).roundToInt(),
                     { progress ->
                         usualScale = progress / original
-                        setPosition(drawing.scenter, usualScale, 0.0)
+                        drawing.resetQuigglePosition(this, 0.0)
                     }
                 )
             }
@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
                     angles.indexOf(idealAngle),
                     { progress ->
                         setAngle(angles[progress])
-                        setPosition(drawing.scenter, usualScale, 0.0)
+                        drawing.resetQuigglePosition(this, 0.0)
                         if (state == Quiggle.State.Complete) {
                             numPaths = numVertices
                         }
