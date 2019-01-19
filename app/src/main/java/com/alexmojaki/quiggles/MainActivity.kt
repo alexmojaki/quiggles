@@ -81,11 +81,16 @@ class MainActivity : AppCompatActivity() {
             drawing.edited = true
             val angles = angleToPoints.navigableKeySet().toList()
             with(drawing.selectedQuiggle!!) {
+                drawing.selectOne(this)
                 showSeekBar(
                     angles.indexOf(idealAngle),
                     { progress ->
                         setAngle(angles[progress])
-                        drawing.resetQuigglePosition(this, 0.0)
+                        setPosition(
+                            drawing.scenter,
+                            drawing.swidth / 2 / outerRadius,
+                            0.0
+                        )
                         if (state == Quiggle.State.Complete) {
                             numPaths = numVertices
                         }
