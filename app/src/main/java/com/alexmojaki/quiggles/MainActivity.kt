@@ -91,6 +91,9 @@ class MainActivity : AppCompatActivity() {
                             drawing.swidth / 2 / outerRadius,
                             0.0
                         )
+
+                        scaleDownToFit(drawing.sheight)
+
                         if (state == Quiggle.State.Complete) {
                             numPaths = numVertices
                         }

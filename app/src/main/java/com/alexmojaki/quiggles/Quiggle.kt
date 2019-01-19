@@ -88,9 +88,7 @@ class Quiggle {
             easingFunction = ::s2Line
         )
 
-        if (sheight / 2 < outerRadius) {
-            usualScale = randRange(0.85f, 1f) * sheight / 2 / outerRadius
-        }
+        scaleDownToFit(sheight)
 
         scaleAnimation = Animated(
             "double",
@@ -105,6 +103,12 @@ class Quiggle {
             Point(swidth / 2, sheight / 2),
             3.0
         )
+    }
+
+    fun scaleDownToFit(sheight: Int) {
+        if (sheight / 2 < usualScale * outerRadius) {
+            usualScale = randRange(0.85f, 1f) * sheight / 2 / outerRadius
+        }
     }
 
     private fun vertices(): ArrayList<Point> {
