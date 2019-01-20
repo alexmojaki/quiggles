@@ -252,11 +252,12 @@ class Drawing {
     }
 
     fun resetQuigglePosition(quiggle: Quiggle, period: Double) {
-        quiggle.setPosition(
-            scenter,
-            quiggle.usualScale,
-            period
-        )
+        with(quiggle) {
+            setPosition(scenter, usualScale, period)
+            if (oscillationPeriod != 0.0) {
+                oscillate(sheight)
+            }
+        }
     }
 
     companion object {

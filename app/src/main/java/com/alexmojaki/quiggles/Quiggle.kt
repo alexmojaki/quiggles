@@ -1,8 +1,13 @@
 package com.alexmojaki.quiggles
 
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.Paint
+import java.lang.Math.pow
 import java.util.*
 import kotlin.math.PI
+import kotlin.math.cos
 
 class Quiggle {
     enum class State { Drawing, Completing, Complete }
@@ -21,6 +26,8 @@ class Quiggle {
     lateinit var rotationAnimation: Animated<Double>
     var brightnessAnimation: Animated<Double> = still("double", 1.0, ::linear)
     var visibilityAnimation: Animated<Double> = still("double", 1.0, ::linear)
+
+    var oscillationPeriod: Double = 0.0
 
     lateinit var center: Point
 
@@ -90,18 +97,30 @@ class Quiggle {
 
         scaleDownToFit(sheight)
 
-        scaleAnimation = Animated(
-            "double",
-            1.0,
-            usualScale,
-            3.0
-        )
+        scaleAnimation = still("double", 1.0)
+
+        if (usualScale < 1) {
+            oscillationPeriod = randRange(4f, 12f).toDouble()
+            oscillate(sheight)
+        }
 
         centerAnimation = Animated(
             "point",
             center,
             Point(swidth / 2, sheight / 2),
             3.0
+        )
+    }
+
+    fun oscillate(sheight: Int) {
+        val current = scaleAnimation.currentValue()
+        scaleAnimation = scaleAnimation.change(
+            0.05 * sheight / 2 / outerRadius,
+            oscillationPeriod,
+            easingFunction = {
+                val y = cos(it * PI / 2)
+                1 - pow(y, 4.0) * (if (it < 1) 1.0 else usualScale / current)
+            }
         )
     }
 
@@ -122,7 +141,7 @@ class Quiggle {
     }
 
     fun setPosition(position: Point, scale: Double, period: Double) {
-        scaleAnimation = scaleAnimation.change(scale, period)
+        scaleAnimation = scaleAnimation.change(scale, period, easingFunction = ::s2)
         centerAnimation = centerAnimation.change(position, period)
     }
 
