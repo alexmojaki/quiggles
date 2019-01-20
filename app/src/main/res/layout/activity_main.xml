@@ -75,6 +75,15 @@
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_marginStart="10dp"
+                    app:srcCompat="@android:drawable/ic_menu_zoom"
+                    android:id="@+id/oscillationButton"
+                    style="@android:style/Widget.DeviceDefault.ImageButton"
+                    android:background="@drawable/round_button_background"/>
+
+            <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="10dp"
                     app:srcCompat="@android:drawable/ic_menu_delete"
                     android:id="@+id/deleteButton"
                     style="@android:style/Widget.DeviceDefault.ImageButton"

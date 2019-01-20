@@ -254,7 +254,7 @@ class Drawing {
     fun resetQuigglePosition(quiggle: Quiggle, period: Double) {
         with(quiggle) {
             setPosition(scenter, usualScale, period)
-            if (oscillationPeriod != 0.0) {
+            if (oscillationPeriod != Double.POSITIVE_INFINITY) {
                 oscillate(sheight)
             }
         }

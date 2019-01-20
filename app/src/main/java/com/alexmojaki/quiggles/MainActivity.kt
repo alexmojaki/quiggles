@@ -103,6 +103,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        oscillationButton.setOnClickListener {
+            drawing.edit()
+            with(drawing.selectedQuiggle!!) {
+                val maxPeriod = 50.0
+                showSeekBar(
+                    (maxPeriod / oscillationPeriod).roundToInt(),
+                    { progress ->
+                        oscillationPeriod = maxPeriod / progress
+                        oscillate(drawing.sheight)
+                    }
+                )
+            }
+        }
+
 
     }
 

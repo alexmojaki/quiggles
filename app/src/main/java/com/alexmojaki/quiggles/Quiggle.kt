@@ -27,7 +27,7 @@ class Quiggle {
     var brightnessAnimation: Animated<Double> = still("double", 1.0, ::linear)
     var visibilityAnimation: Animated<Double> = still("double", 1.0, ::linear)
 
-    var oscillationPeriod: Double = 0.0
+    var oscillationPeriod: Double = Double.POSITIVE_INFINITY
 
     lateinit var center: Point
 
@@ -114,12 +114,13 @@ class Quiggle {
 
     fun oscillate(sheight: Int) {
         val current = scaleAnimation.currentValue()
+        val lower = { 0.05 * sheight / 2 / outerRadius }
         scaleAnimation = scaleAnimation.change(
-            0.05 * sheight / 2 / outerRadius,
+            lower(),
             oscillationPeriod,
             easingFunction = {
                 val y = cos(it * PI / 2)
-                1 - pow(y, 4.0) * (if (it < 1) 1.0 else usualScale / current)
+                1 - pow(y, 4.0) * (if (it < 1) 1.0 else usualScale / (current - lower()))
             }
         )
     }
