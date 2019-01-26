@@ -33,8 +33,9 @@ class MainActivity : AppCompatActivity() {
             val button = ImageButton(this, null, android.R.style.Widget_DeviceDefault_ImageButton)
 
             val width = dp(70f)
+            val margin = dp(5f)
             val params = LinearLayout.LayoutParams(width, width)
-            params.setMargins(dp(10f), 0, 0, 0)
+            params.setMargins(margin, 0, margin, 0)
             with(button) {
                 setImageResource(imageId)
                 setBackgroundResource(R.drawable.round_button_background)
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Scale
-        addButton(android.R.drawable.ic_menu_crop) {
+        addButton(R.drawable.scale) {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val original = outerRadius / (drawing.sheight / 2) * 100
@@ -62,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Color
-        addButton(android.R.drawable.ic_menu_edit) {
+        addButton(R.drawable.color_palette) {
             drawing.edited = true
             val quiggle = drawing.selectedQuiggle!!
 
@@ -86,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Angle
-        addButton(android.R.drawable.ic_menu_close_clear_cancel) {
+        addButton(R.drawable.star) {
             drawing.edited = true
             val angles = angleToPoints.navigableKeySet().toList()
             with(drawing.selectedQuiggle!!) {
@@ -113,7 +114,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Oscillation
-        addButton(android.R.drawable.ic_menu_zoom) {
+        addButton(R.drawable.wave) {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 50.0
@@ -128,7 +129,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Thickness
-        addButton(android.R.drawable.ic_media_pause) {
+        addButton(R.drawable.thickness) {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val max = 200
