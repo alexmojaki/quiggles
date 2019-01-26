@@ -192,6 +192,7 @@ class Drawing {
     fun updateButtons() {
         activity.buttons.visibility =
                 if (selectedQuiggle == null) INVISIBLE else VISIBLE
+        activity.resetButtons()
     }
 
     fun nonTransitioning(includeCompleting: Boolean): Triple<List<Quiggle>, List<Quiggle>, List<Quiggle>> {

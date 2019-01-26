@@ -21,6 +21,14 @@ import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
+    private val buttonsList = ArrayList<ImageButton>()
+
+    fun resetButtons() {
+        buttonsList.forEach {
+            it.backgroundTintList = null
+        }
+    }
+
     fun dp(x: Float) = applyDimension(COMPLEX_UNIT_DIP, x, resources.displayMetrics).toInt()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,8 +39,6 @@ class MainActivity : AppCompatActivity() {
 
         paintView.init(this)
         val drawing = paintView.drawing
-
-        val buttonsList = ArrayList<ImageButton>()
 
         fun addButton(imageId: Int, onClick: (View) -> Unit, highlight: Boolean = true) {
             val button = ImageButton(this, null, android.R.style.Widget_DeviceDefault_ImageButton)
@@ -45,9 +51,7 @@ class MainActivity : AppCompatActivity() {
                 setImageResource(imageId)
                 setBackgroundResource(R.drawable.round_button_background)
                 setOnClickListener {
-                    buttonsList.forEach { otherButton ->
-                        otherButton.backgroundTintList = null
-                    }
+                    resetButtons()
                     if (highlight) {
                         backgroundTintList = ColorStateList.valueOf(Color.parseColor("#B1cddc39"))
                     }
