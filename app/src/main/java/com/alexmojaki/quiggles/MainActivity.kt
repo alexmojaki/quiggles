@@ -1,9 +1,12 @@
 package com.alexmojaki.quiggles
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.TypedValue.*
 import android.view.View
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.Window
 import android.widget.ImageButton
@@ -29,7 +32,9 @@ class MainActivity : AppCompatActivity() {
         paintView.init(this)
         val drawing = paintView.drawing
 
-        fun addButton(imageId: Int, onClick: (View) -> Unit) {
+        val buttonsList = ArrayList<ImageButton>()
+
+        fun addButton(imageId: Int, onClick: (View) -> Unit, highlight: Boolean = true) {
             val button = ImageButton(this, null, android.R.style.Widget_DeviceDefault_ImageButton)
 
             val width = dp(70f)
@@ -39,16 +44,25 @@ class MainActivity : AppCompatActivity() {
             with(button) {
                 setImageResource(imageId)
                 setBackgroundResource(R.drawable.round_button_background)
-                setOnClickListener(onClick)
+                setOnClickListener {
+                    buttonsList.forEach { otherButton ->
+                        otherButton.backgroundTintList = null
+                    }
+                    if (highlight) {
+                        backgroundTintList = ColorStateList.valueOf(Color.parseColor("#B1cddc39"))
+                    }
+                    onClick.invoke(this)
+                }
                 layoutParams = params
                 scaleType = ImageView.ScaleType.CENTER_INSIDE
             }
 
             buttonsLayout.addView(button)
+            buttonsList.add(button)
         }
 
         // Scale
-        addButton(R.drawable.scale) {
+        addButton(R.drawable.scale, {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val original = outerRadius / (drawing.sheight / 2) * 100
@@ -60,11 +74,13 @@ class MainActivity : AppCompatActivity() {
                     }
                 )
             }
-        }
+        })
 
         // Color
-        addButton(R.drawable.color_palette) {
+        addButton(R.drawable.color_palette, {
             drawing.edited = true
+            seekBar.visibility = INVISIBLE
+
             val quiggle = drawing.selectedQuiggle!!
 
             ColorPickerDialogBuilder.with(this)
@@ -84,10 +100,10 @@ class MainActivity : AppCompatActivity() {
                 .build()
                 .show()
             hideSystemUi()
-        }
+        }, highlight = false)
 
         // Angle
-        addButton(R.drawable.star) {
+        addButton(R.drawable.star, {
             drawing.edited = true
             val angles = angleToPoints.navigableKeySet().toList()
             with(drawing.selectedQuiggle!!) {
@@ -111,10 +127,10 @@ class MainActivity : AppCompatActivity() {
                     max = angles.size - 1
                 )
             }
-        }
+        })
 
         // Oscillation
-        addButton(R.drawable.wave) {
+        addButton(R.drawable.wave, {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 50.0
@@ -126,10 +142,10 @@ class MainActivity : AppCompatActivity() {
                     }
                 )
             }
-        }
+        })
 
         // Thickness
-        addButton(R.drawable.thickness) {
+        addButton(R.drawable.thickness, {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val max = 200
@@ -140,12 +156,12 @@ class MainActivity : AppCompatActivity() {
                     }
                 )
             }
-        }
+        })
 
         // Delete
-        addButton(android.R.drawable.ic_menu_delete) {
+        addButton(android.R.drawable.ic_menu_delete, {
             drawing.deleteSelectedQuiggle()
-        }
+        })
 
     }
 
