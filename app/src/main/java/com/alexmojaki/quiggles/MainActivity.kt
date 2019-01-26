@@ -45,10 +45,12 @@ class MainActivity : AppCompatActivity() {
 
             val width = dp(70f)
             val margin = dp(5f)
+            val padding = dp(16f)
             val params = LinearLayout.LayoutParams(width, width)
             params.setMargins(margin, 0, margin, 0)
             with(button) {
                 setImageResource(imageId)
+                setPadding(padding, padding, padding, padding)
                 setBackgroundResource(R.drawable.round_button_background)
                 setOnClickListener {
                     resetButtons()
@@ -58,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                     onClick.invoke(this)
                 }
                 layoutParams = params
-                scaleType = ImageView.ScaleType.CENTER_INSIDE
+                scaleType = ImageView.ScaleType.FIT_XY
             }
 
             buttonsLayout.addView(button)
