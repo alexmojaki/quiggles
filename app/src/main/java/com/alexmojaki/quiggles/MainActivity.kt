@@ -2,9 +2,13 @@ package com.alexmojaki.quiggles
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.TypedValue.*
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.Window
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.SeekBar
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
@@ -13,6 +17,8 @@ import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity() {
+
+    fun dp(x: Float) = applyDimension(COMPLEX_UNIT_DIP, x, resources.displayMetrics).toInt()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,11 +29,40 @@ class MainActivity : AppCompatActivity() {
         paintView.init(this)
         val drawing = paintView.drawing
 
-        deleteButton.setOnClickListener {
-            drawing.deleteSelectedQuiggle()
+        fun addButton(imageId: Int, onClick: (View) -> Unit) {
+            val button = ImageButton(this, null, android.R.style.Widget_DeviceDefault_ImageButton)
+
+            val width = dp(70f)
+            val params = LinearLayout.LayoutParams(width, width)
+            params.setMargins(dp(10f), 0, 0, 0)
+            with(button) {
+                setImageResource(imageId)
+                setBackgroundResource(R.drawable.round_button_background)
+                setOnClickListener(onClick)
+                layoutParams = params
+                scaleType = ImageView.ScaleType.CENTER_INSIDE
+            }
+
+            buttonsLayout.addView(button)
         }
 
-        colorButton.setOnClickListener {
+        // Scale
+        addButton(android.R.drawable.ic_menu_crop) {
+            drawing.edit()
+            with(drawing.selectedQuiggle!!) {
+                val original = outerRadius / (drawing.sheight / 2) * 100
+                showSeekBar(
+                    (usualScale * original).roundToInt(),
+                    { progress ->
+                        usualScale = progress / original
+                        drawing.resetQuigglePosition(this, 0.0)
+                    }
+                )
+            }
+        }
+
+        // Color
+        addButton(android.R.drawable.ic_menu_edit) {
             drawing.edited = true
             val quiggle = drawing.selectedQuiggle!!
 
@@ -50,34 +85,8 @@ class MainActivity : AppCompatActivity() {
             hideSystemUi()
         }
 
-        scaleButton.setOnClickListener {
-            drawing.edit()
-            with(drawing.selectedQuiggle!!) {
-                val original = outerRadius / (drawing.sheight / 2) * 100
-                showSeekBar(
-                    (usualScale * original).roundToInt(),
-                    { progress ->
-                        usualScale = progress / original
-                        drawing.resetQuigglePosition(this, 0.0)
-                    }
-                )
-            }
-        }
-
-        thicknessButton.setOnClickListener {
-            drawing.edit()
-            with(drawing.selectedQuiggle!!) {
-                val max = 200
-                showSeekBar(
-                    (thickness / max * 100).roundToInt(),
-                    { progress ->
-                        thickness = progress / 100f * max
-                    }
-                )
-            }
-        }
-
-        angleButton.setOnClickListener {
+        // Angle
+        addButton(android.R.drawable.ic_menu_close_clear_cancel) {
             drawing.edited = true
             val angles = angleToPoints.navigableKeySet().toList()
             with(drawing.selectedQuiggle!!) {
@@ -103,7 +112,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        oscillationButton.setOnClickListener {
+        // Oscillation
+        addButton(android.R.drawable.ic_menu_zoom) {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 50.0
@@ -117,6 +127,24 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Thickness
+        addButton(android.R.drawable.ic_media_pause) {
+            drawing.edit()
+            with(drawing.selectedQuiggle!!) {
+                val max = 200
+                showSeekBar(
+                    (thickness / max * 100).roundToInt(),
+                    { progress ->
+                        thickness = progress / 100f * max
+                    }
+                )
+            }
+        }
+
+        // Delete
+        addButton(android.R.drawable.ic_menu_delete) {
+            drawing.deleteSelectedQuiggle()
+        }
 
     }
 

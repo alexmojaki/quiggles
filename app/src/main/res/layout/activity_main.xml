@@ -34,61 +34,8 @@
         <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:id="@+id/buttonsLayout"
                 android:orientation="horizontal">
-
-            <ImageButton
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    app:srcCompat="@android:drawable/ic_menu_crop"
-                    android:id="@+id/scaleButton"
-                    style="@android:style/Widget.DeviceDefault.ImageButton"
-                    android:background="@drawable/round_button_background"/>
-
-            <ImageButton
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginStart="10dp"
-                    app:srcCompat="@android:drawable/ic_media_pause"
-                    android:id="@+id/thicknessButton"
-                    style="@android:style/Widget.DeviceDefault.ImageButton"
-                    android:background="@drawable/round_button_background"/>
-
-            <ImageButton
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginStart="10dp"
-                    app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
-                    android:id="@+id/angleButton"
-                    style="@android:style/Widget.DeviceDefault.ImageButton"
-                    android:background="@drawable/round_button_background"/>
-
-            <ImageButton
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginStart="10dp"
-                    app:srcCompat="@android:drawable/ic_menu_edit"
-                    android:id="@+id/colorButton"
-                    style="@android:style/Widget.DeviceDefault.ImageButton"
-                    android:background="@drawable/round_button_background"/>
-
-            <ImageButton
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginStart="10dp"
-                    app:srcCompat="@android:drawable/ic_menu_zoom"
-                    android:id="@+id/oscillationButton"
-                    style="@android:style/Widget.DeviceDefault.ImageButton"
-                    android:background="@drawable/round_button_background"/>
-
-            <ImageButton
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginStart="10dp"
-                    app:srcCompat="@android:drawable/ic_menu_delete"
-                    android:id="@+id/deleteButton"
-                    style="@android:style/Widget.DeviceDefault.ImageButton"
-                    android:background="@drawable/round_button_background"/>
-
         </LinearLayout>
     </HorizontalScrollView>
 </RelativeLayout>
