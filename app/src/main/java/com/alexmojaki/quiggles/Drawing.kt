@@ -165,11 +165,11 @@ class Drawing {
 
             when {
                 selectedQuiggles.isEmpty() -> {
-                    val dist = point.distance(scenter)
+                    val d = point.distance(scenter)
                     val fullyVisible = nonTransitioning(includeCompleting = true).second
                     selectMany(fullyVisible.filter {
-                        val d = dist / it.scaleAnimation.currentValue()
-                        -50 + it.innerRadius <= d && d <= it.outerRadius + 50
+                        val s = it.scaleAnimation.currentValue()
+                        -50 + it.innerRadius * s <= d && d <= s * it.outerRadius + 50
                     })
                 }
                 selectedQuiggle == null ->
