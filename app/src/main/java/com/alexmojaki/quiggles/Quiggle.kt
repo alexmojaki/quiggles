@@ -99,7 +99,7 @@ class Quiggle {
 
         scaleAnimation = still("double", 1.0)
 
-        if (usualScale < 1) {
+        if (sheight / 2 * 0.85 < outerRadius) {
             oscillationPeriod = randRange(4f, 12f).toDouble()
             oscillate(sheight)
         }
