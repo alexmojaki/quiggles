@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import kotlinx.android.synthetic.main.activity_main.*
@@ -23,6 +24,8 @@ class Drawing {
     val scenter by lazy { Point(swidth / 2f, sheight / 2f) }
     lateinit var activity: MainActivity
     var edited = false
+
+    fun dp(x: Float) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, metrics).toInt()
 
     fun draw(canvas: Canvas) {
         canvas.drawColor(DEFAULT_BG_COLOR)
@@ -167,9 +170,10 @@ class Drawing {
                 selectedQuiggles.isEmpty() -> {
                     val d = point.distance(scenter)
                     val fullyVisible = nonTransitioning(includeCompleting = true).second
+                    val buffer = dp(25f)
                     selectMany(fullyVisible.filter {
                         val s = it.scaleAnimation.currentValue()
-                        -50 + it.innerRadius * s <= d && d <= s * it.outerRadius + 50
+                        -buffer + it.innerRadius * s <= d && d <= s * it.outerRadius + buffer
                     })
                 }
                 selectedQuiggle == null ->

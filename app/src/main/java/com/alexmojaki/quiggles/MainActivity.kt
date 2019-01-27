@@ -4,7 +4,6 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.TypedValue.*
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
@@ -29,8 +28,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun dp(x: Float) = applyDimension(COMPLEX_UNIT_DIP, x, resources.displayMetrics).toInt()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -43,9 +40,9 @@ class MainActivity : AppCompatActivity() {
         fun addButton(imageId: Int, onClick: (View) -> Unit, highlight: Boolean = true) {
             val button = ImageButton(this, null, android.R.style.Widget_DeviceDefault_ImageButton)
 
-            val width = dp(70f)
-            val margin = dp(5f)
-            val padding = dp(16f)
+            val width = drawing.dp(70f)
+            val margin = drawing.dp(5f)
+            val padding = drawing.dp(16f)
             val params = LinearLayout.LayoutParams(width, width)
             params.setMargins(margin, 0, margin, 0)
             with(button) {
