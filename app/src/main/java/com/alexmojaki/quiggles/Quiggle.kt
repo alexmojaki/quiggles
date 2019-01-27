@@ -113,14 +113,42 @@ class Quiggle {
     }
 
     fun oscillate(sheight: Int) {
-        val current = scaleAnimation.currentValue()
+        val initial = scaleAnimation.currentValue()
         val lower = { 0.05 * sheight / 2 / outerRadius }
         scaleAnimation = scaleAnimation.change(
             lower(),
             oscillationPeriod,
             easingFunction = {
-                val y = cos(it * PI / 2)
-                1 - pow(y, 4.0) * (if (it < 1) 1.0 else usualScale / (current - lower()))
+                /*
+                cos for oscillation
+                1 - ... to start at max value
+                pow(..., 4.0) to spend more time at smaller scale than bigger
+                PI / 2 * ... to normalise period
+                First shrinkage starts from the current/initial size rather than the
+                maximum size, we use initialRatio to compensate for that
+                so that changing the oscillation speed feels natural and intuitive
+                 */
+                val initialRatio = initial / (usualScale - lower())
+                if (it < initialRatio)
+                    1 - pow(
+                        cos(
+                            PI / 2 *
+                                    // Speed up initial shrinkage
+                                    it / initialRatio
+                        ),
+                        4.0
+                    )
+                else
+                    1 - pow(
+                        cos(
+                            PI / 2 *
+                                    // Shift to match speed up of initial shrinkage
+                                    (it - initialRatio + 1)
+                        ),
+                        4.0
+                    ) *
+                            // Scale back up to max size (usualScale) instead of initial
+                            usualScale / (initial - lower())
             }
         )
     }
