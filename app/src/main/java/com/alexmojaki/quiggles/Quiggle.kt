@@ -235,7 +235,7 @@ class Quiggle {
             numPaths++
             partialPath = QuadraticPath()
             partialPath.start(p)
-            if (numPaths == numVertices) {
+            if (numPaths == numVertices - 1) {
                 state = State.Complete
             }
         } else {

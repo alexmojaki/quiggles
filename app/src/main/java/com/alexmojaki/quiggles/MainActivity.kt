@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                         scaleDownToFit(drawing.sheight)
 
                         if (state == Quiggle.State.Complete) {
-                            numPaths = numVertices
+                            numPaths = numVertices - 1
                         }
                     },
                     max = angles.size - 1
