@@ -15,6 +15,7 @@ import android.widget.SeekBar
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.PI
 import kotlin.math.roundToInt
 
 
@@ -142,6 +143,25 @@ class MainActivity : AppCompatActivity() {
                     { progress ->
                         oscillationPeriod = maxPeriod / progress
                         oscillate(drawing.sheight)
+                    }
+                )
+            }
+        })
+
+        // Rotation
+        addButton(android.R.drawable.ic_menu_rotate, {
+            drawing.edit()
+            with(drawing.selectedQuiggle!!) {
+                val maxPeriod = 50.0
+                showSeekBar(
+                    (maxPeriod / rotationPeriod).roundToInt() + 50,
+                    { progress ->
+                        rotationPeriod = maxPeriod / (progress - 50)
+                        rotationAnimation = rotationAnimation.change(
+                            rotationAnimation.currentValue() + 2 * PI,
+                            period = rotationPeriod,
+                            easingFunction = { x -> x }
+                        )
                     }
                 )
             }

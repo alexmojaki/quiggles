@@ -28,6 +28,7 @@ class Quiggle {
     var visibilityAnimation: Animated<Double> = still("double", 1.0, ::linear)
 
     var oscillationPeriod: Double = Double.POSITIVE_INFINITY
+    var rotationPeriod: Double = randRange(5f, 20f).toDouble()
 
     lateinit var center: Point
 
@@ -91,7 +92,7 @@ class Quiggle {
             "double",
             0.0,
             2 * PI,
-            period = randRange(5f, 20f).toDouble(),
+            period = rotationPeriod,
             easingFunction = ::s2Line
         )
 
