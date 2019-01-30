@@ -139,9 +139,9 @@ class MainActivity : AppCompatActivity() {
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 50.0
                 showSeekBar(
-                    (maxPeriod / oscillationPeriod).roundToInt(),
+                    unstretchProgress(maxPeriod / oscillationPeriod),
                     { progress ->
-                        oscillationPeriod = maxPeriod / progress
+                        oscillationPeriod = maxPeriod / stretchProgress(progress)
                         oscillate(drawing.sheight)
                     }
                 )
@@ -154,15 +154,16 @@ class MainActivity : AppCompatActivity() {
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 50.0
                 showSeekBar(
-                    (maxPeriod / rotationPeriod).roundToInt() + 50,
+                    unstretchProgress(maxPeriod / rotationPeriod + 100),
                     { progress ->
-                        rotationPeriod = maxPeriod / (progress - 50)
+                        rotationPeriod = maxPeriod / stretchProgress(progress - 100)
                         rotationAnimation = rotationAnimation.change(
                             rotationAnimation.currentValue() + 2 * PI,
                             period = rotationPeriod,
                             easingFunction = { x -> x }
                         )
-                    }
+                    },
+                    max = 200
                 )
             }
         })
@@ -171,11 +172,12 @@ class MainActivity : AppCompatActivity() {
         addButton(R.drawable.thickness, {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
+                val min = 0.5
                 val max = 200
                 showSeekBar(
-                    (thickness / max * 100).roundToInt(),
+                    unstretchProgress((thickness - min) / max * 100.0),
                     { progress ->
-                        thickness = progress / 100f * max
+                        thickness = (stretchProgress(progress) / 100 * max + min).toFloat()
                     }
                 )
             }

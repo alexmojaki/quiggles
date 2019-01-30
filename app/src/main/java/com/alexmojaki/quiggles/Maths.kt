@@ -1,8 +1,7 @@
 package com.alexmojaki.quiggles
 
 import java.util.*
-import kotlin.math.PI
-import kotlin.math.sqrt
+import kotlin.math.*
 
 val angleToPoints = TreeMap<Double, Int>().apply {
     for (points in 4..9) {
@@ -50,3 +49,9 @@ fun nextHue(): Double {
     hue %= 1
     return hue * 360f
 }
+
+fun square(x: Double) = x * x
+
+fun stretchProgress(x: Int) = 100 * (1 - sqrt(1 - square(x / 100.0))) * x.sign
+
+fun unstretchProgress(x: Double) = (x.sign * (100 * sqrt(1 - square(x.absoluteValue / 100 - 1)))).roundToInt()
