@@ -22,4 +22,12 @@ class QuadraticPath {
         path.lineTo(previous.xf, previous.yf)
     }
 
+    companion object {
+        fun fromPoints(points: List<Point>) = QuadraticPath().apply {
+            start(points[0])
+            points.asSequence().drop(1).forEach(::add)
+            complete()
+        }
+    }
+
 }

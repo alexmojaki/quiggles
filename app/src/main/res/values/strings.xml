@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Quiggles</string>
+    <string name="newButton">New</string>
+    <string name="loadButton">Load</string>
 </resources>

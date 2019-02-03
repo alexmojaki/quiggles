@@ -1,8 +1,10 @@
 package com.alexmojaki.quiggles
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.View.INVISIBLE
@@ -12,6 +14,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -37,6 +40,17 @@ class MainActivity : AppCompatActivity() {
 
         paintView.init(this)
         val drawing = paintView.drawing
+
+        if (intent.getBooleanExtra("load", false)) {
+            openFileInput("quiggle.json").use {
+                val quiggles = jsonMapper.readValue<Collection<Quiggle>>(it)
+                for (quiggle in quiggles) {
+                    quiggle.restore(drawing.scenter)
+                }
+                drawing.quiggles.addAll(quiggles)
+
+            }
+        }
 
         fun addButton(imageId: Int, onClick: (View) -> Unit, highlight: Boolean = true) {
             val button = ImageButton(this, null, android.R.style.Widget_DeviceDefault_ImageButton)
@@ -69,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         addButton(R.drawable.scale, {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
-                val original = outerRadius / (drawing.sheight / 2) * 100
+                val original = outerRadius / (drawing.scenter.y) * 100
                 showSeekBar(
                     (usualScale * original).roundToInt(),
                     { progress ->
@@ -118,11 +132,11 @@ class MainActivity : AppCompatActivity() {
                         setAngle(angles[progress])
                         setPosition(
                             drawing.scenter,
-                            drawing.swidth / 2 / outerRadius,
+                            drawing.scenter.x / outerRadius,
                             0.0
                         )
 
-                        scaleDownToFit(drawing.sheight)
+                        scaleDownToFit(drawing.scenter)
 
                         if (state == Quiggle.State.Complete) {
                             numPaths = numVertices - 1
@@ -142,7 +156,7 @@ class MainActivity : AppCompatActivity() {
                     unstretchProgress(maxPeriod / oscillationPeriod),
                     { progress ->
                         oscillationPeriod = maxPeriod / stretchProgress(progress)
-                        oscillate(drawing.sheight)
+                        oscillate(drawing.scenter)
                     }
                 )
             }
@@ -218,6 +232,25 @@ class MainActivity : AppCompatActivity() {
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
                 View.SYSTEM_UI_FLAG_FULLSCREEN or
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+    }
+
+    override fun onBackPressed() {
+        val optionsMap = mapOf(
+            "Main menu" to ::finish,
+            "Save" to {
+                openFileOutput("quiggle.json", Context.MODE_PRIVATE).use {
+                    jsonMapper.writeValue(it, paintView.drawing.quiggles)
+                }
+            })
+        val optionsArr = optionsMap.keys.toTypedArray()
+
+        AlertDialog.Builder(this)
+            .setItems(optionsArr) { _, which ->
+                optionsMap[optionsArr[which]]?.invoke()
+                hideSystemUi()
+            }
+            .show()
+        hideSystemUi()
     }
 
 }

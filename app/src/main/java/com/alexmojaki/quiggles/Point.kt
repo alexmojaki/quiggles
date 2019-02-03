@@ -2,7 +2,9 @@ package com.alexmojaki.quiggles
 
 import android.graphics.Canvas
 import android.graphics.Matrix
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
+@JsonIgnoreProperties("xf", "yf")
 data class Point(val x: Double, val y: Double) : TwoComponents<Double, Double> {
     constructor(x: Float, y: Float) : this(x.toDouble(), y.toDouble())
     constructor(x: Int, y: Int) : this(x.toDouble(), y.toDouble())

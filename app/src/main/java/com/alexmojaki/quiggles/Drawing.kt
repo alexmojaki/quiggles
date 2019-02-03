@@ -19,9 +19,7 @@ class Drawing {
     var packing: Packing? = null
 
     lateinit var metrics: DisplayMetrics
-    val swidth by lazy { metrics.widthPixels }
-    val sheight by lazy { metrics.heightPixels }
-    val scenter by lazy { Point(swidth / 2f, sheight / 2f) }
+    val scenter by lazy { Point(metrics.widthPixels / 2, metrics.heightPixels / 2) }
     lateinit var activity: MainActivity
     var edited = false
 
@@ -80,7 +78,7 @@ class Drawing {
         selectedQuiggle = quiggle
 
         val period = 0.7
-        quiggle.setPosition(scenter, swidth / 2 / quiggle.outerRadius, period)
+        quiggle.setPosition(scenter, scenter.x / quiggle.outerRadius, period)
 
         for (other in quiggles - quiggle) {
             other.setBrightness(0.0, period)
@@ -109,15 +107,15 @@ class Drawing {
         val packing = packing!!
 
         val scale = min(
-            swidth / packing.width.toFloat(),
-            sheight / packing.height.toFloat()
+            scenter.x * 2 / packing.width,
+            scenter.y * 2 / packing.height
         )
 
         val period = 0.7
 
         val matrix = Matrix()
         (scenter - packing.boxCenter).translate(matrix)
-        scenter.scale(matrix, scale)
+        scenter.scale(matrix, scale.toFloat())
 
         val oldCenters = selectedQuiggles.map { it.centerAnimation.currentValue() }
         var newCenters = packing.centers.map { matrix * it }
@@ -182,7 +180,7 @@ class Drawing {
                     unselectOne()
             }
         } else if (selectedQuiggle == null) {
-            quiggle.finishDrawing(swidth, sheight)
+            quiggle.finishDrawing(scenter)
             if (selectedQuiggles.isNotEmpty()) {
                 selectMany(selectedQuiggles + quiggle)
             }
@@ -260,7 +258,7 @@ class Drawing {
         with(quiggle) {
             setPosition(scenter, usualScale, period)
             if (oscillationPeriod != Double.POSITIVE_INFINITY) {
-                oscillate(sheight)
+                oscillate(scenter)
             }
         }
     }

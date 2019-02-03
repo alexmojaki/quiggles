@@ -2,6 +2,8 @@ package com.alexmojaki.quiggles
 
 import android.graphics.Matrix
 import android.graphics.Path
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 interface TwoComponents<C1, C2> {
     fun component1(): C1
@@ -42,3 +44,13 @@ fun <T> prn(label: String, x: T): T {
     println("$label: $x")
     return x
 }
+
+
+object Utils {
+    val jsonMapper = jacksonObjectMapper()
+
+    init {
+    }
+}
+
+val jsonMapper = Utils.jsonMapper

@@ -4,11 +4,29 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.lang.Math.pow
 import java.util.*
 import kotlin.math.PI
 import kotlin.math.cos
 
+@JsonIgnoreProperties(
+    "state",
+    "numPaths",
+    "fullPath",
+    "partialPath",
+    "index",
+    "numVertices",
+    "centerAnimation",
+    "scaleAnimation",
+    "rotationAnimation",
+    "brightnessAnimation",
+    "visibilityAnimation",
+    "outerRadius",
+    "innerRadius",
+    "center",
+    "color"
+)
 class Quiggle {
     enum class State { Drawing, Completing, Complete }
 
@@ -51,6 +69,23 @@ class Quiggle {
             colorValue = arr[2]
         }
 
+    fun restore(scenter: Point) {
+        setAngle(idealAngle)
+        state = State.Complete
+        numPaths = numVertices - 1
+        fullPath = QuadraticPath.fromPoints(points)
+
+        scaleAnimation = still("double", usualScale)
+        oscillate(scenter)
+
+        centerAnimation = still("point", scenter)
+
+        setBrightness(0.0, 0.0)
+        setBrightness(1.0, 3.0)
+
+        startRotation()
+    }
+
     fun start(point: Point) {
         points.add(point)
         fullPath.start(point)
@@ -80,7 +115,7 @@ class Quiggle {
         innerRadius = distances.min()!!
     }
 
-    fun finishDrawing(swidth: Int, sheight: Int) {
+    fun finishDrawing(scenter: Point) {
         fullPath.complete()
         state = State.Completing
         numPaths--
@@ -88,6 +123,26 @@ class Quiggle {
 
         setAngle(Math.abs(points[points.size - 2].direction(points.last()) - points[0].direction(points[1])))
 
+        startRotation()
+
+        scaleDownToFit(scenter)
+
+        scaleAnimation = still("double", 1.0)
+
+        if (scenter.y * 0.85 < outerRadius) {
+            oscillationPeriod = randRange(4f, 12f).toDouble()
+            oscillate(scenter)
+        }
+
+        centerAnimation = Animated(
+            "point",
+            center,
+            scenter,
+            3.0
+        )
+    }
+
+    private fun startRotation() {
         rotationAnimation = Animated(
             "double",
             0.0,
@@ -95,27 +150,11 @@ class Quiggle {
             period = rotationPeriod,
             easingFunction = ::s2Line
         )
-
-        scaleDownToFit(sheight)
-
-        scaleAnimation = still("double", 1.0)
-
-        if (sheight / 2 * 0.85 < outerRadius) {
-            oscillationPeriod = randRange(4f, 12f).toDouble()
-            oscillate(sheight)
-        }
-
-        centerAnimation = Animated(
-            "point",
-            center,
-            Point(swidth / 2, sheight / 2),
-            3.0
-        )
     }
 
-    fun oscillate(sheight: Int) {
+    fun oscillate(scenter: Point) {
         val initial = scaleAnimation.currentValue()
-        val lower = { 0.05 * sheight / 2 / outerRadius }
+        val lower = { 0.05 * scenter.y / outerRadius }
         scaleAnimation = scaleAnimation.change(
             lower(),
             oscillationPeriod,
@@ -154,9 +193,9 @@ class Quiggle {
         )
     }
 
-    fun scaleDownToFit(sheight: Int) {
-        if (sheight / 2 < usualScale * outerRadius) {
-            usualScale = randRange(0.85f, 1f) * sheight / 2 / outerRadius
+    fun scaleDownToFit(scenter: Point) {
+        if (scenter.y < usualScale * outerRadius) {
+            usualScale = randRange(0.85f, 1f) * scenter.y / outerRadius
         }
     }
 
