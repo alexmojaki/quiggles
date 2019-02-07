@@ -1,6 +1,5 @@
 package com.alexmojaki.quiggles
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Window
@@ -15,15 +14,27 @@ class MainMenuActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main_menu)
 
         newButton.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(intent(MainActivity::class.java))
         }
 
         loadButton.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java).apply {
-                putExtra("load", true)
-            })
+            val filenames = saveFileDir().list()
+            filenames.sort()
+            dialog {
+                setItems(filenames) { _, which ->
+                    startActivity(
+                        intent(MainActivity::class.java)
+                            .putExtra("LOAD_FILENAME", filenames[which])
+                    )
+                }
+            }
+
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadButton.isEnabled = saveFileDir().list().isNotEmpty()
+    }
 
 }

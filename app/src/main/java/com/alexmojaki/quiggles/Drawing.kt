@@ -13,6 +13,7 @@ import kotlin.math.min
 
 class Drawing {
 
+    var filename: String? = null
     val quiggles = ArrayList<Quiggle>()
     var selectedQuiggles: List<Quiggle> = emptyList()
     var selectedQuiggle: Quiggle? = null

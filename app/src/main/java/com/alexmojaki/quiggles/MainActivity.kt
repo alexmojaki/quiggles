@@ -1,6 +1,5 @@
 package com.alexmojaki.quiggles
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -14,7 +13,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -41,15 +39,9 @@ class MainActivity : AppCompatActivity() {
         paintView.init(this)
         val drawing = paintView.drawing
 
-        if (intent.getBooleanExtra("load", false)) {
-            openFileInput("quiggle.json").use {
-                val quiggles = jsonMapper.readValue<Collection<Quiggle>>(it)
-                for (quiggle in quiggles) {
-                    quiggle.restore(drawing.scenter)
-                }
-                drawing.quiggles.addAll(quiggles)
-
-            }
+        val filename = intent.getStringExtra("LOAD_FILENAME")
+        if (filename != null) {
+            load(filename, drawing)
         }
 
         fun addButton(imageId: Int, onClick: (View) -> Unit, highlight: Boolean = true) {
@@ -238,18 +230,16 @@ class MainActivity : AppCompatActivity() {
         val optionsMap = mapOf(
             "Main menu" to ::finish,
             "Save" to {
-                openFileOutput("quiggle.json", Context.MODE_PRIVATE).use {
-                    jsonMapper.writeValue(it, paintView.drawing.quiggles)
-                }
+                save(paintView.drawing)
             })
         val optionsArr = optionsMap.keys.toTypedArray()
 
-        AlertDialog.Builder(this)
-            .setItems(optionsArr) { _, which ->
+        dialog {
+            setItems(optionsArr) { _, which ->
                 optionsMap[optionsArr[which]]?.invoke()
                 hideSystemUi()
             }
-            .show()
+        }
         hideSystemUi()
     }
 
