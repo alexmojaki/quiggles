@@ -229,14 +229,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val optionsMap = mapOf(
-            "Main menu" to ::finish,
-            "Save" to {
-                if (drawing.filename == null) {
-                    saveAs(drawing)
+            "Main menu" to {
+                if (isChanged(drawing)) {
+                    dialog {
+                        setTitle("Save changes?")
+                        setPositiveButton("Yes") { _, _ ->
+                            save(::finish)
+                        }
+                        setNegativeButton("No") { _, _ ->
+                            finish()
+                        }
+                    }
                 } else {
-                    saveWithName(drawing)
+                    finish()
                 }
-            }
+            },
+            "Save" to { save() }
         ) + (
                 if (drawing.filename != null)
                     mapOf("Save As" to {
@@ -253,6 +261,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
         hideSystemUi()
+    }
+
+    private fun save(callback: () -> Unit = {}) {
+        if (drawing.filename == null) {
+            saveAs(drawing, callback)
+        } else {
+            saveWithName(drawing, callback)
+        }
     }
 
 }

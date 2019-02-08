@@ -85,29 +85,39 @@ fun Context.load(filename: String, drawing: Drawing) {
     drawing.filename = filename
 }
 
-fun Context.saveWithName(drawing: Drawing) {
-    val saveFile = SaveFileV1(drawing.quiggles)
+fun Context.saveWithName(drawing: Drawing, callback: () -> Unit) {
+    val saveFile = SaveFileV1(drawing)
     jsonToFile(drawing.filename!!, saveFile)
+    callback.invoke()
 }
 
-fun Context.saveAs(drawing: Drawing) {
+fun Context.saveAs(drawing: Drawing, callback: () -> Unit = {}) {
     dialog {
         setTitle("Choose save name")
         val input = EditText(context)
         input.inputType = InputType.TYPE_CLASS_TEXT
         setView(input)
-        setPositiveButton("OK") { dialog, _ ->
+        setPositiveButton("OK") { _, _ ->
             val filename = input.text.toString().trim()
             if (filename.isEmpty()) {
-                dialog.cancel()
                 toast("Empty filename not allowed")
             } else {
                 drawing.filename = filename
-                saveWithName(drawing)
+                saveWithName(drawing, callback)
             }
         }
         setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
     }
+}
+
+fun Context.isChanged(drawing: Drawing) : Boolean{
+    if (drawing.quiggles.isEmpty()) {
+        return false
+    }
+    val filename = drawing.filename ?: return true
+    val current = jsonMapper.readTree(jsonMapper.writeValueAsString(SaveFileV1(drawing)))
+    val onDisk = jsonMapper.readTree(saveFilename(filename))
+    return onDisk != current
 }
 
 fun Context.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {

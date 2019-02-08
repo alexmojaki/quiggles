@@ -17,6 +17,8 @@ abstract class SaveFile {
 }
 
 data class SaveFileV1(val quiggles: List<Quiggle>) : SaveFile() {
+    constructor(drawing: Drawing) : this(drawing.quiggles)
+
     override fun restore(drawing: Drawing) {
         for (quiggle in quiggles) {
             quiggle.restore(drawing.scenter)
