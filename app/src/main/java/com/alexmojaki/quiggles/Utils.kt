@@ -99,18 +99,26 @@ fun Context.saveAs(drawing: Drawing, callback: () -> Unit = {}) {
         setView(input)
         setPositiveButton("OK") { _, _ ->
             val filename = input.text.toString().trim()
-            if (filename.isEmpty()) {
-                toast("Empty filename not allowed")
-            } else {
+            fun doSave() {
                 drawing.filename = filename
                 saveWithName(drawing, callback)
+            }
+
+            when {
+                filename.isEmpty() -> toast("Empty filename not allowed")
+                saveFilename(filename).exists() -> dialog {
+                    setTitle("Filename already exists. Replace?")
+                    setPositiveButton("Yes") { _, _ -> doSave() }
+                    setNegativeButton("No") { _, _ -> }
+                }
+                else -> doSave()
             }
         }
         setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
     }
 }
 
-fun Context.isChanged(drawing: Drawing) : Boolean{
+fun Context.isChanged(drawing: Drawing): Boolean {
     if (drawing.quiggles.isEmpty()) {
         return false
     }
