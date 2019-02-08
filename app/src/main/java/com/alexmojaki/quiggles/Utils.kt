@@ -13,6 +13,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.IOException
 
 interface TwoComponents<C1, C2> {
     fun component1(): C1
@@ -62,15 +63,20 @@ operator fun File.div(name: String) = File(this, name)
 fun Context.saveFilename(filename: String) = saveFileDir() / filename
 
 fun Context.saveFileDir(): File {
-    val dir = filesDir / "saved_quiggles"
+    val rootDir = (getExternalFilesDirs(null).filterNotNull() + filesDir)[0]
+    val dir = rootDir / "saved_quiggles"
 //    for (f in dir.listFiles()) f.delete()
     dir.mkdir()
     return dir
 }
 
 inline fun <reified T> Context.jsonToFile(filename: String, value: T) {
-    FileOutputStream(saveFilename(filename)).use {
-        jsonMapper.writeValue(it, value)
+    try {
+        FileOutputStream(saveFilename(filename)).use {
+            jsonMapper.writeValue(it, value)
+        }
+    } catch (e: IOException) {
+        toast("Error saving file: ${e.message}", Toast.LENGTH_LONG)
     }
 }
 
@@ -79,31 +85,28 @@ fun Context.load(filename: String, drawing: Drawing) {
     drawing.filename = filename
 }
 
-fun Context.save(drawing: Drawing) {
-    fun doSave() {
-        val saveFile = SaveFileV1(drawing.quiggles)
-        jsonToFile(drawing.filename!!, saveFile)
-    }
-    if (drawing.filename == null) {
-        dialog {
-            setTitle("Choose save name")
-            val input = EditText(context)
-            input.inputType = InputType.TYPE_CLASS_TEXT
-            setView(input)
-            setPositiveButton("OK") { dialog, _ ->
-                val filename = input.text.toString().trim()
-                if (filename.isEmpty()) {
-                    dialog.cancel()
-                    toast("Empty filename not allowed")
-                } else {
-                    drawing.filename = filename
-                    doSave()
-                }
+fun Context.saveWithName(drawing: Drawing) {
+    val saveFile = SaveFileV1(drawing.quiggles)
+    jsonToFile(drawing.filename!!, saveFile)
+}
+
+fun Context.saveAs(drawing: Drawing) {
+    dialog {
+        setTitle("Choose save name")
+        val input = EditText(context)
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        setView(input)
+        setPositiveButton("OK") { dialog, _ ->
+            val filename = input.text.toString().trim()
+            if (filename.isEmpty()) {
+                dialog.cancel()
+                toast("Empty filename not allowed")
+            } else {
+                drawing.filename = filename
+                saveWithName(drawing)
             }
-            setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
         }
-    } else {
-        doSave()
+        setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
     }
 }
 

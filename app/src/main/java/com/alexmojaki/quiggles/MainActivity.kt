@@ -3,7 +3,6 @@ package com.alexmojaki.quiggles
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.View.INVISIBLE
@@ -22,6 +21,9 @@ import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
+    val drawing: Drawing
+        get() = paintView.drawing
+
     private val buttonsList = ArrayList<ImageButton>()
 
     fun resetButtons() {
@@ -37,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         paintView.init(this)
-        val drawing = paintView.drawing
 
         val filename = intent.getStringExtra("LOAD_FILENAME")
         if (filename != null) {
@@ -230,8 +231,19 @@ class MainActivity : AppCompatActivity() {
         val optionsMap = mapOf(
             "Main menu" to ::finish,
             "Save" to {
-                save(paintView.drawing)
-            })
+                if (drawing.filename == null) {
+                    saveAs(drawing)
+                } else {
+                    saveWithName(drawing)
+                }
+            }
+        ) + (
+                if (drawing.filename != null)
+                    mapOf("Save As" to {
+                        saveAs(drawing)
+                    })
+                else emptyMap()
+                )
         val optionsArr = optionsMap.keys.toTypedArray()
 
         dialog {
