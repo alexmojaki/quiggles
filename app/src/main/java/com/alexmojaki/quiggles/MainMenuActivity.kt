@@ -1,5 +1,6 @@
 package com.alexmojaki.quiggles
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Window
@@ -14,7 +15,7 @@ class MainMenuActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main_menu)
 
         newButton.setOnClickListener {
-            startActivity(intent(MainActivity::class.java))
+            startMain()
         }
 
         loadButton.setOnClickListener {
@@ -22,19 +23,31 @@ class MainMenuActivity : AppCompatActivity() {
             filenames.sort()
             dialog {
                 setItems(filenames) { _, which ->
-                    startActivity(
-                        intent(MainActivity::class.java)
-                            .putExtra("LOAD_FILENAME", filenames[which])
-                    )
+                    startMain {
+                        putExtra("LOAD_FILENAME", filenames[which])
+                    }
                 }
             }
 
         }
+
+        loadUnsavedButton.setOnClickListener {
+            startMain {
+                putExtra("LOAD_UNSAVED", true)
+            }
+        }
+    }
+
+    fun startMain(intentCallback: (Intent.() -> Unit)? = null) {
+        val intent = intent(MainActivity::class.java)
+        intentCallback?.invoke(intent)
+        startActivity(intent)
     }
 
     override fun onResume() {
         super.onResume()
         loadButton.isEnabled = saveFileDir().list().isNotEmpty()
+        loadUnsavedButton.isEnabled = unsavedFile().exists()
     }
 
 }

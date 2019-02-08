@@ -52,8 +52,8 @@ fun <T> prn(label: String, x: T): T {
 
 val jsonMapper = jacksonObjectMapper()
 
-inline fun <reified T> Context.fileToJson(filename: String): T {
-    FileInputStream(saveFilename(filename)).use {
+inline fun <reified T> Context.fileToJson(file: File): T {
+    FileInputStream(file).use {
         return jsonMapper.readValue(it)
     }
 }
@@ -63,16 +63,19 @@ operator fun File.div(name: String) = File(this, name)
 fun Context.saveFilename(filename: String) = saveFileDir() / filename
 
 fun Context.saveFileDir(): File {
-    val rootDir = (getExternalFilesDirs(null).filterNotNull() + filesDir)[0]
-    val dir = rootDir / "saved_quiggles"
+    val dir = rootDir() / "saved_quiggles"
 //    for (f in dir.listFiles()) f.delete()
     dir.mkdir()
     return dir
 }
 
-inline fun <reified T> Context.jsonToFile(filename: String, value: T) {
+fun Context.rootDir(): File = (getExternalFilesDirs(null).filterNotNull() + filesDir)[0]
+
+fun Context.unsavedFile(): File = rootDir() / "unsaved"
+
+inline fun <reified T> Context.jsonToFile(file: File, value: T) {
     try {
-        FileOutputStream(saveFilename(filename)).use {
+        FileOutputStream(file).use {
             jsonMapper.writeValue(it, value)
         }
     } catch (e: IOException) {
@@ -81,13 +84,13 @@ inline fun <reified T> Context.jsonToFile(filename: String, value: T) {
 }
 
 fun Context.load(filename: String, drawing: Drawing) {
-    fileToJson<SaveFile>(filename).restore(drawing)
+    fileToJson<SaveFile>(saveFilename(filename)).restore(drawing)
     drawing.filename = filename
 }
 
 fun Context.saveWithName(drawing: Drawing, callback: () -> Unit) {
     val saveFile = SaveFileV1(drawing)
-    jsonToFile(drawing.filename!!, saveFile)
+    jsonToFile(saveFilename(drawing.filename!!), saveFile)
     callback.invoke()
 }
 
@@ -116,16 +119,6 @@ fun Context.saveAs(drawing: Drawing, callback: () -> Unit = {}) {
         }
         setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
     }
-}
-
-fun Context.isChanged(drawing: Drawing): Boolean {
-    if (drawing.quiggles.isEmpty()) {
-        return false
-    }
-    val filename = drawing.filename ?: return true
-    val current = jsonMapper.readTree(jsonMapper.writeValueAsString(SaveFileV1(drawing)))
-    val onDisk = jsonMapper.readTree(saveFilename(filename))
-    return onDisk != current
 }
 
 fun Context.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {

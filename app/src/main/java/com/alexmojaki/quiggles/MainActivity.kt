@@ -45,6 +45,10 @@ class MainActivity : AppCompatActivity() {
             load(filename, drawing)
         }
 
+        if (intent.getBooleanExtra("LOAD_UNSAVED", false)) {
+            fileToJson<SaveFile>(unsavedFile()).restore(drawing)
+        }
+
         fun addButton(imageId: Int, onClick: (View) -> Unit, highlight: Boolean = true) {
             val button = ImageButton(this, null, android.R.style.Widget_DeviceDefault_ImageButton)
 
@@ -230,7 +234,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         val optionsMap = mapOf(
             "Main menu" to {
-                if (isChanged(drawing)) {
+                if (isChanged()) {
                     dialog {
                         setTitle("Save changes?")
                         setPositiveButton("Yes") { _, _ ->
@@ -269,6 +273,24 @@ class MainActivity : AppCompatActivity() {
         } else {
             saveWithName(drawing, callback)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (isChanged()) {
+            val saveFile = SaveFileV1(drawing)
+            jsonToFile(unsavedFile(), saveFile)
+        }
+    }
+
+    fun isChanged(): Boolean {
+        if (drawing.quiggles.isEmpty()) {
+            return false
+        }
+        val filename = drawing.filename ?: return true
+        val current = jsonMapper.readTree(jsonMapper.writeValueAsString(SaveFileV1(drawing)))
+        val onDisk = jsonMapper.readTree(saveFilename(filename))
+        return onDisk != current
     }
 
 }

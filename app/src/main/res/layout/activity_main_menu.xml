@@ -21,4 +21,10 @@
             android:layout_height="wrap_content" android:layout_centerHorizontal="true"
             android:layout_alignParentTop="true" android:id="@+id/loadButton" android:layout_marginTop="198dp"
     />
+    <Button
+            android:text="@string/loadUnsavedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true" android:id="@+id/loadUnsavedButton" android:layout_marginTop="263dp"
+    />
 </RelativeLayout>
