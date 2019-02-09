@@ -1,5 +1,8 @@
 package com.alexmojaki.quiggles
 
+import kotlin.math.absoluteValue
+import kotlin.math.sign
+
 class Animated<T>(
     val type: String,
     val startValue: T,
@@ -9,7 +12,10 @@ class Animated<T>(
 ) {
     val startTime = clock.now()
     fun elapsedRatio() = if (period == 0.0) 1.0 else (clock.now() - startTime) / (period * 1000)
-    fun easedRatio() = easingFunction(elapsedRatio())
+    fun easedRatio(): Double {
+        val elapsed = elapsedRatio()
+        return easingFunction(elapsed.absoluteValue) * elapsed.sign
+    }
 
     @Suppress("UNCHECKED_CAST")
     fun currentValue(): T {
