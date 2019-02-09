@@ -4,6 +4,8 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
@@ -21,6 +23,8 @@ import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
+    val metrics = DisplayMetrics()
+
     val drawing: Drawing
         get() = paintView.drawing
 
@@ -32,11 +36,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun dp(x: Float) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, metrics).toInt()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
 
         setContentView(R.layout.activity_main)
+
+        windowManager.defaultDisplay.getMetrics(metrics)
 
         paintView.init(this)
 
@@ -52,9 +60,9 @@ class MainActivity : AppCompatActivity() {
         fun addButton(imageId: Int, onClick: (View) -> Unit, highlight: Boolean = true) {
             val button = ImageButton(this, null, android.R.style.Widget_DeviceDefault_ImageButton)
 
-            val width = drawing.dp(70f)
-            val margin = drawing.dp(5f)
-            val padding = drawing.dp(16f)
+            val width = dp(70f)
+            val margin = dp(5f)
+            val padding = dp(16f)
             val params = LinearLayout.LayoutParams(width, width)
             params.setMargins(margin, 0, margin, 0)
             with(button) {
@@ -255,6 +263,12 @@ class MainActivity : AppCompatActivity() {
                         saveAs(drawing)
                     })
                 else emptyMap()
+                ) +
+                mapOf(
+                    "Make GIF" to {
+                        gifDrawing = drawing
+                        startActivity(intent(GifActivity::class.java))
+                    }
                 )
         val optionsArr = optionsMap.keys.toTypedArray()
 

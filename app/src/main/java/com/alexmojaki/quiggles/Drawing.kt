@@ -3,15 +3,13 @@ package com.alexmojaki.quiggles
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
-import android.util.DisplayMetrics
-import android.util.TypedValue
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.min
 
-class Drawing {
+class Drawing(val scenter: Point) {
 
     var filename: String? = null
     val quiggles = ArrayList<Quiggle>()
@@ -19,12 +17,8 @@ class Drawing {
     var selectedQuiggle: Quiggle? = null
     var packing: Packing? = null
 
-    lateinit var metrics: DisplayMetrics
-    val scenter by lazy { Point(metrics.widthPixels / 2, metrics.heightPixels / 2) }
     lateinit var activity: MainActivity
     var edited = false
-
-    fun dp(x: Float) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, metrics).toInt()
 
     fun draw(canvas: Canvas) {
         canvas.drawColor(DEFAULT_BG_COLOR)
@@ -169,7 +163,7 @@ class Drawing {
                 selectedQuiggles.isEmpty() -> {
                     val d = point.distance(scenter)
                     val fullyVisible = nonTransitioning(includeCompleting = true).second
-                    val buffer = dp(25f)
+                    val buffer = activity.dp(25f)
                     selectMany(fullyVisible.filter {
                         val s = it.scaleAnimation.currentValue()
                         -buffer + it.innerRadius * s <= d && d <= s * it.outerRadius + buffer

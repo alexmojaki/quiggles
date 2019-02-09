@@ -1,14 +1,13 @@
 package com.alexmojaki.quiggles
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Matrix
-import android.graphics.Paint
+import android.graphics.*
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.module.kotlin.readValue
 import java.lang.Math.pow
 import java.util.*
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.roundToInt
 
 @JsonIgnoreProperties(
     "state",
@@ -283,4 +282,28 @@ class Quiggle {
         }
         index = (index + 1) % points.size
     }
+
+    fun copyForGif(scenter: Point, duration: Double) =
+        jsonMapper.readValue<Quiggle>(jsonMapper.writeValueAsString(this)).apply {
+            setAngle(idealAngle)
+
+            fun alignPeriod(period: Double, factor: Double) = if (period.isFinite()) {
+                duration / (duration / (period * factor)).roundToInt() / factor
+            } else {
+                period
+            }
+
+            rotationPeriod = alignPeriod(rotationPeriod, 1.0 / numVertices)
+            oscillationPeriod = alignPeriod(oscillationPeriod, 2.0)
+
+            restore(scenter)
+            setBrightness(1.0, 0.0)
+            rotationAnimation = Animated(
+                "double",
+                0.0,
+                2 * PI,
+                period = rotationPeriod,
+                easingFunction = { it }
+            )
+        }
 }

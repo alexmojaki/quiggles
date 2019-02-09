@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".GifActivity" android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

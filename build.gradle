@@ -6,6 +6,7 @@ buildscript {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
+        maven { url "http://dl.bintray.com/waynejo/maven" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'

@@ -13,10 +13,9 @@ class BitmapPaintView(context: Context, attrs: AttributeSet?) : BasePaintView(co
 
     override fun init(activity: MainActivity) {
         super.init(activity)
-        val height = drawing.metrics.heightPixels
-        val width = drawing.metrics.widthPixels
+        val (width, height) = drawing.scenter * 2.0
 
-        mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        mBitmap = Bitmap.createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
         mCanvas = Canvas(mBitmap!!)
     }
 
