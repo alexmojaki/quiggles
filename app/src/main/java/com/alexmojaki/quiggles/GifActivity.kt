@@ -2,20 +2,16 @@ package com.alexmojaki.quiggles
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.view.Window
+import android.view.View.INVISIBLE
 import com.waynejo.androidndkgif.GifEncoder
 import kotlinx.android.synthetic.main.activity_gif.*
+import pl.droidsonroids.gif.GifDrawable
 import kotlin.math.absoluteValue
 
 
-class GifActivity : AppCompatActivity() {
+class GifActivity : CommonActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-
+    override fun onCreate() {
         setContentView(R.layout.activity_gif)
 
         val fps = 30
@@ -41,16 +37,17 @@ class GifActivity : AppCompatActivity() {
         gifProgress.progress = 0
 
         val gifEncoder = GifEncoder()
+        val path = (rootDir() / "video.gif").absolutePath
         gifEncoder.init(
             width, height,
-            (rootDir() / "video.gif").absolutePath, GifEncoder.EncodingType.ENCODING_TYPE_SIMPLE_FAST
+            path, GifEncoder.EncodingType.ENCODING_TYPE_SIMPLE_FAST
         )
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
         Thread {
-            for (i in 1..frames) {
+            for (i in 0..frames) {
                 drawing.draw(canvas)
                 clock.tick()
                 gifEncoder.encodeFrame(
@@ -58,9 +55,19 @@ class GifActivity : AppCompatActivity() {
                     delay
                 )
                 gifProgress.progress = i
+
+                // Shows each frame in ImageView preview
+//                    val copy = Bitmap.createBitmap(bitmap)
+//                    runOnUiThread { gifPreview.setImageBitmap(copy) }
             }
             gifEncoder.close()
-            finish()
+
+            val gifDrawable = GifDrawable(path)
+            runOnUiThread {
+                gifPreview.setImageDrawable(gifDrawable)
+                gifProgress.visibility = INVISIBLE
+            }
+
         }.start()
     }
 

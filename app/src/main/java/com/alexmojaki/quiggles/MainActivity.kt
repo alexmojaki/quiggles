@@ -2,14 +2,9 @@ package com.alexmojaki.quiggles
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.util.DisplayMetrics
-import android.util.TypedValue
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import android.view.Window
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -21,9 +16,7 @@ import kotlin.math.PI
 import kotlin.math.roundToInt
 
 
-class MainActivity : AppCompatActivity() {
-
-    val metrics = DisplayMetrics()
+class MainActivity : CommonActivity() {
 
     val drawing: Drawing
         get() = paintView.drawing
@@ -36,15 +29,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun dp(x: Float) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, metrics).toInt()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-
+    override fun onCreate() {
         setContentView(R.layout.activity_main)
-
-        windowManager.defaultDisplay.getMetrics(metrics)
 
         paintView.init(this)
 
@@ -115,14 +101,11 @@ class MainActivity : AppCompatActivity() {
                     "OK"
                 ) { _, selectedColor, _ ->
                     quiggle.color = selectedColor
-                    hideSystemUi()
                 }
                 .setNegativeButton("Cancel") { _, _ ->
-                    hideSystemUi()
                 }
                 .build()
                 .show()
-            hideSystemUi()
         }, highlight = false)
 
         // Angle
@@ -227,18 +210,6 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    override fun onResume() {
-        super.onResume()
-        hideSystemUi()
-    }
-
-    private fun hideSystemUi() {
-        paintView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-    }
-
     override fun onBackPressed() {
         val optionsMap = mapOf(
             "Main menu" to {
@@ -275,10 +246,8 @@ class MainActivity : AppCompatActivity() {
         dialog {
             setItems(optionsArr) { _, which ->
                 optionsMap[optionsArr[which]]?.invoke()
-                hideSystemUi()
             }
         }
-        hideSystemUi()
     }
 
     private fun save(callback: () -> Unit = {}) {
