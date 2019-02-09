@@ -18,6 +18,10 @@ class GifActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_gif)
 
+        val fps = 30
+        val delay = 1000 / fps
+        clock = ControlledClock(delay)
+
         val scenter = gifDrawing!!.scenter
         val drawing = Drawing(scenter)
         val quiggles = gifDrawing!!.nonTransitioning(includeCompleting = false).second
@@ -25,15 +29,13 @@ class GifActivity : AppCompatActivity() {
                 quiggles.map { it.rotationPeriod.absoluteValue / it.numVertices })
             .filter { it.isFinite() }
             .max()!!
+            .toNearest(delay / 1000.0)
 
         drawing.quiggles.addAll(quiggles.map { it.copyForGif(scenter, duration) })
 
         val width = (drawing.scenter.x * 2).toInt()
         val height = (drawing.scenter.y * 2).toInt()
 
-        val fps = 30
-        val delay = 1000 / fps
-        clock = ControlledClock(delay)
         val frames = (fps * duration).toInt()
         gifProgress.max = frames
         gifProgress.progress = 0

@@ -55,3 +55,5 @@ fun square(x: Double) = x * x
 fun stretchProgress(x: Int) = 100 * (1 - sqrt(1 - square(x / 100.0))) * x.sign
 
 fun unstretchProgress(x: Double) = (x.sign * (100 * sqrt(1 - square(x.absoluteValue / 100 - 1)))).roundToInt()
+
+fun Double.toNearest(x: Double) = (this / x).roundToInt() * x
