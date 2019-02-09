@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity() {
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 50.0
                 showSeekBar(
-                    unstretchProgress(maxPeriod / rotationPeriod + 100),
+                    unstretchProgress(maxPeriod / rotationPeriod) + 100,
                     { progress ->
                         rotationPeriod = maxPeriod / stretchProgress(progress - 100)
                         rotationAnimation = rotationAnimation.change(
