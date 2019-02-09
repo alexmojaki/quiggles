@@ -133,3 +133,10 @@ fun Context.dialog(block: AlertDialog.Builder.() -> Unit) {
 }
 
 fun Context.intent(cls: Class<*>) = Intent(this, cls)
+
+fun time(block: () -> Unit) {
+    val start = System.currentTimeMillis()
+    block()
+    val end = System.currentTimeMillis()
+    println("Time taken = ${end - start}")
+}
