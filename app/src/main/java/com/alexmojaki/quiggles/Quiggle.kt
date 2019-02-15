@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.readValue
 import java.lang.Math.pow
 import java.util.*
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 @JsonIgnoreProperties(
     "state",
@@ -285,7 +283,7 @@ class Quiggle {
 
     fun copyForGif(scenter: Point, duration: Double, scale: Double) =
         jsonMapper.readValue<Quiggle>(jsonMapper.writeValueAsString(this)).apply {
-            val newPoints= points * scale
+            val newPoints = points * scale
             points.clear()
             points.addAll(newPoints)
             setAngle(idealAngle)
@@ -308,5 +306,8 @@ class Quiggle {
                 period = rotationPeriod,
                 easingFunction = { it }
             )
+
+            // Decrease thickness by scale, but not too much
+            thickness = max(min(2f, thickness), thickness * scale.toFloat())
         }
 }
