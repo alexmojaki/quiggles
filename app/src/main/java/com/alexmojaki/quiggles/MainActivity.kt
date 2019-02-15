@@ -211,8 +211,8 @@ class MainActivity : CommonActivity() {
     }
 
     override fun onBackPressed() {
-        val optionsMap = mapOf(
-            "Main menu" to {
+        val optionsMap = LinkedHashMap(
+            mapOf("Main menu" to {
                 if (isChanged()) {
                     dialog {
                         setTitle("Save changes?")
@@ -226,21 +226,22 @@ class MainActivity : CommonActivity() {
                 } else {
                     finish()
                 }
-            },
-            "Save" to { save() }
-        ) + (
-                if (drawing.filename != null)
-                    mapOf("Save As" to {
-                        saveAs(drawing)
-                    })
-                else emptyMap()
-                ) +
-                mapOf(
-                    "Make GIF" to {
-                        gifDrawing = drawing
-                        startActivity(intent(GifActivity::class.java))
-                    }
-                )
+            })
+        )
+
+        if (drawing.quiggles.isNotEmpty()) {
+            optionsMap["Save"] = { save() }
+
+            if (drawing.filename != null) {
+                optionsMap["Save As"] = { saveAs(drawing) }
+            }
+
+            optionsMap["Make GIF"] =  {
+                gifDrawing = drawing
+                startActivity(intent(GifActivity::class.java))
+            }
+        }
+
         val optionsArr = optionsMap.keys.toTypedArray()
 
         dialog {

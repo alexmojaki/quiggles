@@ -283,8 +283,11 @@ class Quiggle {
         index = (index + 1) % points.size
     }
 
-    fun copyForGif(scenter: Point, duration: Double) =
+    fun copyForGif(scenter: Point, duration: Double, scale: Double) =
         jsonMapper.readValue<Quiggle>(jsonMapper.writeValueAsString(this)).apply {
+            val newPoints= points * scale
+            points.clear()
+            points.addAll(newPoints)
             setAngle(idealAngle)
 
             fun alignPeriod(period: Double, factor: Double) = if (period.isFinite()) {

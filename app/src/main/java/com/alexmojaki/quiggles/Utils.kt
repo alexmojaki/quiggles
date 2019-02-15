@@ -1,9 +1,13 @@
 package com.alexmojaki.quiggles
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Matrix
 import android.graphics.Path
+import android.os.Environment
+import android.os.Environment.DIRECTORY_PICTURES
+import android.os.Environment.getExternalStoragePublicDirectory
 import android.support.v7.app.AlertDialog
 import android.text.InputType
 import android.widget.EditText
@@ -14,6 +18,8 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 interface TwoComponents<C1, C2> {
     fun component1(): C1
@@ -63,15 +69,27 @@ operator fun File.div(name: String) = File(this, name)
 fun Context.saveFilename(filename: String) = saveFileDir() / filename
 
 fun Context.saveFileDir(): File {
-    val dir = rootDir() / "saved_quiggles"
+    val dir = internalDir() / "saved_quiggles"
 //    for (f in dir.listFiles()) f.delete()
     dir.mkdir()
     return dir
 }
 
-fun Context.rootDir(): File = (getExternalFilesDirs(null).filterNotNull() + filesDir)[0]
+fun Context.internalDir(): File = (getExternalFilesDirs(null).filterNotNull() + filesDir)[0]
 
-fun Context.unsavedFile(): File = rootDir() / "unsaved"
+fun picsDir(): File {
+    val dir = getExternalStoragePublicDirectory(DIRECTORY_PICTURES) / "Quiggles"
+//    for (f in dir.listFiles()) f.delete()
+    dir.mkdir()
+    return dir
+}
+
+fun currentTime(): Date = Calendar.getInstance().time
+
+@SuppressLint("SimpleDateFormat")
+fun isoFormat(dt: Date) = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(dt)
+
+fun Context.unsavedFile(): File = internalDir() / "unsaved"
 
 inline fun <reified T> Context.jsonToFile(file: File, value: T) {
     try {
