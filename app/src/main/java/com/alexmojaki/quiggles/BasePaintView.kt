@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
-import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.View
 
@@ -14,10 +13,10 @@ abstract class BasePaintView @JvmOverloads constructor(context: Context, attrs: 
     lateinit var drawing: Drawing
 
     open fun init(activity: MainActivity) {
-        val metrics = DisplayMetrics()
-        activity.windowManager.defaultDisplay.getMetrics(metrics)
+        val metrics = activity.metrics
         drawing = Drawing(Point(metrics.widthPixels / 2, metrics.heightPixels / 2))
         drawing.activity = activity
+        drawing.tutorialQuiggle = TutorialQuiggle(drawing)
     }
 
     @SuppressLint("ClickableViewAccessibility")

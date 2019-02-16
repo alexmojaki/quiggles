@@ -24,7 +24,7 @@ import kotlin.math.*
     "center",
     "color"
 )
-class Quiggle {
+open class Quiggle {
     enum class State { Drawing, Completing, Complete }
 
     var state = State.Drawing
@@ -222,7 +222,7 @@ class Quiggle {
     fun isSelected(point: Point) =
         point.distance(centerAnimation.currentValue()) <= scaleAnimation.currentValue() * outerRadius
 
-    fun draw(canvas: Canvas) {
+    open fun draw(canvas: Canvas) {
         val brightness = brightness().toFloat()
         if (brightness == 0f) {
             return
@@ -245,7 +245,7 @@ class Quiggle {
 
         val matrix = Matrix()
 
-        if (state != Quiggle.State.Drawing) {
+        if (state != Quiggle.State.Drawing && this !is TutorialQuiggle) {
             (centerAnimation.currentValue() - center).translate(canvas)
             center.scale(matrix, scaleAnimation.currentValue().toFloat())
             center.rotate(canvas, rotationAnimation.currentValue())
@@ -265,7 +265,7 @@ class Quiggle {
     fun brightness() = brightnessAnimation.currentValue() *
             visibilityAnimation.currentValue()
 
-    fun update() {
+    open fun update() {
         if (state != State.Completing) return
         val p = points[index]
         if (index == 0) {
@@ -310,4 +310,6 @@ class Quiggle {
             // Decrease thickness by scale, but not too much
             thickness = max(min(2f, thickness), thickness * scale.toFloat())
         }
+
+    fun isLongEnough() = points.size >= 5
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -41,4 +42,20 @@
                 android:orientation="horizontal">
         </LinearLayout>
     </HorizontalScrollView>
+
+    <TextView
+            android:text="@string/draw_a_shape"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textAlignment="center"
+            android:id="@+id/draw_a_shape"
+            android:textSize="24sp"/>
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/finger"
+            android:id="@+id/finger"
+            tools:ignore="ContentDescription"/>
 </RelativeLayout>

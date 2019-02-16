@@ -16,6 +16,7 @@ class Drawing(val scenter: Point) {
     var selectedQuiggles: List<Quiggle> = emptyList()
     var selectedQuiggle: Quiggle? = null
     var packing: Packing? = null
+    var tutorialQuiggle: TutorialQuiggle? = null
 
     lateinit var activity: MainActivity
     var edited = false
@@ -26,6 +27,7 @@ class Drawing(val scenter: Point) {
         for (quiggle in quiggles.sortedBy { it.brightness() }) {
             quiggle.draw(canvas)
         }
+        tutorialQuiggle?.draw(canvas)
     }
 
     fun touchStart(point: Point) {
@@ -39,7 +41,13 @@ class Drawing(val scenter: Point) {
     fun touchMove(point: Point) {
         if (selectedQuiggle != null)
             return
-        quiggles.last().addPoint(point)
+        val quiggle = quiggles.last()
+        quiggle.addPoint(point)
+        if (quiggle.isLongEnough()) {
+            tutorialQuiggle = null
+            activity.finger.visibility = INVISIBLE
+            activity.draw_a_shape.visibility = INVISIBLE
+        }
     }
 
     fun selectNone() {
@@ -156,7 +164,7 @@ class Drawing(val scenter: Point) {
         }
 
         val quiggle = quiggles.last()
-        if (quiggle.points.size < 5) {
+        if (!quiggle.isLongEnough()) {
             quiggles.remove(quiggle)
 
             when {
@@ -212,6 +220,7 @@ class Drawing(val scenter: Point) {
         for (quiggle in quiggles) {
             quiggle.update()
         }
+        tutorialQuiggle?.update()
 
         if (selectedQuiggles.isNotEmpty()) return
 
