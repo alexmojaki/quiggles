@@ -9,6 +9,9 @@ import kotlinx.android.synthetic.main.activity_gif.*
 import pl.droidsonroids.gif.GifDrawable
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
+import android.content.Intent
+import android.net.Uri
+import java.io.File
 
 
 class GifActivity : CommonActivity() {
@@ -78,6 +81,15 @@ class GifActivity : CommonActivity() {
                 gifPreview.setImageDrawable(gifDrawable)
                 gifPreview.visibility = VISIBLE
                 gifProgress.visibility = INVISIBLE
+                buttons.visibility = VISIBLE
+
+                addButton(android.R.drawable.ic_menu_share) {
+                    val shareIntent = Intent(android.content.Intent.ACTION_SEND)
+                    shareIntent.type = "image/gif"
+                    val uri = Uri.fromFile(File(path))
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+                    startActivity(Intent.createChooser(shareIntent, "Share GIF"))
+                }
             }
 
         }.start()

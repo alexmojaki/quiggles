@@ -26,4 +26,19 @@
             android:layout_marginBottom="90dp"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
+    <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/buttons"
+            android:visibility="invisible"
+            android:layout_alignParentBottom="true">
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/buttonsLayout"
+                android:orientation="horizontal">
+        </LinearLayout>
+    </HorizontalScrollView>
+
 </RelativeLayout>

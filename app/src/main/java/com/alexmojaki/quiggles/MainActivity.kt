@@ -10,8 +10,6 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.SeekBar
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
@@ -48,29 +46,15 @@ class MainActivity : CommonActivity() {
         }
 
         fun addButton(imageId: Int, onClick: (View) -> Unit, highlight: Boolean = true) {
-            val button = ImageButton(this, null, android.R.style.Widget_DeviceDefault_ImageButton)
-
-            val width = dp(70f)
-            val margin = dp(5f)
-            val padding = dp(16f)
-            val params = LinearLayout.LayoutParams(width, width)
-            params.setMargins(margin, 0, margin, 0)
-            with(button) {
-                setImageResource(imageId)
-                setPadding(padding, padding, padding, padding)
-                setBackgroundResource(R.drawable.round_button_background)
-                setOnClickListener {
-                    resetButtons()
-                    if (highlight) {
-                        backgroundTintList = ColorStateList.valueOf(Color.parseColor("#B1cddc39"))
-                    }
-                    onClick.invoke(this)
+            var button: ImageButton? = null
+            button = this.addButton(imageId) {
+                resetButtons()
+                if (highlight) {
+                    button!!.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#B1cddc39"))
                 }
-                layoutParams = params
-                scaleType = ImageView.ScaleType.FIT_XY
+                onClick.invoke(button!!)
             }
 
-            buttonsLayout.addView(button)
             buttonsList.add(button)
         }
 
