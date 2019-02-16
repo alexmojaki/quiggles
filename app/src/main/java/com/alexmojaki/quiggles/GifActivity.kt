@@ -1,12 +1,9 @@
 package com.alexmojaki.quiggles
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import com.waynejo.androidndkgif.GifEncoder
 import kotlinx.android.synthetic.main.activity_gif.*
 import pl.droidsonroids.gif.GifDrawable
@@ -37,26 +34,21 @@ class GifActivity : CommonActivity() {
         drawing.quiggles.addAll(quiggles.map { it.copyForGif(scenter, duration, scale) })
 
         val (scaledWidth, scaledHeight) = (scenter * 2.0).toInt()
-        println(metrics.widthPixels)
-        println(scaledWidth)
 
-        val frames = (fps * duration).roundToInt()
+        val frames = (duration / delay * 1000).roundToInt()
         gifProgress.max = frames
         gifProgress.progress = 0
+
+        prn("delay", delay)
+        prn("duration", duration)
+        prn("frames", frames)
 
         val gifEncoder = GifEncoder()
         val path = (picsDir() /
                 "${gifDrawing!!.filename ?: "untitled"} ${isoFormat(currentTime())}.gif"
                     .replace(Regex("""["*/:<>?\\|]"""), "_")
                 ).absolutePath
-        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
-        if (ContextCompat.checkSelfPermission(this, permission)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this, arrayOf(permission), 99)
-            finish()
-            return
-        }
+
         gifEncoder.init(
             scaledWidth, scaledHeight,
             path, GifEncoder.EncodingType.ENCODING_TYPE_SIMPLE_FAST
@@ -66,7 +58,7 @@ class GifActivity : CommonActivity() {
         val canvas = Canvas(bitmap)
 
         Thread {
-            for (i in 0..frames) {
+            for (i in 1..frames) {
                 drawing.draw(canvas)
                 clock.tick()
                 gifEncoder.encodeFrame(
@@ -84,6 +76,7 @@ class GifActivity : CommonActivity() {
             val gifDrawable = GifDrawable(path)
             runOnUiThread {
                 gifPreview.setImageDrawable(gifDrawable)
+                gifPreview.visibility = VISIBLE
                 gifProgress.visibility = INVISIBLE
             }
 
@@ -93,16 +86,6 @@ class GifActivity : CommonActivity() {
     override fun finish() {
         super.finish()
         clock = SystemClock()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == 99 && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
-            // TODO
-        }
     }
 
 }

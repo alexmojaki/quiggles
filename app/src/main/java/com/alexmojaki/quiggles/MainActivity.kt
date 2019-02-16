@@ -1,7 +1,11 @@
 package com.alexmojaki.quiggles
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
@@ -236,9 +240,19 @@ class MainActivity : CommonActivity() {
                 optionsMap["Save As"] = { saveAs(drawing) }
             }
 
-            optionsMap["Make GIF"] =  {
-                gifDrawing = drawing
-                startActivity(intent(GifActivity::class.java))
+            optionsMap["Make GIF"] = {
+                val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+                if (ContextCompat.checkSelfPermission(this, permission)
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
+                    makeGif()
+                } else {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(permission),
+                        WRITE_PERMISSION_REQUEST
+                    )
+                }
             }
         }
 
@@ -249,6 +263,23 @@ class MainActivity : CommonActivity() {
                 optionsMap[optionsArr[which]]?.invoke()
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == WRITE_PERMISSION_REQUEST
+            && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
+        ) {
+            makeGif()
+        }
+    }
+
+    private fun makeGif() {
+        gifDrawing = drawing
+        startActivity(intent(GifActivity::class.java))
     }
 
     private fun save(callback: () -> Unit = {}) {
@@ -275,6 +306,10 @@ class MainActivity : CommonActivity() {
         val current = jsonMapper.readTree(jsonMapper.writeValueAsString(SaveFileV1(drawing)))
         val onDisk = jsonMapper.readTree(saveFilename(filename))
         return onDisk != current
+    }
+
+    companion object {
+        const val WRITE_PERMISSION_REQUEST = 99
     }
 
 }
