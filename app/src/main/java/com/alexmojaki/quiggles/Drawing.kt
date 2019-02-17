@@ -27,7 +27,7 @@ class Drawing(val scenter: Point) {
         canvas.drawColor(DEFAULT_BG_COLOR)
 
         for (quiggle in quiggles.sortedBy { it.brightness() }) {
-            quiggle.draw(canvas)
+            quiggle.draw(canvas, tutorial.state == Select)
         }
         tutorialQuiggle?.draw(canvas)
     }

@@ -222,7 +222,7 @@ open class Quiggle {
     fun isSelected(point: Point) =
         point.distance(centerAnimation.currentValue()) <= scaleAnimation.currentValue() * outerRadius
 
-    open fun draw(canvas: Canvas) {
+    open fun draw(canvas: Canvas, drawRings: Boolean = false) {
         val brightness = brightness().toFloat()
         if (brightness == 0f) {
             return
@@ -260,6 +260,20 @@ open class Quiggle {
         }
         canvas.drawPath(matrix * partialPath.path, paint)
         canvas.restore()
+
+        if (drawRings && state != Quiggle.State.Drawing) {
+            val scale = scaleAnimation.currentValue().toFloat()
+            val c = centerAnimation.currentValue().toFloat()
+            with(paint) {
+                strokeWidth = (outerRadius - innerRadius).toFloat() * scale
+                alpha = 0x20
+            }
+            canvas.drawCircle(
+                c.x, c.y,
+                ((outerRadius + innerRadius) / 2).toFloat() * scale,
+                paint
+            )
+        }
     }
 
     fun brightness() = brightnessAnimation.currentValue() *

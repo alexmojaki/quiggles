@@ -47,7 +47,7 @@ class Tutorial(val activity: MainActivity) {
 
     init {
         State.values().forEach {
-            it.visited = prefs.getBoolean(it.prefsKey(), false)
+//            it.visited = prefs.getBoolean(it.prefsKey(), false)
         }
     }
 
