@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
+import com.alexmojaki.quiggles.Tutorial.State.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.min
@@ -17,6 +18,7 @@ class Drawing(val scenter: Point) {
     var selectedQuiggle: Quiggle? = null
     var packing: Packing? = null
     var tutorialQuiggle: TutorialQuiggle? = null
+    val tutorial: Tutorial get() = activity.tutorial
 
     lateinit var activity: MainActivity
     var edited = false
@@ -43,11 +45,6 @@ class Drawing(val scenter: Point) {
             return
         val quiggle = quiggles.last()
         quiggle.addPoint(point)
-        if (quiggle.isLongEnough()) {
-            tutorialQuiggle = null
-            activity.finger.visibility = INVISIBLE
-            activity.draw_a_shape.visibility = INVISIBLE
-        }
     }
 
     fun selectNone() {
@@ -62,6 +59,10 @@ class Drawing(val scenter: Point) {
             val period = 1.2
             resetQuigglePosition(quiggle, period)
             quiggle.setBrightness(1.0, period)
+        }
+
+        if (SelectedOne.visited) {
+            tutorial.state = PressBackButton
         }
     }
 
@@ -86,6 +87,8 @@ class Drawing(val scenter: Point) {
         for (other in quiggles - quiggle) {
             other.setBrightness(0.0, period)
         }
+
+        tutorial.state = SelectedOne
     }
 
     fun selectMany(selection: List<Quiggle>) {
@@ -142,6 +145,8 @@ class Drawing(val scenter: Point) {
         for (quiggle in quiggles - selectedQuiggles) {
             quiggle.setBrightness(0.3, period)
         }
+
+        tutorial.state = SelectedMany
     }
 
     fun edit() {
@@ -250,7 +255,20 @@ class Drawing(val scenter: Point) {
             showOne()
         }
 
+        if (!SelectedOne.visited) {
+            val numComplete = quiggles.filter { it.state == Quiggle.State.Complete }.size
+            tutorial.state = when {
+                quiggles.isEmpty() -> DrawOne
+                numComplete == 1 -> DrawMore
+                numComplete >= 3 -> Select
+                else -> Hidden
+            }
+        }
 
+        if (quiggles.firstOrNull()?.isLongEnough() == true) {
+            tutorialQuiggle = null
+            activity.finger.visibility = INVISIBLE
+        }
     }
 
     fun deleteSelectedQuiggle() {

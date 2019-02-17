@@ -44,13 +44,15 @@
     </HorizontalScrollView>
 
     <TextView
-            android:text="@string/draw_a_shape"
+            android:id="@+id/tutorial_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:textAlignment="center"
-            android:id="@+id/draw_a_shape"
-            android:textSize="24sp"/>
+            android:textSize="18sp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="30dp"
+    />
 
     <ImageView
             android:layout_width="wrap_content"

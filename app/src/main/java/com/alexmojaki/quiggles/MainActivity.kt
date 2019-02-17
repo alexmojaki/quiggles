@@ -11,6 +11,7 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.ImageButton
 import android.widget.SeekBar
+import com.alexmojaki.quiggles.Tutorial.State.*
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -22,6 +23,8 @@ class MainActivity : CommonActivity() {
 
     val drawing: Drawing
         get() = paintView.drawing
+
+    lateinit var tutorial: Tutorial
 
     private val buttonsList = ArrayList<ImageButton>()
 
@@ -40,6 +43,9 @@ class MainActivity : CommonActivity() {
         if (filename != null) {
             load(filename, drawing)
         }
+
+        tutorial = Tutorial(this)
+        tutorial.state = DrawOne
 
         if (intent.getBooleanExtra("LOAD_UNSAVED", false)) {
             fileToJson<SaveFile>(unsavedFile()).restore(drawing)
@@ -188,6 +194,7 @@ class MainActivity : CommonActivity() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (!fromUser) return
                 onChange(progress)
+                tutorial.state = GoBackFromSelection
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -196,6 +203,7 @@ class MainActivity : CommonActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
             }
         })
+        tutorial.state = MoveSlider
     }
 
     override fun onBackPressed() {
@@ -246,6 +254,10 @@ class MainActivity : CommonActivity() {
             setItems(optionsArr) { _, which ->
                 optionsMap[optionsArr[which]]?.invoke()
             }
+        }
+        
+        if (tutorial.state == PressBackButton) {
+            tutorial.state = Hidden
         }
     }
 
