@@ -22,6 +22,7 @@ import kotlin.math.*
     "outerRadius",
     "innerRadius",
     "center",
+    "longEnough",
     "color"
 )
 open class Quiggle {
