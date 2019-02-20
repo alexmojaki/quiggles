@@ -1,11 +1,7 @@
 package com.alexmojaki.quiggles
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
@@ -239,22 +235,11 @@ class MainActivity : CommonActivity() {
             optionsMap["Save"] = { save() }
 
             if (drawing.filename != null) {
-                optionsMap["Save As"] = { saveAs(drawing) }
+                optionsMap["Save As"] = { withWritePermission { saveAs(drawing) } }
             }
 
             optionsMap["Make GIF"] = {
-                val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
-                if (ContextCompat.checkSelfPermission(this, permission)
-                    == PackageManager.PERMISSION_GRANTED
-                ) {
-                    makeGif()
-                } else {
-                    ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(permission),
-                        WRITE_PERMISSION_REQUEST
-                    )
-                }
+                withWritePermission { makeGif() }
             }
         }
 
@@ -271,28 +256,18 @@ class MainActivity : CommonActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == WRITE_PERMISSION_REQUEST
-            && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
-        ) {
-            makeGif()
-        }
-    }
-
     private fun makeGif() {
         gifDrawing = drawing
         startActivity(intent(GifActivity::class.java))
     }
 
     private fun save(callback: () -> Unit = {}) {
-        if (drawing.filename == null) {
-            saveAs(drawing, callback)
-        } else {
-            saveWithName(drawing, callback)
+        withWritePermission {
+            if (drawing.filename == null) {
+                saveAs(drawing, callback)
+            } else {
+                saveWithName(drawing, callback)
+            }
         }
     }
 
@@ -312,10 +287,6 @@ class MainActivity : CommonActivity() {
         val current = jsonMapper.readTree(jsonMapper.writeValueAsString(SaveFileV1(drawing)))
         val onDisk = jsonMapper.readTree(saveFilename(filename))
         return onDisk != current
-    }
-
-    companion object {
-        const val WRITE_PERMISSION_REQUEST = 99
     }
 
 }

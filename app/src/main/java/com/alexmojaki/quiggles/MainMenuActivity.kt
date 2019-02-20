@@ -41,8 +41,9 @@ class MainMenuActivity : CommonActivity() {
 
     override fun onResume() {
         super.onResume()
-        loadButton.isEnabled = saveFileDir().list().isNotEmpty()
-        loadUnsavedButton.isEnabled = unsavedFile().exists()
+        val can = hasWritePermission()
+        loadButton.isEnabled = can && saveFileDir().list().isNotEmpty()
+        loadUnsavedButton.isEnabled = can && unsavedFile().exists()
     }
 
 }
