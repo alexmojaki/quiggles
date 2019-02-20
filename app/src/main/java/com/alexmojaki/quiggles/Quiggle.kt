@@ -230,17 +230,9 @@ open class Quiggle {
         }
 
         canvas.save()
-        val paint = Paint()
-
-        with(paint) {
-            isAntiAlias = true
-            isDither = true
+        val paint = makePaint().apply {
             color = Color.HSVToColor(floatArrayOf(hue, saturation, colorValue * brightness))
-            style = Paint.Style.STROKE
-            strokeJoin = Paint.Join.ROUND
-            strokeCap = Paint.Cap.ROUND
             strokeWidth = thickness
-            xfermode = null
             alpha = 0xff
         }
 

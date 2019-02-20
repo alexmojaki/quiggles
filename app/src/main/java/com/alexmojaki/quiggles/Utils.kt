@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Matrix
+import android.graphics.Paint
 import android.graphics.Path
-import android.os.Environment
 import android.os.Environment.DIRECTORY_PICTURES
 import android.os.Environment.getExternalStoragePublicDirectory
 import android.support.v7.app.AlertDialog
@@ -58,7 +58,7 @@ fun <T> prn(label: String, x: T): T {
 
 val jsonMapper = jacksonObjectMapper()
 
-inline fun <reified T> Context.fileToJson(file: File): T {
+inline fun <reified T> fileToJson(file: File): T {
     FileInputStream(file).use {
         return jsonMapper.readValue(it)
     }
@@ -157,4 +157,13 @@ fun time(block: () -> Unit) {
     block()
     val end = System.currentTimeMillis()
     println("Time taken = ${end - start}")
+}
+
+fun makePaint() = Paint().apply {
+    isAntiAlias = true
+    isDither = true
+    style = Paint.Style.STROKE
+    strokeJoin = Paint.Join.ROUND
+    strokeCap = Paint.Cap.ROUND
+    xfermode = null
 }

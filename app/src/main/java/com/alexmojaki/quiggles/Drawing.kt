@@ -18,16 +18,23 @@ class Drawing(val scenter: Point) {
     var selectedQuiggle: Quiggle? = null
     var packing: Packing? = null
     var tutorialQuiggle: TutorialQuiggle? = null
-    val tutorial: Tutorial get() = activity.tutorial
+    val tutorial: Tutorial? get() {
+        if (::activity.isInitialized) {
+            return activity.tutorial
+        }
+        return null
+    }
+    var starField: StarField? = null
 
     lateinit var activity: MainActivity
     var edited = false
 
     fun draw(canvas: Canvas) {
         canvas.drawColor(DEFAULT_BG_COLOR)
+        starField?.draw(canvas)
 
         for (quiggle in quiggles.sortedBy { it.brightness() }) {
-            quiggle.draw(canvas, tutorial.state == Select)
+            quiggle.draw(canvas, tutorial?.state == Select)
         }
         tutorialQuiggle?.draw(canvas)
     }
@@ -62,7 +69,7 @@ class Drawing(val scenter: Point) {
         }
 
         if (SelectedOne.visited) {
-            tutorial.state = PressBackButton
+            tutorial?.state = PressBackButton
         }
     }
 
@@ -88,7 +95,7 @@ class Drawing(val scenter: Point) {
             other.setBrightness(0.0, period)
         }
 
-        tutorial.state = SelectedOne
+        tutorial?.state = SelectedOne
     }
 
     fun selectMany(selection: List<Quiggle>) {
@@ -146,7 +153,7 @@ class Drawing(val scenter: Point) {
             quiggle.setBrightness(0.3, period)
         }
 
-        tutorial.state = SelectedMany
+        tutorial?.state = SelectedMany
     }
 
     fun edit() {
@@ -226,6 +233,7 @@ class Drawing(val scenter: Point) {
             quiggle.update()
         }
         tutorialQuiggle?.update()
+        starField?.update()
 
         if (selectedQuiggles.isNotEmpty()) return
 
@@ -257,7 +265,7 @@ class Drawing(val scenter: Point) {
 
         if (!SelectedOne.visited) {
             val numComplete = quiggles.filter { it.state == Quiggle.State.Complete }.size
-            tutorial.state = when {
+            tutorial?.state = when {
                 quiggles.isEmpty() -> DrawOne
                 numComplete == 1 -> DrawMore
                 numComplete >= 3 -> Select

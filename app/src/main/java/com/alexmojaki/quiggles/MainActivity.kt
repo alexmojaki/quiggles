@@ -225,6 +225,16 @@ class MainActivity : CommonActivity() {
             })
         )
 
+        if (drawing.starField == null) {
+            optionsMap["Add stars"] = {
+                drawing.starField = StarField(drawing.scenter)
+            }
+        } else {
+            optionsMap["Remove stars"] = {
+                drawing.starField = null
+            }
+        }
+
         if (drawing.quiggles.isNotEmpty()) {
             optionsMap["Save"] = { save() }
 
@@ -255,7 +265,7 @@ class MainActivity : CommonActivity() {
                 optionsMap[optionsArr[which]]?.invoke()
             }
         }
-        
+
         if (tutorial.state == PressBackButton) {
             tutorial.state = Hidden
         }
