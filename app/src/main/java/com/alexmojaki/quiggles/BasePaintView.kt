@@ -38,11 +38,8 @@ abstract class BasePaintView @JvmOverloads constructor(context: Context, attrs: 
 
     override fun onDraw(canvas: Canvas) {
         doDraw(canvas)
-
-        postDelayed({
-            drawing.update()
-            invalidate()
-        }, 16)
+        drawing.update()
+        invalidate()
     }
 
     abstract fun doDraw(canvas: Canvas)
