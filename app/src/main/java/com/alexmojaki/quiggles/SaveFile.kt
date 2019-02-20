@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type"
+    property = "version"
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = SaveFileV1::class, name = "SaveFileV1")
+    JsonSubTypes.Type(value = SaveFileV1::class, name = "1")
 )
 abstract class SaveFile {
     abstract fun restore(drawing: Drawing)
