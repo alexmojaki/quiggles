@@ -7,12 +7,12 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 
-abstract class BasePaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
+class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     View(context, attrs) {
 
     lateinit var drawing: Drawing
 
-    open fun init(activity: MainActivity) {
+    fun init(activity: MainActivity) {
         val metrics = activity.metrics
         drawing = Drawing(Point(metrics.widthPixels / 2, metrics.heightPixels / 2))
         drawing.activity = activity
@@ -37,11 +37,9 @@ abstract class BasePaintView @JvmOverloads constructor(context: Context, attrs: 
     }
 
     override fun onDraw(canvas: Canvas) {
-        doDraw(canvas)
+        drawing.draw(canvas)
         drawing.update()
         invalidate()
     }
-
-    abstract fun doDraw(canvas: Canvas)
 
 }
