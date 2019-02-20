@@ -27,6 +27,7 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
                 MotionEvent.ACTION_DOWN -> drawing.touchStart(point)
                 MotionEvent.ACTION_MOVE -> drawing.touchMove(point)
                 MotionEvent.ACTION_UP -> drawing.touchUp(point)
+                MotionEvent.ACTION_CANCEL -> drawing.touchCancel()
                 else -> null
             } != null
         ) {

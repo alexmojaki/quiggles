@@ -206,6 +206,13 @@ class Drawing(val scenter: Point) {
         updateButtons()
     }
 
+    fun touchCancel() {
+        val quiggle = quiggles.last()
+        if (quiggle.state == Quiggle.State.Drawing) {
+            quiggles.remove(quiggle)
+        }
+    }
+
     fun updateButtons() {
         activity.buttons.visibility =
                 if (selectedQuiggle == null) INVISIBLE else VISIBLE
