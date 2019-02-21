@@ -5,8 +5,11 @@ import android.graphics.Color
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.SeekBar
+import android.widget.TextView
 import com.alexmojaki.quiggles.Tutorial.State.*
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
@@ -141,7 +144,7 @@ class MainActivity : CommonActivity() {
         })
 
         // Rotation
-        addButton(android.R.drawable.ic_menu_rotate, {
+        addButton(R.drawable.rotate_right, {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 50.0
@@ -176,7 +179,7 @@ class MainActivity : CommonActivity() {
         })
 
         // Delete
-        addButton(android.R.drawable.ic_menu_delete, {
+        addButton(R.drawable.delete, {
             drawing.deleteSelectedQuiggle()
         })
 
@@ -203,51 +206,80 @@ class MainActivity : CommonActivity() {
     }
 
     override fun onBackPressed() {
-        val optionsMap = LinkedHashMap(
-            mapOf("Main menu" to {
-                if (isChanged()) {
-                    dialog {
-                        setTitle("Save changes?")
-                        setPositiveButton("Yes") { _, _ ->
-                            save(::finish)
-                        }
-                        setNegativeButton("No") { _, _ ->
-                            finish()
-                        }
+        class Item(val text: String, val icon: Int, val action: () -> Unit) {
+            override fun toString(): String {
+                return text
+            }
+        }
+
+        val optionsMap = LinkedHashMap<String, Item>()
+
+        fun item(text: String, icon: Int, action: () -> Unit) {
+            optionsMap[text] = Item(text, icon, action)
+        }
+
+        item("Main menu", R.drawable.backburger) {
+            if (isChanged()) {
+                dialog {
+                    setTitle("Save changes?")
+                    setPositiveButton("Yes") { _, _ ->
+                        save(::finish)
                     }
-                } else {
-                    finish()
+                    setNegativeButton("No") { _, _ ->
+                        finish()
+                    }
                 }
-            })
-        )
+            } else {
+                finish()
+            }
+        }
 
         if (drawing.starField == null) {
-            optionsMap["Add stars"] = {
+            item("Add stars", R.drawable.star_four_points) {
                 drawing.starField = StarField(drawing.scenter)
             }
         } else {
-            optionsMap["Remove stars"] = {
+            item("Remove stars", R.drawable.star_four_points) {
                 drawing.starField = null
             }
         }
 
         if (drawing.quiggles.isNotEmpty()) {
-            optionsMap["Save"] = { save() }
+            item("Save", R.drawable.content_save) { save() }
 
             if (drawing.filename != null) {
-                optionsMap["Save As"] = { withWritePermission { saveAs(drawing) } }
+                item("Save As", R.drawable.content_save_all) { withWritePermission { saveAs(drawing) } }
             }
 
-            optionsMap["Make GIF"] = {
+            item("Make GIF", R.drawable.animation_play) {
                 withWritePermission { makeGif() }
             }
         }
 
         val optionsArr = optionsMap.keys.toTypedArray()
 
+        val adapter = object : ArrayAdapter<String>(
+            this,
+            android.R.layout.select_dialog_item,
+            android.R.id.text1,
+            optionsArr
+        ) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup) =
+                super.getView(position, convertView, parent).apply {
+                    (findViewById<View>(android.R.id.text1) as TextView).apply {
+                        //Put the image on the TextView
+                        setCompoundDrawablesWithIntrinsicBounds(
+                            optionsMap[optionsArr[position]]!!.icon,
+                            0, 0, 0)
+                        compoundDrawablePadding = dp(5f)
+                    }
+
+                }
+        }
+
         dialog {
-            setItems(optionsArr) { _, which ->
-                optionsMap[optionsArr[which]]?.invoke()
+            setAdapter(adapter) { _, which ->
+                optionsMap[optionsArr[which]]!!.action()
             }
         }
 
