@@ -13,9 +13,12 @@ import android.text.InputType
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
 import android.view.Window
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.TextView
+import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -45,25 +48,18 @@ abstract class CommonActivity : AppCompatActivity() {
 
     abstract fun onCreate()
 
-    fun addButton(imageId: Int, onClick: (View) -> Unit): ImageButton {
-        val button = ImageButton(this, null, android.R.style.Widget_DeviceDefault_ImageButton)
-
-        val width = dp(70f)
-        val margin = dp(5f)
-        val padding = dp(16f)
-        val params = LinearLayout.LayoutParams(width, width)
-        params.setMargins(margin, 0, margin, 0)
-        with(button) {
+    fun addButton(
+        label: String,
+        imageId: Int,
+        onClick: (View) -> Unit
+    ): ImageButton {
+        val buttonLayout = layoutInflater.inflate(R.layout.button_layout, buttonsLayout, false)
+        buttonLayout.findViewById<TextView>(R.id.label).text = label
+        val button = buttonLayout.findViewById<ImageButton>(R.id.button).apply {
             setImageResource(imageId)
-            setPadding(padding, padding, padding, padding)
-            setBackgroundResource(R.drawable.round_button_background)
             setOnClickListener(onClick)
-            layoutParams = params
-            scaleType = ImageView.ScaleType.FIT_XY
         }
-
-        findViewById<ViewGroup>(R.id.buttonsLayout).addView(button)
-
+        buttonsLayout.addView(buttonLayout)
         return button
     }
 

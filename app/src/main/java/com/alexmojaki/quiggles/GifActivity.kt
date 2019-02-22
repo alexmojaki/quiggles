@@ -83,7 +83,10 @@ class GifActivity : CommonActivity() {
                 gifProgress.visibility = INVISIBLE
                 buttons.visibility = VISIBLE
 
-                addButton(R.drawable.share_variant) {
+                addButton(
+                    "Share",
+                    R.drawable.share_variant
+                ) {
                     val shareIntent = Intent(android.content.Intent.ACTION_SEND)
                     shareIntent.type = "image/gif"
                     val uri = Uri.fromFile(File(path))

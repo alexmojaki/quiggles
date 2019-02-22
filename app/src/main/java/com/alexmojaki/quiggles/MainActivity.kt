@@ -50,9 +50,14 @@ class MainActivity : CommonActivity() {
             fileToJson<SaveFile>(unsavedFile()).restore(drawing)
         }
 
-        fun addButton(imageId: Int, onClick: (View) -> Unit, highlight: Boolean = true) {
+        fun addButton(
+            label: String,
+            imageId: Int,
+            onClick: (View) -> Unit,
+            highlight: Boolean = true
+        ) {
             var button: ImageButton? = null
-            button = this.addButton(imageId) {
+            button = this.addButton(label, imageId) {
                 resetButtons()
                 if (highlight) {
                     button!!.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#B1cddc39"))
@@ -63,8 +68,7 @@ class MainActivity : CommonActivity() {
             buttonsList.add(button)
         }
 
-        // Scale
-        addButton(R.drawable.scale, {
+        addButton("Size", R.drawable.scale, {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val original = outerRadius / (drawing.scenter.y) * 100
@@ -78,8 +82,7 @@ class MainActivity : CommonActivity() {
             }
         })
 
-        // Color
-        addButton(R.drawable.color_palette, {
+        addButton("Color", R.drawable.color_palette, {
             drawing.edited = true
             seekBar.visibility = INVISIBLE
 
@@ -101,8 +104,7 @@ class MainActivity : CommonActivity() {
                 .show()
         }, highlight = false)
 
-        // Angle
-        addButton(R.drawable.star, {
+        addButton("Shape", R.drawable.star, {
             drawing.edited = true
             val angles = angleToPoints.navigableKeySet().toList()
             with(drawing.selectedQuiggle!!) {
@@ -128,8 +130,7 @@ class MainActivity : CommonActivity() {
             }
         })
 
-        // Oscillation
-        addButton(R.drawable.wave, {
+        addButton("Grow", R.drawable.wave, {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 50.0
@@ -143,8 +144,7 @@ class MainActivity : CommonActivity() {
             }
         })
 
-        // Rotation
-        addButton(R.drawable.rotate_right, {
+        addButton("Spin", R.drawable.rotate_right, {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 50.0
@@ -163,8 +163,7 @@ class MainActivity : CommonActivity() {
             }
         })
 
-        // Thickness
-        addButton(R.drawable.thickness, {
+        addButton("Thicken", R.drawable.thickness, {
             drawing.edit()
             with(drawing.selectedQuiggle!!) {
                 val min = 0.5
@@ -178,8 +177,7 @@ class MainActivity : CommonActivity() {
             }
         })
 
-        // Delete
-        addButton(R.drawable.delete, {
+        addButton("Delete", R.drawable.delete, {
             drawing.deleteSelectedQuiggle()
         })
 
@@ -270,7 +268,8 @@ class MainActivity : CommonActivity() {
                         //Put the image on the TextView
                         setCompoundDrawablesWithIntrinsicBounds(
                             optionsMap[optionsArr[position]]!!.icon,
-                            0, 0, 0)
+                            0, 0, 0
+                        )
                         compoundDrawablePadding = dp(5f)
                     }
 

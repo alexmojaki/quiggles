@@ -76,7 +76,7 @@ class Tutorial(val activity: MainActivity) {
         ),
         SelectedOne(
             TextPosition.Top,
-            "Nice! These buttons let you change the size, color, shape, or movement of the quiggle, or delete it. Try them all."
+            "Nice! These buttons give you control over each quiggle. Try them all."
         ),
         MoveSlider(
             TextPosition.Top,

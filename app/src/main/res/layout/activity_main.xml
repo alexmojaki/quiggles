@@ -13,35 +13,40 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-    <SeekBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:max="100"
-            android:progress="50"
-            android:id="@+id/seekBar"
-            android:visibility="invisible"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="70dp"/>
-
-    <HorizontalScrollView
+    <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/buttons"
-            android:visibility="invisible"
             android:layout_alignParentBottom="true">
-        <LinearLayout
+
+        <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:max="100"
+                android:progress="50"
+                android:id="@+id/seekBar"
+                android:visibility="invisible"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                app:layout_constraintBottom_toTopOf="@id/buttons"/>
+
+        <HorizontalScrollView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/buttonsLayout"
-                android:orientation="horizontal">
-        </LinearLayout>
-    </HorizontalScrollView>
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/buttons"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent">
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buttonsLayout"
+                    android:orientation="horizontal">
+            </LinearLayout>
+        </HorizontalScrollView>
+    </android.support.constraint.ConstraintLayout>
 
     <TextView
             android:id="@+id/tutorial_text"
