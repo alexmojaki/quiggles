@@ -50,6 +50,8 @@ class MainActivity : CommonActivity() {
             fileToJson<SaveFile>(unsavedFile()).restore(drawing)
         }
 
+        var buttonsGroup = buttonsLayout
+
         fun addButton(
             label: String,
             imageId: Int,
@@ -57,7 +59,7 @@ class MainActivity : CommonActivity() {
             highlight: Boolean = true
         ) {
             var button: ImageButton? = null
-            button = this.addButton(label, imageId) {
+            button = this.addButton(label, imageId, buttonsGroup) {
                 resetButtons()
                 if (highlight) {
                     button!!.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#B1cddc39"))
@@ -181,6 +183,23 @@ class MainActivity : CommonActivity() {
             drawing.deleteSelectedQuiggle()
         })
 
+        buttonsGroup = buttonsLayout2
+
+        addButton("Stars", R.drawable.star_four_points, {
+            drawing.starField =
+                    if (drawing.starField == null)
+                        StarField(drawing.scenter)
+                    else
+                        null
+        }, highlight = false)
+
+        addButton("Number", R.drawable.counter, {
+            showSeekBar(
+                drawing.maxQuiggles - 1,
+                { x -> drawing.maxQuiggles = x + 1 },
+                40
+            )
+        })
     }
 
     fun showSeekBar(progress: Int, onChange: (Int) -> Unit, max: Int = 100) {
@@ -232,16 +251,6 @@ class MainActivity : CommonActivity() {
             }
         }
 
-        if (drawing.starField == null) {
-            item("Add stars", R.drawable.star_four_points) {
-                drawing.starField = StarField(drawing.scenter)
-            }
-        } else {
-            item("Remove stars", R.drawable.star_four_points) {
-                drawing.starField = null
-            }
-        }
-
         if (drawing.quiggles.isNotEmpty()) {
             item("Save", R.drawable.content_save) { save() }
 
@@ -252,6 +261,11 @@ class MainActivity : CommonActivity() {
             item("Make GIF", R.drawable.animation_play) {
                 withWritePermission { makeGif() }
             }
+        }
+
+        item("Edit canvas", R.drawable.drawing_box) {
+            drawing.selectNone()
+            buttons2.visibility = VISIBLE
         }
 
         val optionsArr = optionsMap.keys.toTypedArray()

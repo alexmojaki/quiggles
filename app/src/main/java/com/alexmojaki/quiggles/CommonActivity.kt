@@ -13,6 +13,7 @@ import android.text.InputType
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.widget.EditText
 import android.widget.ImageButton
@@ -51,6 +52,7 @@ abstract class CommonActivity : AppCompatActivity() {
     fun addButton(
         label: String,
         imageId: Int,
+        viewGroup: ViewGroup,
         onClick: (View) -> Unit
     ): ImageButton {
         val buttonLayout = layoutInflater.inflate(R.layout.button_layout, buttonsLayout, false)
@@ -59,7 +61,7 @@ abstract class CommonActivity : AppCompatActivity() {
             setImageResource(imageId)
             setOnClickListener(onClick)
         }
-        buttonsLayout.addView(buttonLayout)
+        viewGroup.addView(buttonLayout)
         return button
     }
 

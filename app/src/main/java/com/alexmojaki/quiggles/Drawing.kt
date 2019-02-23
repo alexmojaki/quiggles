@@ -8,6 +8,7 @@ import android.view.View.VISIBLE
 import com.alexmojaki.quiggles.Tutorial.State.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import kotlin.math.absoluteValue
 import kotlin.math.min
 
 class Drawing(val scenter: Point) {
@@ -25,6 +26,7 @@ class Drawing(val scenter: Point) {
         return null
     }
     var starField: StarField? = null
+    var maxQuiggles = 10
 
     lateinit var activity: MainActivity
     var edited = false
@@ -216,6 +218,7 @@ class Drawing(val scenter: Point) {
     fun updateButtons() {
         activity.buttons.visibility =
                 if (selectedQuiggle == null) INVISIBLE else VISIBLE
+        activity.buttons2.visibility = INVISIBLE
         activity.resetButtons()
     }
 
@@ -224,7 +227,7 @@ class Drawing(val scenter: Point) {
             (it.state == Quiggle.State.Complete ||
                     it.state == Quiggle.State.Completing &&
                     includeCompleting) &&
-                    it.visibilityAnimation.elapsedRatio() > 1
+                    it.visibilityAnimation.elapsedRatio() >= 1
         }
 
         val (fullyVisible, fullyInvisible) = notTransitioning
@@ -244,31 +247,7 @@ class Drawing(val scenter: Point) {
 
         if (selectedQuiggles.isNotEmpty()) return
 
-        val (notTransitioning, fullyVisible, fullyInvisible) = nonTransitioning(includeCompleting = false)
-
-        fun switchOne(part: List<Quiggle>, visibility: Double) {
-            part
-                .sortedBy { it.visibilityAnimation.startTime }
-                .take(Math.ceil(part.size / 2.0).toInt())
-                .shuffled()[0]
-                .setVisibility(visibility, 2.5)
-        }
-
-        fun hideOne() = switchOne(fullyVisible, 0.0)
-        fun showOne() = switchOne(fullyInvisible, 1.0)
-
-        val maxQuiggles = 10
-        if (fullyVisible.size > maxQuiggles) {
-            hideOne()
-        } else if (
-            notTransitioning.size == quiggles.size
-            && fullyInvisible.isNotEmpty()
-        ) {
-            if (fullyVisible.size == maxQuiggles) {
-                hideOne()
-            }
-            showOne()
-        }
+        updateVisibility()
 
         if (!SelectedOne.visited) {
             val numComplete = quiggles.filter { it.state == Quiggle.State.Complete }.size
@@ -283,6 +262,39 @@ class Drawing(val scenter: Point) {
         if (quiggles.firstOrNull()?.isLongEnough() == true) {
             tutorialQuiggle = null
             activity.finger.visibility = INVISIBLE
+        }
+    }
+
+    private fun updateVisibility() {
+        val (notTransitioning, fullyVisible, fullyInvisible) = nonTransitioning(includeCompleting = false)
+
+        val diff = fullyVisible.size - maxQuiggles
+        val quick = diff.absoluteValue > 1
+
+        fun switchOne(part: List<Quiggle>, visibility: Double) {
+            part
+                .sortedBy { it.visibilityAnimation.startTime }
+                .take(Math.ceil(part.size / 2.0).toInt())
+                .shuffled()[0]
+                .setVisibility(
+                    visibility,
+                    period = if (quick) 0.0 else 2.5
+                )
+        }
+
+        fun hideOne() = switchOne(fullyVisible, 0.0)
+        fun showOne() = switchOne(fullyInvisible, 1.0)
+
+        if (diff > 0) {
+            hideOne()
+        } else if (
+            (notTransitioning.size == quiggles.size || quick)
+            && fullyInvisible.isNotEmpty()
+        ) {
+            if (diff == 0) {
+                hideOne()
+            }
+            showOne()
         }
     }
 

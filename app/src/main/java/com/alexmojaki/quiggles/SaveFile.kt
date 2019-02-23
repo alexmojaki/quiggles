@@ -16,8 +16,16 @@ abstract class SaveFile {
     abstract fun restore(drawing: Drawing)
 }
 
-data class SaveFileV1(val quiggles: List<Quiggle>, val stars: Boolean) : SaveFile() {
-    constructor(drawing: Drawing) : this(drawing.quiggles, drawing.starField != null)
+data class SaveFileV1(
+    val quiggles: List<Quiggle>,
+    val stars: Boolean,
+    val maxQuiggles: Int
+) : SaveFile() {
+    constructor(drawing: Drawing) : this(
+        drawing.quiggles,
+        drawing.starField != null,
+        drawing.maxQuiggles
+    )
 
     override fun restore(drawing: Drawing) {
         for (quiggle in quiggles) {
@@ -28,6 +36,8 @@ data class SaveFileV1(val quiggles: List<Quiggle>, val stars: Boolean) : SaveFil
         if (stars) {
             drawing.starField = StarField(drawing.scenter)
         }
+
+        drawing.maxQuiggles = maxQuiggles
     }
 
 }

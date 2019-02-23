@@ -85,7 +85,8 @@ class GifActivity : CommonActivity() {
 
                 addButton(
                     "Share",
-                    R.drawable.share_variant
+                    R.drawable.share_variant,
+                    buttonsLayout
                 ) {
                     val shareIntent = Intent(android.content.Intent.ACTION_SEND)
                     shareIntent.type = "image/gif"
