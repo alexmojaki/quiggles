@@ -14,11 +14,15 @@ class Tutorial(val activity: MainActivity) {
                 val next =
                     when (value) {
                         Select -> SelectedOne
-                        GoBackFromSelection -> value
-                        PressBackButton -> value
                         else -> State.values()[value.ordinal + 1]
                     }
-                if (next.visited) {
+                if (next.visited ||
+                    value.oneOf(
+                        GoBackFromSelection,
+                        MaxQuigglesSlider,
+                        PressBackButton
+                    )
+                ) {
                     @Suppress("RecursivePropertyAccessor")
                     state = Hidden
                     return
@@ -88,7 +92,11 @@ class Tutorial(val activity: MainActivity) {
         ),
         PressBackButton(
             TextPosition.Bottom,
-            "Press the back button to show the menu."
+            "Press the back button to show the menu. Try the different options there."
+        ),
+        MaxQuigglesSlider(
+            TextPosition.Top,
+            "If you draw many quiggles, only some will be shown at a time. This slider controls the limit."
         ),
         Hidden(TextPosition.Top, "");
 

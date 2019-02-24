@@ -19,12 +19,13 @@ class Drawing(val scenter: Point) {
     var selectedQuiggle: Quiggle? = null
     var packing: Packing? = null
     var tutorialQuiggle: TutorialQuiggle? = null
-    val tutorial: Tutorial? get() {
-        if (::activity.isInitialized) {
-            return activity.tutorial
+    val tutorial: Tutorial?
+        get() {
+            if (::activity.isInitialized) {
+                return activity.tutorial
+            }
+            return null
         }
-        return null
-    }
     var starField: StarField? = null
     var maxQuiggles = 10
 
@@ -216,10 +217,13 @@ class Drawing(val scenter: Point) {
     }
 
     fun updateButtons() {
-        activity.buttons.visibility =
-                if (selectedQuiggle == null) INVISIBLE else VISIBLE
-        activity.buttons2.visibility = INVISIBLE
-        activity.resetButtons()
+        with(activity) {
+            buttons.visibility =
+                    if (selectedQuiggle == null) INVISIBLE else VISIBLE
+            buttons2.visibility = INVISIBLE
+            seekBar.visibility = INVISIBLE
+            resetButtons()
+        }
     }
 
     fun nonTransitioning(includeCompleting: Boolean): Triple<List<Quiggle>, List<Quiggle>, List<Quiggle>> {
@@ -249,7 +253,10 @@ class Drawing(val scenter: Point) {
 
         updateVisibility()
 
-        if (!SelectedOne.visited) {
+        if (!SelectedOne.visited
+            && tutorial != null
+            && activity.buttons2.visibility != VISIBLE
+        ) {
             val numComplete = quiggles.filter { it.state == Quiggle.State.Complete }.size
             tutorial?.state = when {
                 quiggles.isEmpty() -> DrawOne

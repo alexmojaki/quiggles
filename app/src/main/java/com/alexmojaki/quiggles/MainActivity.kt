@@ -187,6 +187,7 @@ class MainActivity : CommonActivity() {
         buttonsGroup = buttonsLayout2
 
         addButton("Stars", R.drawable.star_four_points, {
+            seekBar.visibility = INVISIBLE
             drawing.starField =
                     if (drawing.starField == null)
                         StarField(drawing.scenter)
@@ -195,15 +196,17 @@ class MainActivity : CommonActivity() {
         }, highlight = false)
 
         addButton("Number", R.drawable.counter, {
+            tutorial.state = MaxQuigglesSlider
             showSeekBar(
                 drawing.maxQuiggles - 1,
                 { x -> drawing.maxQuiggles = x + 1 },
-                40
+                40,
+                doTutorial = false
             )
         })
     }
 
-    fun showSeekBar(progress: Int, onChange: (Int) -> Unit, max: Int = 100) {
+    fun showSeekBar(progress: Int, onChange: (Int) -> Unit, max: Int = 100, doTutorial: Boolean = false) {
         seekBar.visibility = VISIBLE
         seekBar.max = max
         seekBar.progress = progress
@@ -211,7 +214,7 @@ class MainActivity : CommonActivity() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (!fromUser) return
                 onChange(progress)
-                tutorial.state = GoBackFromSelection
+                if (doTutorial) tutorial.state = GoBackFromSelection
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -220,7 +223,7 @@ class MainActivity : CommonActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
             }
         })
-        tutorial.state = MoveSlider
+        if (doTutorial) tutorial.state = MoveSlider
     }
 
     override fun onBackPressed() {
@@ -267,6 +270,7 @@ class MainActivity : CommonActivity() {
         item("Edit canvas", R.drawable.drawing_box) {
             drawing.selectNone()
             buttons2.visibility = VISIBLE
+            tutorial.state = Hidden
         }
 
         val optionsArr = optionsMap.keys.toTypedArray()
