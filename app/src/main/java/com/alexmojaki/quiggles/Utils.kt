@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
+import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.File
 import java.io.FileInputStream
+import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -47,6 +49,7 @@ fun <T> prn(label: String, x: T): T {
 }
 
 val jsonMapper = jacksonObjectMapper()
+    .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)!!
 
 inline fun <reified T> fileToJson(file: File): T {
     FileInputStream(file).use {
@@ -76,3 +79,8 @@ fun makePaint() = Paint().apply {
     strokeCap = Paint.Cap.ROUND
     xfermode = null
 }
+
+fun sha256(s: String): String =
+    MessageDigest.getInstance("SHA-256")
+        .digest(s.toByteArray())
+        .joinToString("") { "%02x".format(it) }

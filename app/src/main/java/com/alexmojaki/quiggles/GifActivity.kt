@@ -1,5 +1,6 @@
 package com.alexmojaki.quiggles
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View.INVISIBLE
@@ -33,6 +34,14 @@ class GifActivity : CommonActivity() {
             .filter { it.isFinite() }
             .max()!!
             .toNearest(delay / 1000.0)
+
+        val hash = sha256(quiggles.map { jsonMapper.writeValueAsString(it) }.sorted().joinToString())
+        val sharedPreferences = getPreferences(Context.MODE_PRIVATE)!!
+        val cachedPath = sharedPreferences.getString(hash, null)
+        if (cachedPath != null && File(cachedPath).exists()) {
+            complete(cachedPath)
+            return
+        }
 
         drawing.quiggles.addAll(quiggles.map { it.copyForGif(scenter, duration, scale) })
 
@@ -75,28 +84,36 @@ class GifActivity : CommonActivity() {
 //                    runOnUiThread { gifPreview.setImageBitmap(copy) }
             }
             gifEncoder.close()
-
-            val gifDrawable = GifDrawable(path)
-            runOnUiThread {
-                gifPreview.setImageDrawable(gifDrawable)
-                gifPreview.visibility = VISIBLE
-                gifProgress.visibility = INVISIBLE
-                buttons.visibility = VISIBLE
-
-                addButton(
-                    "Share",
-                    R.drawable.share_variant,
-                    buttonsLayout
-                ) {
-                    val shareIntent = Intent(android.content.Intent.ACTION_SEND)
-                    shareIntent.type = "image/gif"
-                    val uri = Uri.fromFile(File(path))
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
-                    startActivity(Intent.createChooser(shareIntent, "Share GIF"))
-                }
+            with(sharedPreferences.edit()) {
+                putString(hash, path)
+                apply()
             }
 
+            complete(path)
+
         }.start()
+    }
+
+    private fun complete(path: String) {
+        val gifDrawable = GifDrawable(path)
+        runOnUiThread {
+            gifPreview.setImageDrawable(gifDrawable)
+            gifPreview.visibility = VISIBLE
+            gifProgress.visibility = INVISIBLE
+            buttons.visibility = VISIBLE
+
+            addButton(
+                "Share",
+                R.drawable.share_variant,
+                buttonsLayout
+            ) {
+                val shareIntent = Intent(Intent.ACTION_SEND)
+                shareIntent.type = "image/gif"
+                val uri = Uri.fromFile(File(path))
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+                startActivity(Intent.createChooser(shareIntent, "Share GIF"))
+            }
+        }
     }
 
     override fun finish() {
