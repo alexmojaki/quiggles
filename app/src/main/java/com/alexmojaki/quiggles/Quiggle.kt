@@ -151,8 +151,12 @@ open class Quiggle {
     }
 
     fun oscillate(scenter: Point) {
+        if (usualScale <= 0.0) return
         val initial = scaleAnimation.currentValue()
-        val lower = { 0.05 * scenter.y / outerRadius }
+        var lower = { 0.05 * scenter.y / outerRadius }
+        if (usualScale < lower()) {
+            lower = { 0.0 }
+        }
         scaleAnimation = scaleAnimation.change(
             lower(),
             oscillationPeriod,

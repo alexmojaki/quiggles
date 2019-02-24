@@ -15,6 +15,7 @@ import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.PI
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 
@@ -75,9 +76,9 @@ class MainActivity : CommonActivity() {
             with(drawing.selectedQuiggle!!) {
                 val original = outerRadius / (drawing.scenter.y) * 100
                 showSeekBar(
-                    (usualScale * original).roundToInt(),
+                    max((usualScale * original).roundToInt(), 1) - 1,
                     { progress ->
-                        usualScale = progress / original
+                        usualScale = (progress + 1) / original
                         drawing.resetQuigglePosition(this, 0.0)
                     }
                 )
