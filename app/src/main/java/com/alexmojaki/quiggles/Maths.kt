@@ -44,10 +44,10 @@ var hue = rand.nextDouble()
 val phi = (1 + sqrt(5.0)) / 2
 val phiInv = 1 / phi
 
-fun nextHue(): Double {
+fun nextHue(): Float {
     hue += phiInv
     hue %= 1
-    return hue * 360f
+    return (hue * 360).toFloat()
 }
 
 fun square(x: Double) = x * x

@@ -21,15 +21,15 @@ class Drawing(val scenter: Point) {
     var tutorialQuiggle: TutorialQuiggle? = null
     val tutorial: Tutorial?
         get() {
-            if (::activity.isInitialized) {
-                return activity.tutorial
+            if (::activity.isInitialized && activity is MainActivity) {
+                return (activity as MainActivity).tutorial
             }
             return null
         }
     var starField: StarField? = null
     var maxQuiggles = 10
 
-    lateinit var activity: MainActivity
+    lateinit var activity: CommonActivity
     var edited = false
 
     fun draw(canvas: Canvas) {
@@ -217,7 +217,7 @@ class Drawing(val scenter: Point) {
     }
 
     fun updateButtons() {
-        with(activity) {
+        with(activity as MainActivity) {
             buttons.visibility =
                     if (selectedQuiggle == null) INVISIBLE else VISIBLE
             buttons2.visibility = INVISIBLE
@@ -268,7 +268,7 @@ class Drawing(val scenter: Point) {
 
         if (quiggles.firstOrNull()?.isLongEnough() == true) {
             tutorialQuiggle = null
-            activity.finger.visibility = INVISIBLE
+            activity.finger?.visibility = INVISIBLE
         }
     }
 

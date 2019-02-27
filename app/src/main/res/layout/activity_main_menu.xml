@@ -7,6 +7,11 @@
         android:theme="@style/AppTheme"
         tools:context=".MainActivity">
 
+    <com.alexmojaki.quiggles.PaintView
+            android:id="@+id/paintView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -16,34 +21,22 @@
     >
 
         <Button
+                style="@style/MainMenuButton"
                 android:id="@+id/newButton"
                 android:text="@string/newButton"
                 android:drawableStart="@drawable/pencil_plus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:textAllCaps="false"
-                android:textSize="20sp"
         />
         <Button
+                style="@style/MainMenuButton"
                 android:id="@+id/loadButton"
                 android:text="@string/loadButton"
                 android:drawableStart="@drawable/folder_open"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:textAllCaps="false"
-                android:textSize="20sp"
         />
         <Button
+                style="@style/MainMenuButton"
                 android:id="@+id/loadUnsavedButton"
                 android:text="@string/loadUnsavedButton"
                 android:drawableStart="@drawable/folder_clock"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:textAllCaps="false"
-                android:textSize="20sp"
         />
     </LinearLayout>
 

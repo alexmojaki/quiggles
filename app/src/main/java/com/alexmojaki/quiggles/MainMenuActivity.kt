@@ -1,6 +1,7 @@
 package com.alexmojaki.quiggles
 
 import android.content.Intent
+import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.android.synthetic.main.activity_main_menu.*
 
 
@@ -8,6 +9,12 @@ class MainMenuActivity : CommonActivity() {
 
     override fun onCreate() {
         setContentView(R.layout.activity_main_menu)
+
+        paintView.init(this)
+        assets.open("menu_background.json").use {
+            jsonMapper.readValue<SaveFile>(it).restore(paintView.drawing)
+        }
+        paintView.drawing.quiggles[0].baseHue = nextHue()
 
         newButton.setOnClickListener {
             startMain()

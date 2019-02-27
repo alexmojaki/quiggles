@@ -58,7 +58,7 @@ open class Quiggle {
     var outerRadius: Double = 0.0
     var innerRadius: Double = 0.0
 
-    var baseHue = nextHue().toFloat()
+    var baseHue = nextHue()
 
     var hue: Float
         get() = (baseHue + hueAnimation.currentValue().toFloat()) % 360

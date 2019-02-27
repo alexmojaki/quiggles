@@ -38,6 +38,7 @@ class MainActivity : CommonActivity() {
         setContentView(R.layout.activity_main)
 
         paintView.init(this)
+        drawing.tutorialQuiggle = TutorialQuiggle(drawing)
 
         val filename = intent.getStringExtra("LOAD_FILENAME")
         if (filename != null) {

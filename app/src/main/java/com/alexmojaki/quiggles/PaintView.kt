@@ -12,15 +12,16 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
 
     lateinit var drawing: Drawing
 
-    fun init(activity: MainActivity) {
+    fun init(activity: CommonActivity) {
         val metrics = activity.metrics
         drawing = Drawing(Point(metrics.widthPixels / 2, metrics.heightPixels / 2))
         drawing.activity = activity
-        drawing.tutorialQuiggle = TutorialQuiggle(drawing)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (drawing.activity !is MainActivity) return false
+
         val point = Point(event.x, event.y)
 
         if (when (event.action) {
