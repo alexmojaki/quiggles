@@ -30,7 +30,9 @@ class GifActivity : CommonActivity() {
 
         val quiggles = gifDrawing!!.nonTransitioning(includeCompleting = true).second
         val duration = (quiggles.map { it.oscillationPeriod * 2 } +
-                quiggles.map { it.rotationPeriod.absoluteValue / it.numVertices })
+                quiggles.map { it.huePeriod } +
+                quiggles.map { it.rotationPeriod / it.numVertices })
+            .map { it.absoluteValue }
             .filter { it.isFinite() }
             .max()!!
             .toNearest(delay / 1000.0)

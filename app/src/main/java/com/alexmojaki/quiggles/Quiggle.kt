@@ -19,6 +19,8 @@ import kotlin.math.*
     "rotationAnimation",
     "brightnessAnimation",
     "visibilityAnimation",
+    "hueAnimation",
+    "hue",
     "outerRadius",
     "innerRadius",
     "center",
@@ -40,11 +42,13 @@ open class Quiggle {
     lateinit var centerAnimation: Animated<Point>
     lateinit var scaleAnimation: Animated<Double>
     lateinit var rotationAnimation: Animated<Double>
+    var hueAnimation: Animated<Double> = still("double", 0.0) { it % 1 }
     var brightnessAnimation: Animated<Double> = still("double", 1.0, ::linear)
     var visibilityAnimation: Animated<Double> = still("double", 1.0, ::linear)
 
     var oscillationPeriod: Double = Double.POSITIVE_INFINITY
     var rotationPeriod: Double = randRange(5f, 20f).toDouble()
+    var huePeriod: Double = Double.POSITIVE_INFINITY
 
     lateinit var center: Point
 
@@ -53,7 +57,16 @@ open class Quiggle {
 
     var outerRadius: Double = 0.0
     var innerRadius: Double = 0.0
-    var hue = nextHue().toFloat()
+
+    var baseHue = nextHue().toFloat()
+
+    var hue: Float
+        get() = (baseHue + hueAnimation.currentValue().toFloat()) % 360
+        set(value) {
+            baseHue = value
+            hueAnimation = hueAnimation.change(0.0, 0.0)
+            huePeriod = Double.POSITIVE_INFINITY
+        }
     var saturation = 1f
     var colorValue = 1f
 
@@ -67,6 +80,10 @@ open class Quiggle {
             colorValue = arr[2]
         }
 
+    init {
+        hue = baseHue
+    }
+
     fun restore(scenter: Point) {
         setAngle(idealAngle)
         state = State.Complete
@@ -77,6 +94,11 @@ open class Quiggle {
         oscillate(scenter)
 
         centerAnimation = still("point", scenter)
+
+        hueAnimation = hueAnimation.change(
+            360.0,
+            period = huePeriod
+        )
 
         setBrightness(0.0, 0.0)
         setBrightness(1.0, 3.0)
@@ -307,6 +329,7 @@ open class Quiggle {
 
             rotationPeriod = alignPeriod(rotationPeriod, 1.0 / numVertices)
             oscillationPeriod = alignPeriod(oscillationPeriod, 2.0)
+            huePeriod = alignPeriod(huePeriod, 1.0)
 
             restore(scenter)
             setBrightness(1.0, 0.0)

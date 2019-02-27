@@ -107,6 +107,24 @@ class MainActivity : CommonActivity() {
                 .show()
         }, highlight = false)
 
+        addButton("Glow", R.drawable.rainbow, {
+            drawing.edit()
+            with(drawing.selectedQuiggle!!) {
+                val maxPeriod = 200.0
+                showSeekBar(
+                    unstretchProgress(maxPeriod / huePeriod) + 100,
+                    { progress ->
+                        huePeriod = maxPeriod / stretchProgress(progress - 100)
+                        hueAnimation = hueAnimation.change(
+                            hueAnimation.currentValue() + 360,
+                            period = huePeriod
+                        )
+                    },
+                    max = 200
+                )
+            }
+        })
+
         addButton("Shape", R.drawable.star, {
             drawing.edited = true
             val angles = angleToPoints.navigableKeySet().toList()
