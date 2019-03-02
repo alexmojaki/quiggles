@@ -225,7 +225,7 @@ class MainActivity : CommonActivity() {
         })
     }
 
-    fun showSeekBar(progress: Int, onChange: (Int) -> Unit, max: Int = 100, doTutorial: Boolean = false) {
+    fun showSeekBar(progress: Int, onChange: (Int) -> Unit, max: Int = 100, doTutorial: Boolean = true) {
         seekBar.visibility = VISIBLE
         seekBar.max = max
         seekBar.progress = progress
