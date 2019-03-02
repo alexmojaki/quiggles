@@ -84,3 +84,7 @@ fun sha256(s: String): String =
     MessageDigest.getInstance("SHA-256")
         .digest(s.toByteArray())
         .joinToString("") { "%02x".format(it) }
+
+fun <T> Iterable<T>.forEachApply(action: T.() -> Unit) {
+    for (element in this) action(element)
+}

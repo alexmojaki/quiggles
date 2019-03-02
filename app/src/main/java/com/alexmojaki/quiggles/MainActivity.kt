@@ -116,10 +116,8 @@ class MainActivity : CommonActivity() {
                     unstretchProgress(maxPeriod / huePeriod) + 100,
                     { progress ->
                         huePeriod = maxPeriod / stretchProgress(progress - 100)
-                        hueAnimation = hueAnimation.change(
-                            hueAnimation.currentValue() + 360,
-                            period = huePeriod
-                        )
+                        glow()
+                        glowNormally = huePeriod.isFinite()
                     },
                     max = 200
                 )
@@ -207,6 +205,7 @@ class MainActivity : CommonActivity() {
 
         addButton("Stars", R.drawable.star_four_points, {
             seekBar.visibility = INVISIBLE
+            tutorial.maybeHide()
             drawing.starField =
                     if (drawing.starField == null)
                         StarField(drawing.scenter)
@@ -223,6 +222,22 @@ class MainActivity : CommonActivity() {
                 doTutorial = false
             )
         })
+
+        addButton("Glow All", R.drawable.rainbow, {
+            tutorial.state = GlowAll
+            with(drawing) {
+                allGlow = !allGlow
+                quiggles.forEachApply {
+                    if (!glowNormally) {
+                        if (allGlow) {
+                            glowRandomly()
+                        } else {
+                            stopGlowing()
+                        }
+                    }
+                }
+            }
+        }, highlight = false)
     }
 
     fun showSeekBar(progress: Int, onChange: (Int) -> Unit, max: Int = 100, doTutorial: Boolean = true) {

@@ -28,6 +28,7 @@ class Drawing(val scenter: Point) {
         }
     var starField: StarField? = null
     var maxQuiggles = 10
+    var allGlow = false
 
     lateinit var activity: CommonActivity
     var edited = false
@@ -48,6 +49,9 @@ class Drawing(val scenter: Point) {
         val quiggle = Quiggle()
         quiggle.start(point)
         quiggles.add(quiggle)
+        if (allGlow) {
+            quiggle.glowRandomly()
+        }
     }
 
     fun touchMove(point: Point) {
@@ -223,6 +227,7 @@ class Drawing(val scenter: Point) {
             buttons2.visibility = INVISIBLE
             seekBar.visibility = INVISIBLE
             resetButtons()
+            tutorial.maybeHide()
         }
     }
 

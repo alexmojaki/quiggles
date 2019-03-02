@@ -20,6 +20,7 @@ class Tutorial(val activity: MainActivity) {
                     value.oneOf(
                         GoBackFromSelection,
                         MaxQuigglesSlider,
+                        GlowAll,
                         PressBackButton
                     )
                 ) {
@@ -52,6 +53,12 @@ class Tutorial(val activity: MainActivity) {
     init {
         State.values().forEach {
             it.visited = prefs.getBoolean(it.prefsKey(), false)
+        }
+    }
+
+    fun maybeHide() {
+        if (state.oneOf(GlowAll, MaxQuigglesSlider)) {
+            state = Hidden
         }
     }
 
@@ -97,6 +104,10 @@ class Tutorial(val activity: MainActivity) {
         MaxQuigglesSlider(
             TextPosition.Top,
             "If you draw many quiggles, only some will be shown at a time. This slider controls the limit."
+        ),
+        GlowAll(
+            TextPosition.Top,
+            "This makes all quiggles (including new ones) 'glow', always changing color. Tap again to undo."
         ),
         Hidden(TextPosition.Top, "");
 

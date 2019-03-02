@@ -19,11 +19,13 @@ abstract class SaveFile {
 data class SaveFileV1(
     val quiggles: List<Quiggle>,
     val stars: Boolean,
+    val allGlow: Boolean,
     val maxQuiggles: Int
 ) : SaveFile() {
     constructor(drawing: Drawing) : this(
         drawing.quiggles,
         drawing.starField != null,
+        drawing.allGlow,
         drawing.maxQuiggles
     )
 
@@ -37,6 +39,7 @@ data class SaveFileV1(
             drawing.starField = StarField(drawing.scenter)
         }
 
+        drawing.allGlow = allGlow
         drawing.maxQuiggles = maxQuiggles
     }
 

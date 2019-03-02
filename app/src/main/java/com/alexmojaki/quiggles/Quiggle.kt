@@ -49,6 +49,7 @@ open class Quiggle {
     var oscillationPeriod: Double = Double.POSITIVE_INFINITY
     var rotationPeriod: Double = randRange(5f, 20f).toDouble()
     var huePeriod: Double = Double.POSITIVE_INFINITY
+    var glowNormally = false
 
     lateinit var center: Point
 
@@ -64,8 +65,7 @@ open class Quiggle {
         get() = (baseHue + hueAnimation.currentValue().toFloat()) % 360
         set(value) {
             baseHue = value
-            hueAnimation = hueAnimation.change(0.0, 0.0)
-            huePeriod = Double.POSITIVE_INFINITY
+            stopGlowing()
         }
     var saturation = 1f
     var colorValue = 1f
@@ -95,10 +95,7 @@ open class Quiggle {
 
         centerAnimation = still("point", scenter)
 
-        hueAnimation = hueAnimation.change(
-            360.0,
-            period = huePeriod
-        )
+        glow()
 
         setBrightness(0.0, 0.0)
         setBrightness(1.0, 3.0)
@@ -170,6 +167,24 @@ open class Quiggle {
             period = rotationPeriod,
             easingFunction = ::s2Line
         )
+    }
+
+    fun glow() {
+        hueAnimation = hueAnimation.change(
+            hueAnimation.currentValue() + 360,
+            period = huePeriod
+        )
+    }
+
+    fun glowRandomly() {
+        huePeriod = randRange(5f, 20f).toDouble()
+        glow()
+    }
+
+    fun stopGlowing() {
+        hueAnimation = hueAnimation.change(0.0, 0.0)
+        huePeriod = Double.POSITIVE_INFINITY
+        glowNormally = false
     }
 
     fun oscillate(scenter: Point) {

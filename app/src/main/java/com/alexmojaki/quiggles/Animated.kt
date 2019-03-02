@@ -13,6 +13,7 @@ class Animated<T>(
     val startTime = clock.now()
     fun elapsedRatio() = if (period == 0.0) 1.0 else (clock.now() - startTime) / (period * 1000)
     fun easedRatio(): Double {
+        if (period == 0.0) return 1.0
         val elapsed = elapsedRatio()
         return easingFunction(elapsed.absoluteValue) * elapsed.sign
     }
