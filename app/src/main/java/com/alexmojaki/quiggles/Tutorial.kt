@@ -91,7 +91,7 @@ class Tutorial(val activity: MainActivity) {
         ),
         MoveSlider(
             TextPosition.Top,
-            "Move the slider back and forth to see what it does."
+            "Move the slider to see what it does. Go all the way if it's not obvious."
         ),
         GoBackFromSelection(
             TextPosition.Top,
