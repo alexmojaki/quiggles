@@ -207,10 +207,10 @@ class MainActivity : CommonActivity() {
             seekBar.visibility = INVISIBLE
             tutorial.maybeHide()
             drawing.starField =
-                    if (drawing.starField == null)
-                        StarField(drawing.scenter)
-                    else
-                        null
+                if (drawing.starField == null)
+                    StarField(drawing.scenter)
+                else
+                    null
         }, highlight = false)
 
         addButton("Number", R.drawable.counter, {
@@ -238,6 +238,9 @@ class MainActivity : CommonActivity() {
                 }
             }
         }, highlight = false)
+
+        menuButton.setOnClickListener { onBackPressed() }
+
     }
 
     fun showSeekBar(progress: Int, onChange: (Int) -> Unit, max: Int = 100, doTutorial: Boolean = true) {
@@ -307,6 +310,14 @@ class MainActivity : CommonActivity() {
             tutorial.state = Hidden
         }
 
+        item(
+            if (menuButton.visible) "Hide menu button"
+            else "Show menu button",
+            R.drawable.menu
+        ) {
+            menuButton.visible = !menuButton.visible
+        }
+
         val optionsArr = optionsMap.keys.toTypedArray()
 
         val adapter = object : ArrayAdapter<String>(
@@ -335,9 +346,6 @@ class MainActivity : CommonActivity() {
             }
         }
 
-        if (tutorial.state == PressBackButton) {
-            tutorial.state = Hidden
-        }
     }
 
     private fun makeGif() {

@@ -76,7 +76,7 @@ class Drawing(val scenter: Point) {
         }
 
         if (SelectedOne.visited) {
-            tutorial?.state = PressBackButton
+            tutorial?.state = Hidden
         }
     }
 
@@ -187,6 +187,11 @@ class Drawing(val scenter: Point) {
             quiggles.remove(quiggle)
 
             when {
+                !activity.menuButton.visible
+                        && point.x <= activity.dp(50f)
+                        && point.y <= activity.dp(50f)
+                ->
+                    activity.onBackPressed()
                 selectedQuiggles.isEmpty() -> {
                     val d = point.distance(scenter)
                     val fullyVisible = nonTransitioning(includeCompleting = true).second
@@ -222,10 +227,9 @@ class Drawing(val scenter: Point) {
 
     fun updateButtons() {
         with(activity as MainActivity) {
-            buttons.visibility =
-                    if (selectedQuiggle == null) INVISIBLE else VISIBLE
-            buttons2.visibility = INVISIBLE
-            seekBar.visibility = INVISIBLE
+            buttons.visible = selectedQuiggle != null
+            buttons2.visible = false
+            seekBar.visible = false
             resetButtons()
             tutorial.maybeHide()
         }

@@ -66,6 +66,16 @@
 
     </android.support.constraint.ConstraintLayout>
 
+    <ImageButton
+            style="@android:style/Widget.DeviceDefault.ImageButton"
+            android:id="@+id/menuButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/menu"
+            android:padding="8dp"
+            android:background="?android:selectableItemBackground"
+            tools:ignore="ContentDescription"/>
+
     <TextView
             android:id="@+id/tutorial_text"
             android:layout_width="wrap_content"

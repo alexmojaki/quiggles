@@ -20,8 +20,7 @@ class Tutorial(val activity: MainActivity) {
                     value.oneOf(
                         GoBackFromSelection,
                         MaxQuigglesSlider,
-                        GlowAll,
-                        PressBackButton
+                        GlowAll
                     )
                 ) {
                     @Suppress("RecursivePropertyAccessor")
@@ -96,10 +95,6 @@ class Tutorial(val activity: MainActivity) {
         GoBackFromSelection(
             TextPosition.Top,
             "Once you're done experimenting, tap outside the controls to go back."
-        ),
-        PressBackButton(
-            TextPosition.Bottom,
-            "Press the back button to show the menu. Try the different options there."
         ),
         MaxQuigglesSlider(
             TextPosition.Top,
