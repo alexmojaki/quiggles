@@ -264,6 +264,7 @@ class Drawing(val scenter: Point) {
 
         if (!SelectedOne.visited
             && tutorial != null
+            && tutorial?.state != HiddenMenuButton
             && activity.buttons2.visibility != VISIBLE
         ) {
             val numComplete = quiggles.filter { it.state == Quiggle.State.Complete }.size

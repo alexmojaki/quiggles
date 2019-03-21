@@ -316,6 +316,7 @@ class MainActivity : CommonActivity() {
             R.drawable.menu
         ) {
             menuButton.visible = !menuButton.visible
+            tutorial.state = if (menuButton.visible) Hidden else HiddenMenuButton
         }
 
         val optionsArr = optionsMap.keys.toTypedArray()

@@ -104,6 +104,11 @@ class Tutorial(val activity: MainActivity) {
             TextPosition.Top,
             "This makes all quiggles (including new ones) 'glow', always changing color. Tap again to undo."
         ),
+        HiddenMenuButton(
+            TextPosition.Top,
+            "The menu button is now invisible, but it's still there. Tapping the top left of the screen will " +
+                    "show the menu."
+        ),
         Hidden(TextPosition.Top, "");
 
         var visited: Boolean = false
