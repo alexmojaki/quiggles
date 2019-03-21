@@ -240,6 +240,10 @@ class MainActivity : CommonActivity() {
         }, highlight = false)
 
         menuButton.setOnClickListener { onBackPressed() }
+        if (showMenuButton == null) {
+            showMenuButton = true
+        }
+        menuButton.visible = showMenuButton!!
 
     }
 
@@ -315,8 +319,9 @@ class MainActivity : CommonActivity() {
             else "Show menu button",
             R.drawable.menu
         ) {
-            menuButton.visible = !menuButton.visible
-            tutorial.state = if (menuButton.visible) Hidden else HiddenMenuButton
+            showMenuButton = !menuButton.visible
+            menuButton.visible = showMenuButton!!
+            tutorial.state = if (showMenuButton!!) Hidden else HiddenMenuButton
         }
 
         val optionsArr = optionsMap.keys.toTypedArray()
@@ -383,3 +388,5 @@ class MainActivity : CommonActivity() {
     }
 
 }
+
+var showMenuButton: Boolean? = null
