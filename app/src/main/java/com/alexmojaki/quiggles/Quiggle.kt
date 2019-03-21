@@ -62,7 +62,7 @@ open class Quiggle {
     var baseHue = nextHue()
 
     var hue: Float
-        get() = (baseHue + hueAnimation.currentValue().toFloat()) % 360
+        get() = (baseHue + hueAnimation.currentValue().toFloat() + 3600) % 360
         set(value) {
             baseHue = value
             stopGlowing()
