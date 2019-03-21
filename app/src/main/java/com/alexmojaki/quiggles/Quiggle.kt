@@ -191,7 +191,7 @@ open class Quiggle {
         if (usualScale <= 0.0) return
         val initial = scaleAnimation.currentValue()
         var lower = { 0.05 * scenter.y / outerRadius }
-        if (usualScale < lower()) {
+        if (usualScale < lower() * 2) {
             lower = { 0.0 }
         }
         scaleAnimation = scaleAnimation.change(
