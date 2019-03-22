@@ -1,6 +1,7 @@
 package com.alexmojaki.quiggles
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
@@ -95,3 +96,10 @@ var View.visible: Boolean
     set(value) {
         visibility = if (value) View.VISIBLE else View.INVISIBLE
     }
+
+fun SharedPreferences.edit(block: SharedPreferences.Editor.() -> Unit) {
+    with(edit()) {
+        block()
+        apply()
+    }
+}

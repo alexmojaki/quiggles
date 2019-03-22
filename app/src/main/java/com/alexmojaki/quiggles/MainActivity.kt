@@ -241,7 +241,7 @@ class MainActivity : CommonActivity() {
 
         menuButton.setOnClickListener { onBackPressed() }
         if (showMenuButton == null) {
-            showMenuButton = true
+            showMenuButton = sharedPreferences.getInt(HIDE_MENU_COUNT, 0) < 3
         }
         menuButton.visible = showMenuButton!!
 
@@ -319,9 +319,17 @@ class MainActivity : CommonActivity() {
             else "Show menu button",
             R.drawable.menu
         ) {
-            showMenuButton = !menuButton.visible
-            menuButton.visible = showMenuButton!!
-            tutorial.state = if (showMenuButton!!) Hidden else HiddenMenuButton
+            val show = !menuButton.visible
+            showMenuButton = show
+            menuButton.visible = show
+            tutorial.state = if (show) Hidden else HiddenMenuButton
+            sharedPreferences.edit {
+                putInt(
+                    HIDE_MENU_COUNT,
+                    if (show) 0
+                    else sharedPreferences.getInt(HIDE_MENU_COUNT, 0) + 1
+                )
+            }
         }
 
         val optionsArr = optionsMap.keys.toTypedArray()
@@ -390,3 +398,4 @@ class MainActivity : CommonActivity() {
 }
 
 var showMenuButton: Boolean? = null
+val HIDE_MENU_COUNT = "hideMenuCount"

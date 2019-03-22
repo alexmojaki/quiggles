@@ -1,6 +1,7 @@
 package com.alexmojaki.quiggles
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -28,6 +29,8 @@ abstract class CommonActivity : AppCompatActivity() {
 
     val metrics = DisplayMetrics()
     var permissionCallback: (() -> Unit)? = null
+    val sharedPreferences
+        get() = getPreferences(Context.MODE_PRIVATE)!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +45,9 @@ abstract class CommonActivity : AppCompatActivity() {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         window.decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                    View.SYSTEM_UI_FLAG_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
     }
 
     abstract fun onCreate()

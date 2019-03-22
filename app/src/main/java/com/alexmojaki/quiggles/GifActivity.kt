@@ -38,7 +38,6 @@ class GifActivity : CommonActivity() {
             .toNearest(delay / 1000.0)
 
         val hash = sha256(quiggles.map { jsonMapper.writeValueAsString(it) }.sorted().joinToString())
-        val sharedPreferences = getPreferences(Context.MODE_PRIVATE)!!
         val cachedPath = sharedPreferences.getString(hash, null)
         if (cachedPath != null && File(cachedPath).exists()) {
             complete(cachedPath)
@@ -86,9 +85,8 @@ class GifActivity : CommonActivity() {
 //                    runOnUiThread { gifPreview.setImageBitmap(copy) }
             }
             gifEncoder.close()
-            with(sharedPreferences.edit()) {
+            sharedPreferences.edit {
                 putString(hash, path)
-                apply()
             }
 
             complete(path)

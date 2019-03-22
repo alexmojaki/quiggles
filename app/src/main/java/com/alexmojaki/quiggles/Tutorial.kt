@@ -47,7 +47,8 @@ class Tutorial(val activity: MainActivity) {
             }
         }
 
-    val prefs = activity.getPreferences(Context.MODE_PRIVATE)!!
+    val prefs
+        get() = activity.sharedPreferences
 
     init {
         State.values().forEach {
