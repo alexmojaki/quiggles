@@ -8,6 +8,11 @@ import kotlinx.android.synthetic.main.activity_main_menu.*
 class MainMenuActivity : CommonActivity() {
 
     override fun onCreate() {
+        if (isInstant) {
+            startMain()
+            return
+        }
+
         setContentView(R.layout.activity_main_menu)
 
         paintView.init(this)
@@ -48,6 +53,15 @@ class MainMenuActivity : CommonActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (isInstant) {
+            if (startedMain) {
+                // The main screen has already been opened, so the user
+                // probably pressed the back button. End the app.
+                finish()
+            }
+            return
+        }
+
         val can = hasWritePermission()
         loadButton.isEnabled = can && saveFileDir().list().isNotEmpty()
         loadUnsavedButton.isEnabled = can && unsavedFile().exists()

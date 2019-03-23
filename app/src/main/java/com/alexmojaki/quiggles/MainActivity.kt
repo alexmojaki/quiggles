@@ -239,11 +239,19 @@ class MainActivity : CommonActivity() {
             }
         }, highlight = false)
 
-        menuButton.setOnClickListener { onBackPressed() }
+        menuButton.setOnClickListener {
+            if (isInstant) {
+                editCanvas()
+            } else {
+                onBackPressed()
+            }
+        }
         if (showMenuButton == null) {
             showMenuButton = sharedPreferences.getInt(HIDE_MENU_COUNT, 0) < 3
         }
         menuButton.visible = showMenuButton!!
+
+        startedMain = true
 
     }
 
@@ -268,6 +276,10 @@ class MainActivity : CommonActivity() {
     }
 
     override fun onBackPressed() {
+        if (isInstant) {
+            return super.onBackPressed()
+        }
+
         class Item(val text: String, val icon: Int, val action: () -> Unit) {
             override fun toString(): String {
                 return text
@@ -308,11 +320,7 @@ class MainActivity : CommonActivity() {
             }
         }
 
-        item("Edit canvas", R.drawable.drawing_box) {
-            drawing.selectNone()
-            buttons2.visibility = VISIBLE
-            tutorial.state = Hidden
-        }
+        item("Edit canvas", R.drawable.drawing_box, ::editCanvas)
 
         item(
             if (menuButton.visible) "Hide menu button"
@@ -362,6 +370,12 @@ class MainActivity : CommonActivity() {
 
     }
 
+    private fun editCanvas() {
+        drawing.selectNone()
+        buttons2.visibility = VISIBLE
+        tutorial.state = Hidden
+    }
+
     private fun makeGif() {
         gifDrawing = drawing
         startActivity(intent(GifActivity::class.java))
@@ -398,4 +412,5 @@ class MainActivity : CommonActivity() {
 }
 
 var showMenuButton: Boolean? = null
-val HIDE_MENU_COUNT = "hideMenuCount"
+const val HIDE_MENU_COUNT = "hideMenuCount"
+var startedMain = false

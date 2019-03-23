@@ -20,6 +20,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import com.google.android.instantapps.InstantApps
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileOutputStream
@@ -31,6 +32,8 @@ abstract class CommonActivity : AppCompatActivity() {
     var permissionCallback: (() -> Unit)? = null
     val sharedPreferences
         get() = getPreferences(Context.MODE_PRIVATE)!!
+
+    val isInstant by lazy { InstantApps.isInstantApp(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
