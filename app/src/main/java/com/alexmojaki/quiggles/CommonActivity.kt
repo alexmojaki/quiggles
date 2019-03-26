@@ -1,9 +1,11 @@
 package com.alexmojaki.quiggles
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.ActivityCompat
@@ -178,4 +180,55 @@ abstract class CommonActivity : AppCompatActivity() {
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     ) == PackageManager.PERMISSION_GRANTED
 
+    fun shareApp() = startActivity(
+        Intent.createChooser(
+            Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(
+                    Intent.EXTRA_SUBJECT,
+                    "Quiggles app"
+                )
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    "Try out the Quiggles app from the Play Store! " +
+                            playStoreHttpLink
+                )
+
+            },
+            "Choose how to share the app"
+        )
+    )
+
+    fun rateApp() {
+        try {
+            viewUrl(playStoreDirectLink)
+        } catch (e: ActivityNotFoundException) {
+            openInBrowser(playStoreHttpLink)
+        }
+    }
+
+    fun openInBrowser(url: String) {
+        try {
+            viewUrl(url)
+        } catch (e: ActivityNotFoundException) {
+            toast("No browser found")
+        }
+    }
+
+    private fun viewUrl(url: String) {
+        startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(url)
+            )
+        )
+    }
 }
+
+const val playStoreHttpLink =
+    "https://play.google.com/store/apps/details?id=" +
+            BuildConfig.APPLICATION_ID
+
+const val playStoreDirectLink =
+    "market://details?id=" +
+            BuildConfig.APPLICATION_ID

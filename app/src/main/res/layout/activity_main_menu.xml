@@ -38,6 +38,12 @@
                 android:text="@string/loadUnsavedButton"
                 android:drawableStart="@drawable/folder_clock"
         />
+
+        <Button
+                style="@style/MainMenuButton"
+                android:id="@+id/heartButton"
+                android:text="@string/heartButton"
+        />
     </LinearLayout>
 
 </RelativeLayout>

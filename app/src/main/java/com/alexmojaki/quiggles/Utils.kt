@@ -14,6 +14,10 @@ import java.io.FileInputStream
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
+import android.text.Html
+import android.os.Build
+import android.text.Spanned
+
 
 interface TwoComponents<C1, C2> {
     fun component1(): C1
@@ -101,5 +105,14 @@ fun SharedPreferences.edit(block: SharedPreferences.Editor.() -> Unit) {
     with(edit()) {
         block()
         apply()
+    }
+}
+
+fun fromHtml(source: String): Spanned {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        Html.fromHtml(source, Html.FROM_HTML_MODE_LEGACY)
+    } else {
+        @Suppress("DEPRECATION")
+        Html.fromHtml(source)
     }
 }

@@ -3,5 +3,6 @@
     <string name="newButton">New</string>
     <string name="loadButton">Load</string>
     <string name="loadUnsavedButton">Load Unsaved</string>
+    <string name="heartButton">♥</string>
     <string name="draw_a_shape">Drag your finger to draw any simple shape</string>
 </resources>
