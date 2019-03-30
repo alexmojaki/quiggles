@@ -42,9 +42,9 @@ open class Quiggle {
     lateinit var centerAnimation: Animated<Point>
     lateinit var scaleAnimation: Animated<Double>
     lateinit var rotationAnimation: Animated<Double>
-    var hueAnimation: Animated<Double> = still("double", 0.0) { it % 1 }
-    var brightnessAnimation: Animated<Double> = still("double", 1.0, ::linear)
-    var visibilityAnimation: Animated<Double> = still("double", 1.0, ::linear)
+    var hueAnimation: Animated<Double> = still(0.0) { it % 1 }
+    var brightnessAnimation: Animated<Double> = still(1.0, ::linear)
+    var visibilityAnimation: Animated<Double> = still(1.0, ::linear)
 
     var oscillationPeriod: Double = Double.POSITIVE_INFINITY
     var rotationPeriod: Double = randRange(5f, 20f).toDouble()
@@ -90,10 +90,10 @@ open class Quiggle {
         numPaths = numVertices - 1
         fullPath = QuadraticPath.fromPoints(points)
 
-        scaleAnimation = still("double", usualScale)
+        scaleAnimation = still(usualScale)
         oscillate(scenter)
 
-        centerAnimation = still("point", scenter)
+        centerAnimation = still(scenter)
 
         glow()
 
@@ -144,15 +144,14 @@ open class Quiggle {
 
         scaleDownToFit(scenter)
 
-        scaleAnimation = still("double", 1.0)
+        scaleAnimation = still(1.0)
 
         if (scenter.y * 0.85 < outerRadius) {
             oscillationPeriod = randRange(4f, 12f).toDouble()
             oscillate(scenter)
         }
 
-        centerAnimation = Animated(
-            "point",
+        centerAnimation = animated(
             center,
             scenter,
             3.0
@@ -160,8 +159,7 @@ open class Quiggle {
     }
 
     private fun startRotation() {
-        rotationAnimation = Animated(
-            "double",
+        rotationAnimation = animated(
             0.0,
             2 * PI,
             period = rotationPeriod,
@@ -348,8 +346,7 @@ open class Quiggle {
 
             restore(scenter)
             setBrightness(1.0, 0.0)
-            rotationAnimation = Animated(
-                "double",
+            rotationAnimation = animated(
                 0.0,
                 2 * PI,
                 period = rotationPeriod,
