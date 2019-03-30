@@ -1,18 +1,17 @@
 package com.alexmojaki.quiggles
 
-import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.support.v4.content.FileProvider
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import com.waynejo.androidndkgif.GifEncoder
 import kotlinx.android.synthetic.main.activity_gif.*
 import pl.droidsonroids.gif.GifDrawable
+import java.io.File
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
-import android.content.Intent
-import android.net.Uri
-import java.io.File
 
 
 class GifActivity : CommonActivity() {
@@ -107,11 +106,20 @@ class GifActivity : CommonActivity() {
                 R.drawable.share_variant,
                 buttonsLayout
             ) {
-                val shareIntent = Intent(Intent.ACTION_SEND)
-                shareIntent.type = "image/gif"
-                val uri = Uri.fromFile(File(path))
-                shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
-                startActivity(Intent.createChooser(shareIntent, "Share GIF"))
+                val uri = FileProvider.getUriForFile(
+                    this,
+                    "${applicationContext.packageName}.provider",
+                    File(path)
+                )
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "image/gif"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivity(
+                    Intent.createChooser(intent, "Share GIF")
+                )
+
             }
         }
     }
