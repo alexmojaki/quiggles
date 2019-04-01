@@ -4,11 +4,10 @@ import kotlin.math.absoluteValue
 import kotlin.math.sign
 
 class Animated<T>(
-    val type: Class<T>,
     val startValue: T,
     val endValue: T,
     val period: Double,
-    val easingFunction: (Double) -> Double
+    val easingFunction: (Double) -> Double = ::s2
 ) {
     val startTime = clock.now()
 
@@ -29,9 +28,9 @@ class Animated<T>(
 
     @Suppress("UNCHECKED_CAST")
     fun currentValue(): T {
-        return when (type) {
-            Double::class.java -> ((startValue as Double) + (endValue as Double - startValue) * easedRatio()) as T
-            Point::class.java -> ((startValue as Point) + (endValue as Point - startValue) * easedRatio()) as T
+        return when (startValue) {
+            is Double -> (startValue + (endValue as Double - startValue) * easedRatio()) as T
+            is Point -> (startValue + (endValue as Point - startValue) * easedRatio()) as T
             else -> throw IllegalArgumentException()
         }
     }
@@ -42,7 +41,6 @@ class Animated<T>(
         easingFunction: ((Double) -> Double)? = null
     ): Animated<T> {
         return Animated(
-            type,
             currentValue(),
             endValue,
             period,
@@ -52,22 +50,9 @@ class Animated<T>(
 
 }
 
-inline fun <reified T> animated(
-    startValue: T,
-    endValue: T,
-    period: Double,
-    noinline easingFunction: (Double) -> Double = ::s2
-) = Animated(
-    T::class.java,
-    startValue,
-    endValue,
-    period,
-    easingFunction
-)
-
 inline fun <reified T> still(
     value: T,
     noinline easingFunction: (Double) -> Double = ::s2
 ): Animated<T> {
-    return animated(value, value, 0.0, easingFunction)
+    return Animated(value, value, 0.0, easingFunction)
 }

@@ -42,9 +42,9 @@ open class Quiggle {
     lateinit var centerAnimation: Animated<Point>
     lateinit var scaleAnimation: Animated<Double>
     lateinit var rotationAnimation: Animated<Double>
-    var hueAnimation: Animated<Double> = still(0.0) { it % 1 }
-    var brightnessAnimation: Animated<Double> = still(1.0, ::linear)
-    var visibilityAnimation: Animated<Double> = still(1.0, ::linear)
+    var hueAnimation = still(0.0) { it % 1 }
+    var brightnessAnimation = still(1.0, ::linear)
+    var visibilityAnimation = still(1.0, ::linear)
 
     var oscillationPeriod: Double = Double.POSITIVE_INFINITY
     var rotationPeriod: Double = randRange(5f, 20f).toDouble()
@@ -151,7 +151,7 @@ open class Quiggle {
             oscillate(scenter)
         }
 
-        centerAnimation = animated(
+        centerAnimation = Animated(
             center,
             scenter,
             3.0
@@ -159,7 +159,7 @@ open class Quiggle {
     }
 
     private fun startRotation() {
-        rotationAnimation = animated(
+        rotationAnimation = Animated(
             0.0,
             2 * PI,
             period = rotationPeriod,
@@ -346,7 +346,7 @@ open class Quiggle {
 
             restore(scenter)
             setBrightness(1.0, 0.0)
-            rotationAnimation = animated(
+            rotationAnimation = Animated(
                 0.0,
                 2 * PI,
                 period = rotationPeriod,
