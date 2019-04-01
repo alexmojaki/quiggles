@@ -11,10 +11,19 @@ class Animated<T>(
     val easingFunction: (Double) -> Double
 ) {
     val startTime = clock.now()
-    fun elapsedRatio() = if (period == 0.0) 1.0 else (clock.now() - startTime) / (period * 1000)
+
+    fun elapsedRatio() =
+        if (period == 0.0)
+            1.0
+        else
+            (clock.now() - startTime) / (period * 1000)
+
     fun easedRatio(): Double {
         if (period == 0.0) return 1.0
         val elapsed = elapsedRatio()
+
+        // easingFunction only needs to make sense for positive inputs,
+        // this will return symmetric values for negative inputs
         return easingFunction(elapsed.absoluteValue) * elapsed.sign
     }
 
@@ -60,5 +69,5 @@ inline fun <reified T> still(
     value: T,
     noinline easingFunction: (Double) -> Double = ::s2
 ): Animated<T> {
-    return animated(value, value, 1.0, easingFunction)
+    return animated(value, value, 0.0, easingFunction)
 }

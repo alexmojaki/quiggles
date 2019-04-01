@@ -77,7 +77,7 @@ class MainMenuActivity : CommonActivity() {
     }
 
     fun startMain(intentCallback: (Intent.() -> Unit)? = null) {
-        val intent = intent(MainActivity::class.java)
+        val intent = intent(MainActivity::class)
         intentCallback?.invoke(intent)
         startActivity(intent)
     }

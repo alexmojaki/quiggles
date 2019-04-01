@@ -30,20 +30,20 @@
                 android:paddingBottom="20dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                app:layout_constraintBottom_toTopOf="@id/buttons"/>
+                app:layout_constraintBottom_toTopOf="@id/editQuiggleButtons"/>
 
         <HorizontalScrollView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/buttons"
+                android:id="@+id/editQuiggleButtons"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent">
             <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/buttonsLayout"
+                    android:id="@+id/editQuiggleButtonsLayout"
                     android:orientation="horizontal">
             </LinearLayout>
         </HorizontalScrollView>
@@ -53,13 +53,13 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/buttons2"
+                android:id="@+id/editCanvasButtons"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent">
             <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/buttonsLayout2"
+                    android:id="@+id/editCanvasButtonsLayout"
                     android:orientation="horizontal">
             </LinearLayout>
         </HorizontalScrollView>

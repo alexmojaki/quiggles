@@ -3,8 +3,6 @@ package com.alexmojaki.quiggles
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import com.alexmojaki.quiggles.Tutorial.State.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -31,12 +29,15 @@ class Drawing(val scenter: Point) {
     var allGlow = false
 
     lateinit var activity: CommonActivity
-    var edited = false
+
+    /**
+     * When true, unselecting a single quiggle always exits selection completely
+     * instead of returning to multiple selection mode. */
+    var selectedQuiggleEdited = false
 
     fun draw(canvas: Canvas) {
-        canvas.drawColor(DEFAULT_BG_COLOR)
+        canvas.drawColor(Color.BLACK)
         starField?.draw(canvas)
-
         for (quiggle in quiggles.sortedBy { it.brightness() }) {
             quiggle.draw(canvas, tutorial?.state == Select)
         }
@@ -65,8 +66,7 @@ class Drawing(val scenter: Point) {
         packing = null
         selectedQuiggle = null
         selectedQuiggles = emptyList()
-        activity.seekBar.visibility = INVISIBLE
-        edited = false
+        selectedQuiggleEdited = false
         updateButtons()
 
         for (quiggle in quiggles) {
@@ -80,19 +80,16 @@ class Drawing(val scenter: Point) {
         }
     }
 
+    /** One quiggle is currently selected. Return to the previous selection state. */
     fun unselectOne() {
-        if (selectedQuiggles.size > 1) {
+        if (selectedQuiggles.size > 1 && !selectedQuiggleEdited) {
             selectMany(selectedQuiggles)
         } else {
             selectNone()
         }
     }
 
-    fun selectOne(quiggle: Quiggle?) {
-        if (quiggle == null) {
-            selectNone()
-            return
-        }
+    fun selectOne(quiggle: Quiggle) {
         selectedQuiggle = quiggle
 
         val period = 0.7
@@ -126,6 +123,9 @@ class Drawing(val scenter: Point) {
 
         val packing = packing!!
 
+        // Packings are defined in a small coordinate system
+        // independent of the screen. This is the factor that makes
+        // it fill the screen.
         val scale = min(
             scenter.x * 2 / packing.width,
             scenter.y * 2 / packing.height
@@ -133,12 +133,16 @@ class Drawing(val scenter: Point) {
 
         val period = 0.7
 
+        // Transformation to center packing and fill the screen
         val matrix = Matrix()
         (scenter - packing.boxCenter).translate(matrix)
         scenter.scale(matrix, scale.toFloat())
 
+        // Calculate positions of quiggles in transformed packing
         val oldCenters = selectedQuiggles.map { it.centerAnimation.currentValue() }
         var newCenters = packing.centers.map { matrix * it }
+
+        // Try all possible permutations of small packings to find one that requires the least movement of quiggles
         if (n <= 7) {
             val permutations: Iterable<IntArray> = Permutations(n)
             newCenters = permutations.asSequence().map { it.map { i -> newCenters[i] } }.minBy {
@@ -147,6 +151,7 @@ class Drawing(val scenter: Point) {
             }!!
         }
 
+        // Apply packing transformation to reposition quiggles
         newCenters.zip(selectedQuiggles).map { (center, quiggle) ->
             quiggle.setPosition(
                 center,
@@ -156,6 +161,7 @@ class Drawing(val scenter: Point) {
             quiggle.setBrightness(1.0, period)
         }
 
+        // Dim non-selected quiggles in background
         for (quiggle in quiggles - selectedQuiggles) {
             quiggle.setBrightness(0.3, period)
         }
@@ -163,35 +169,39 @@ class Drawing(val scenter: Point) {
         tutorial?.state = SelectedMany
     }
 
-    fun edit() {
-        edited = true
-        for (quiggle in quiggles) {
-            val period = 0.7
-            var scalePeriod = period
-            if (quiggle != selectedQuiggle) {
-                scalePeriod = 0.0
-                quiggle.setBrightness(0.5, period)
-            }
-            resetQuigglePosition(quiggle, scalePeriod)
+    /**
+     * Moves all quiggles to usual position and size
+     * Non-selected quiggles are dimmed to highlight selected quiggle,
+     * but bright enough to see how the selected quiggle looks in context compared
+     * to other quiggles while the user makes changes (e.g. to adjust size to match another)
+     */
+    fun editSelectedQuiggleInContext() {
+        selectedQuiggleEdited = true
+
+        val period = 0.7
+        resetQuigglePosition(selectedQuiggle!!, period)
+        for (quiggle in quiggles - selectedQuiggle!!) {
+            quiggle.setBrightness(0.5, period)
+            resetQuigglePosition(quiggle, 0.0)
         }
     }
 
     fun touchUp(point: Point) {
-        if (edited) {
-            selectNone()
-            return
-        }
-
         val quiggle = quiggles.last()
+
+        // User tapped rather than drawing a proper quiggle
         if (!quiggle.isLongEnough()) {
             quiggles.remove(quiggle)
 
             when {
+                // Tapped on invisible menu button in corner
                 !activity.menuButton.visible
                         && point.x <= activity.dp(50f)
                         && point.y <= activity.dp(50f)
                 ->
                     activity.onBackPressed()
+
+                // Tried to select one or more quiggles from all of them
                 selectedQuiggles.isEmpty() -> {
                     val d = point.distance(scenter)
                     val fullyVisible = nonTransitioning(includeCompleting = true).second
@@ -201,17 +211,33 @@ class Drawing(val scenter: Point) {
                         -buffer + it.innerRadius * s <= d && d <= s * it.outerRadius + buffer
                     })
                 }
-                selectedQuiggle == null ->
-                    selectOne(selectedQuiggles.singleOrNull { it.isSelected(point) })
+
+                // Tried to pick one quiggle from the current multi-selection
+                // or tapped outside to exit selection mode
+                selectedQuiggle == null -> {
+                    val maybeQuiggle = selectedQuiggles.singleOrNull { it.isSelected(point) }
+                    if (maybeQuiggle == null) {
+                        selectNone()
+                    } else {
+                        selectOne(maybeQuiggle)
+                    }
+                }
+
+                // A quiggle was already selected, exiting the selected mode
                 else ->
                     unselectOne()
             }
         } else if (selectedQuiggle == null) {
+            // Just finished drawing a quiggle
             quiggle.finishDrawing(scenter)
+
+            // Many quiggles were selected - rearrange them in a new packing
             if (selectedQuiggles.isNotEmpty()) {
                 selectMany(selectedQuiggles + quiggle)
             }
         } else {
+            // A single quiggle was selected, exiting the selected mode
+            // Nothing was drawn because the other methods return early
             unselectOne()
         }
 
@@ -219,6 +245,8 @@ class Drawing(val scenter: Point) {
     }
 
     fun touchCancel() {
+        // This can happen e.g. when taking a screenshot
+        // A quiggle may have started being drawn but touchUp is never called
         val quiggle = quiggles.last()
         if (quiggle.state == Quiggle.State.Drawing) {
             quiggles.remove(quiggle)
@@ -227,8 +255,8 @@ class Drawing(val scenter: Point) {
 
     fun updateButtons() {
         with(activity as MainActivity) {
-            buttons.visible = selectedQuiggle != null
-            buttons2.visible = false
+            editQuiggleButtons.visible = selectedQuiggle != null
+            editCanvasButtons.visible = false
             seekBar.visible = false
             resetButtons()
             tutorial.maybeHide()
@@ -265,7 +293,7 @@ class Drawing(val scenter: Point) {
         if (!SelectedOne.visited
             && tutorial != null
             && tutorial?.state != HiddenMenuButton
-            && activity.buttons2.visibility != VISIBLE
+            && !activity.editCanvasButtons.visible
         ) {
             val numComplete = quiggles.filter { it.state == Quiggle.State.Complete }.size
             tutorial?.state = when {
@@ -278,7 +306,7 @@ class Drawing(val scenter: Point) {
 
         if (quiggles.firstOrNull()?.isLongEnough() == true) {
             tutorialQuiggle = null
-            activity.finger?.visibility = INVISIBLE
+            activity.finger?.visible = false
         }
     }
 
@@ -286,8 +314,19 @@ class Drawing(val scenter: Point) {
         val (notTransitioning, fullyVisible, fullyInvisible) = nonTransitioning(includeCompleting = false)
 
         val diff = fullyVisible.size - maxQuiggles
+
+        // This typically indicates that the user is moving the max quiggles slider
+        // It causes a quiggle to be shown/hidden instantly, once for each of these method calls,
+        // which is once per frame.
+        // This lets the user easily see the effect of the slider.
+        // Otherwise, at most one quiggle is becoming visible/invisible (often one of each) at a time,
+        // and it's gradual.
         val quick = diff.absoluteValue > 1
 
+        /**
+         * Pick a random quiggle that has been visible/invisible for a while
+         * and toggle its visibility.
+         */
         fun switchOne(part: List<Quiggle>, visibility: Double) {
             part
                 .sortedBy { it.visibilityAnimation.startTime }
@@ -302,12 +341,16 @@ class Drawing(val scenter: Point) {
         fun hideOne() = switchOne(fullyVisible, 0.0)
         fun showOne() = switchOne(fullyInvisible, 1.0)
 
+        // If too many quiggles are visible, hide one
         if (diff > 0) {
             hideOne()
         } else if (
+        // Only start showing a quiggle if none are currently changing
+        // or too many are invisible
             (notTransitioning.size == quiggles.size || quick)
             && fullyInvisible.isNotEmpty()
         ) {
+            // Perfectly balanced, as all things should be
             if (diff == 0) {
                 hideOne()
             }
@@ -327,10 +370,5 @@ class Drawing(val scenter: Point) {
                 oscillate(scenter)
             }
         }
-    }
-
-    companion object {
-        const val DEFAULT_BG_COLOR = Color.BLACK
-        const val TOUCH_TOLERANCE = 8f
     }
 }

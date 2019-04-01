@@ -45,14 +45,14 @@ class MainActivity : CommonActivity() {
             load(filename, drawing)
         }
 
-        tutorial = Tutorial(this)
-        tutorial.state = DrawOne
-
         if (intent.getBooleanExtra("LOAD_UNSAVED", false)) {
             fileToJson<SaveFile>(unsavedFile()).restore(drawing)
         }
 
-        var buttonsGroup = buttonsLayout
+        tutorial = Tutorial(this)
+        tutorial.state = DrawOne
+
+        var buttonsGroup = editQuiggleButtonsLayout
 
         fun addButton(
             label: String,
@@ -73,7 +73,7 @@ class MainActivity : CommonActivity() {
         }
 
         addButton("Size", R.drawable.scale, {
-            drawing.edit()
+            drawing.editSelectedQuiggleInContext()
             with(drawing.selectedQuiggle!!) {
                 val original = outerRadius / (drawing.scenter.y) * 100
                 showSeekBar(
@@ -87,7 +87,7 @@ class MainActivity : CommonActivity() {
         })
 
         addButton("Color", R.drawable.color_palette, {
-            drawing.edited = true
+            drawing.selectedQuiggleEdited = true
             seekBar.visibility = INVISIBLE
 
             val quiggle = drawing.selectedQuiggle!!
@@ -109,7 +109,7 @@ class MainActivity : CommonActivity() {
         }, highlight = false)
 
         addButton("Glow", R.drawable.rainbow, {
-            drawing.edit()
+            drawing.editSelectedQuiggleInContext()
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 200.0
                 showSeekBar(
@@ -125,7 +125,7 @@ class MainActivity : CommonActivity() {
         })
 
         addButton("Shape", R.drawable.star, {
-            drawing.edited = true
+            drawing.selectedQuiggleEdited = true
             val angles = angleToPoints.navigableKeySet().toList()
             with(drawing.selectedQuiggle!!) {
                 drawing.selectOne(this)
@@ -151,7 +151,7 @@ class MainActivity : CommonActivity() {
         })
 
         addButton("Grow", R.drawable.wave, {
-            drawing.edit()
+            drawing.editSelectedQuiggleInContext()
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 50.0
                 showSeekBar(
@@ -165,7 +165,7 @@ class MainActivity : CommonActivity() {
         })
 
         addButton("Spin", R.drawable.rotate_right, {
-            drawing.edit()
+            drawing.editSelectedQuiggleInContext()
             with(drawing.selectedQuiggle!!) {
                 val maxPeriod = 50.0
                 showSeekBar(
@@ -184,7 +184,7 @@ class MainActivity : CommonActivity() {
         })
 
         addButton("Thicken", R.drawable.thickness, {
-            drawing.edit()
+            drawing.editSelectedQuiggleInContext()
             with(drawing.selectedQuiggle!!) {
                 val min = 0.5
                 val max = 200
@@ -201,7 +201,7 @@ class MainActivity : CommonActivity() {
             drawing.deleteSelectedQuiggle()
         })
 
-        buttonsGroup = buttonsLayout2
+        buttonsGroup = editCanvasButtonsLayout
 
         addButton("Stars", R.drawable.star_four_points, {
             seekBar.visibility = INVISIBLE
@@ -312,7 +312,7 @@ class MainActivity : CommonActivity() {
             item("Save", R.drawable.content_save) { save() }
 
             if (drawing.filename != null) {
-                item("Save As", R.drawable.content_save_all) { withWritePermission { saveAs(drawing) } }
+                item("Save As", R.drawable.content_save_all) { saveAsDialog(drawing) }
             }
 
             item("Make GIF", R.drawable.animation_play) {
@@ -372,21 +372,22 @@ class MainActivity : CommonActivity() {
 
     private fun editCanvas() {
         drawing.selectNone()
-        buttons2.visibility = VISIBLE
+        editCanvasButtons.visibility = VISIBLE
         tutorial.state = Hidden
     }
 
     private fun makeGif() {
         gifDrawing = drawing
-        startActivity(intent(GifActivity::class.java))
+        startActivity(intent(GifActivity::class))
     }
 
     private fun save(callback: () -> Unit = {}) {
         withWritePermission {
             if (drawing.filename == null) {
-                saveAs(drawing, callback)
+                saveAsDialog(drawing, callback)
             } else {
-                saveWithName(drawing, callback)
+                saveWithName(drawing)
+                callback()
             }
         }
     }

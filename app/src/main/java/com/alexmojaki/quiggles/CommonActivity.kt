@@ -23,15 +23,17 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import com.google.android.instantapps.InstantApps
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.reflect.KClass
 
 abstract class CommonActivity : AppCompatActivity() {
 
     val metrics = DisplayMetrics()
+
     var permissionCallback: (() -> Unit)? = null
+
     val sharedPreferences
         get() = getPreferences(Context.MODE_PRIVATE)!!
 
@@ -63,7 +65,11 @@ abstract class CommonActivity : AppCompatActivity() {
         viewGroup: ViewGroup,
         onClick: (View) -> Unit
     ): ImageButton {
-        val buttonLayout = layoutInflater.inflate(R.layout.button_layout, buttonsLayout, false)
+        val buttonLayout = layoutInflater.inflate(
+            R.layout.button_layout,
+            viewGroup,
+            false
+        )
         buttonLayout.findViewById<TextView>(R.id.label).text = label
         val button = buttonLayout.findViewById<ImageButton>(R.id.button).apply {
             setImageResource(imageId)
@@ -129,13 +135,17 @@ abstract class CommonActivity : AppCompatActivity() {
         drawing.filename = filename
     }
 
-    fun saveWithName(drawing: Drawing, callback: () -> Unit) {
+    /** Save a drawing that has a filename */
+    fun saveWithName(drawing: Drawing) {
         val saveFile = SaveFileV1(drawing)
         jsonToFile(saveFilename(drawing.filename!!), saveFile)
-        callback()
     }
 
-    fun saveAs(drawing: Drawing, callback: () -> Unit = {}) {
+    /**
+     * Show dialog to choose a name to save a drawing.
+     * Execute callback after saving.
+     * */
+    fun saveAsDialog(drawing: Drawing, callback: () -> Unit = {}) {
         dialog {
             setTitle("Choose save name")
             val input = EditText(context)
@@ -145,7 +155,8 @@ abstract class CommonActivity : AppCompatActivity() {
                 val filename = input.text.toString().trim()
                 fun doSave() {
                     drawing.filename = filename
-                    saveWithName(drawing, callback)
+                    saveWithName(drawing)
+                    callback()
                 }
 
                 when {
@@ -173,7 +184,7 @@ abstract class CommonActivity : AppCompatActivity() {
         }
     }
 
-    fun intent(cls: Class<*>) = Intent(this, cls)
+    fun intent(cls: KClass<*>) = Intent(this, cls.java)
 
     fun hasWritePermission() = ContextCompat.checkSelfPermission(
         this,

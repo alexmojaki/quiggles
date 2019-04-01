@@ -110,7 +110,7 @@ open class Quiggle {
 
     fun addPoint(point: Point) {
         require(state == State.Drawing)
-        if (point.distance(points.last()) >= Drawing.TOUCH_TOLERANCE) {
+        if (point.distance(points.last()) >= 8) {
             fullPath.add(point)
             points.add(point)
         }
