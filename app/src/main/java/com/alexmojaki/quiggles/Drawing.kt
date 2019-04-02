@@ -48,6 +48,7 @@ class Drawing(val scenter: Point) {
         if (selectedQuiggle != null)
             return
         val quiggle = Quiggle()
+        quiggle.drawing = this
         quiggle.start(point)
         quiggles.add(quiggle)
         if (allGlow) {
@@ -229,7 +230,7 @@ class Drawing(val scenter: Point) {
             }
         } else if (selectedQuiggle == null) {
             // Just finished drawing a quiggle
-            quiggle.finishDrawing(scenter)
+            quiggle.finishDrawing()
 
             // Many quiggles were selected - rearrange them in a new packing
             if (selectedQuiggles.isNotEmpty()) {
@@ -367,7 +368,7 @@ class Drawing(val scenter: Point) {
         with(quiggle) {
             setPosition(scenter, usualScale, period)
             if (oscillationPeriod != Double.POSITIVE_INFINITY) {
-                oscillate(scenter)
+                oscillate()
             }
         }
     }

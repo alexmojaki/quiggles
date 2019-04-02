@@ -23,6 +23,8 @@ class MainActivity : CommonActivity() {
 
     val drawing: Drawing
         get() = paintView.drawing
+    val scenter: Point
+        get() = drawing.scenter
 
     lateinit var tutorial: Tutorial
 
@@ -75,7 +77,7 @@ class MainActivity : CommonActivity() {
         addButton("Size", R.drawable.scale, {
             drawing.editSelectedQuiggleInContext()
             with(drawing.selectedQuiggle!!) {
-                val original = outerRadius / (drawing.scenter.y) * 100
+                val original = outerRadius / (scenter.y) * 100
                 showSeekBar(
                     max((usualScale * original).roundToInt(), 1) - 1,
                     { progress ->
@@ -134,12 +136,12 @@ class MainActivity : CommonActivity() {
                     { progress ->
                         setAngle(angles[progress])
                         setPosition(
-                            drawing.scenter,
-                            drawing.scenter.x / outerRadius,
+                            scenter,
+                            scenter.x / outerRadius,
                             0.0
                         )
 
-                        scaleDownToFit(drawing.scenter)
+                        scaleDownToFit()
 
                         if (state == Quiggle.State.Complete) {
                             numPaths = numVertices - 1
@@ -158,7 +160,7 @@ class MainActivity : CommonActivity() {
                     unstretchProgress(maxPeriod / oscillationPeriod),
                     { progress ->
                         oscillationPeriod = maxPeriod / stretchProgress(progress)
-                        oscillate(drawing.scenter)
+                        oscillate()
                     }
                 )
             }
@@ -208,7 +210,7 @@ class MainActivity : CommonActivity() {
             tutorial.maybeHide()
             drawing.starField =
                 if (drawing.starField == null)
-                    StarField(drawing.scenter)
+                    StarField(scenter)
                 else
                     null
         }, highlight = false)

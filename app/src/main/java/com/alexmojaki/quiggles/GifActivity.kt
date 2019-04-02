@@ -43,7 +43,7 @@ class GifActivity : CommonActivity() {
             return
         }
 
-        drawing.quiggles.addAll(quiggles.map { it.copyForGif(scenter, duration, scale) })
+        drawing.quiggles.addAll(quiggles.map { it.copyForGif(drawing, duration, scale) })
 
         val (scaledWidth, scaledHeight) = (scenter * 2.0).toInt()
 

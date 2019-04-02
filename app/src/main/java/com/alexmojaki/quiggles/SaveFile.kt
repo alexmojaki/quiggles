@@ -31,7 +31,8 @@ data class SaveFileV1(
 
     override fun restore(drawing: Drawing) {
         for (quiggle in quiggles) {
-            quiggle.restore(drawing.scenter)
+            quiggle.drawing = drawing
+            quiggle.restore()
         }
         drawing.quiggles.addAll(quiggles)
 

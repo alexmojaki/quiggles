@@ -8,6 +8,8 @@ import java.util.*
 import kotlin.math.*
 
 @JsonIgnoreProperties(
+    "drawing",
+    "scenter",
     "state",
     "numPaths",
     "fullPath",
@@ -29,6 +31,10 @@ import kotlin.math.*
 )
 open class Quiggle {
     enum class State { Drawing, Completing, Complete }
+
+    lateinit var drawing: Drawing
+    val scenter: Point
+        get() = drawing.scenter
 
     var state = State.Drawing
     val points: MutableList<Point> = ArrayList()
@@ -84,14 +90,14 @@ open class Quiggle {
         hue = baseHue
     }
 
-    fun restore(scenter: Point) {
+    fun restore() {
         setAngle(idealAngle)
         state = State.Complete
         numPaths = numVertices - 1
         fullPath = QuadraticPath.fromPoints(points)
 
         scaleAnimation = still(usualScale)
-        oscillate(scenter)
+        oscillate()
 
         centerAnimation = still(scenter)
 
@@ -132,7 +138,7 @@ open class Quiggle {
         innerRadius = distances.min()!!
     }
 
-    fun finishDrawing(scenter: Point) {
+    fun finishDrawing() {
         fullPath.complete()
         state = State.Completing
         numPaths--
@@ -142,13 +148,13 @@ open class Quiggle {
 
         startRotation()
 
-        scaleDownToFit(scenter)
+        scaleDownToFit()
 
         scaleAnimation = still(1.0)
 
         if (scenter.y * 0.85 < outerRadius) {
             oscillationPeriod = randRange(4f, 12f).toDouble()
-            oscillate(scenter)
+            oscillate()
         }
 
         centerAnimation = Animated(
@@ -185,7 +191,7 @@ open class Quiggle {
         glowNormally = false
     }
 
-    fun oscillate(scenter: Point) {
+    fun oscillate() {
         if (usualScale <= 0.0) return
         val initial = scaleAnimation.currentValue()
         var lower = { 0.05 * scenter.y / outerRadius }
@@ -230,7 +236,7 @@ open class Quiggle {
         )
     }
 
-    fun scaleDownToFit(scenter: Point) {
+    fun scaleDownToFit() {
         if (scenter.y < usualScale * outerRadius) {
             usualScale = randRange(0.85f, 1f) * scenter.y / outerRadius
         }
@@ -327,8 +333,9 @@ open class Quiggle {
         index = (index + 1) % points.size
     }
 
-    fun copyForGif(scenter: Point, duration: Double, scale: Double) =
+    fun copyForGif(drawing: Drawing, duration: Double, scale: Double) =
         jsonMapper.readValue<Quiggle>(jsonMapper.writeValueAsString(this)).apply {
+            this.drawing = drawing
             val newPoints = points * scale
             points.clear()
             points.addAll(newPoints)
@@ -344,7 +351,7 @@ open class Quiggle {
             oscillationPeriod = alignPeriod(oscillationPeriod, 2.0)
             huePeriod = alignPeriod(huePeriod, 1.0)
 
-            restore(scenter)
+            restore()
             setBrightness(1.0, 0.0)
             rotationAnimation = Animated(
                 0.0,
