@@ -18,20 +18,6 @@ import android.text.Html
 import android.os.Build
 import android.text.Spanned
 
-
-interface TwoComponents<C1, C2> {
-    fun component1(): C1
-    fun component2(): C2
-
-    fun <R> spread(f: (C1, C2) -> R) = f(component1(), component2())
-}
-
-fun <R> TwoComponents<Double, Double>.spreadF(f: (Float, Float) -> R): R =
-    f(
-        component1().toFloat(),
-        component2().toFloat()
-    )
-
 fun Any.oneOf(vararg vals: Any): Boolean {
     return vals.any { this == it }
 }

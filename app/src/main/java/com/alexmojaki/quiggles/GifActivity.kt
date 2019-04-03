@@ -4,8 +4,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.support.v4.content.FileProvider
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import com.waynejo.androidndkgif.GifEncoder
 import kotlinx.android.synthetic.main.activity_gif.*
 import pl.droidsonroids.gif.GifDrawable
@@ -23,19 +21,29 @@ class GifActivity : CommonActivity() {
         val delay = 1000 / fps
         clock = ControlledClock(delay)
 
+        // The drawing is scaled down to reduce file size and encoding time
+        // It should be at least twice as small as before,
+        // and the width should be at most 1000 pixels
         val scale = Math.min(0.5, 1000 / (gifDrawing!!.scenter.x * 2))
+
         val scenter = gifDrawing!!.scenter * scale
         val drawing = Drawing(scenter)
 
+        // Only include quiggles which are currently fully visible
+        // There will be no visibility changes in the GIF
         val quiggles = gifDrawing!!.nonTransitioning(includeCompleting = true).second
-        val duration = (quiggles.map { it.oscillationPeriod * 2 } +
-                quiggles.map { it.huePeriod } +
-                quiggles.map { it.rotationPeriod / it.numVertices })
+
+        // Find the longest effective period for a perfect loop
+        val duration = (
+                quiggles.map { it.oscillationPeriod * 2 } +
+                        quiggles.map { it.huePeriod } +
+                        quiggles.map { it.rotationPeriod / it.numVertices })
             .map { it.absoluteValue }
             .filter { it.isFinite() }
             .max()!!
             .toNearest(delay / 1000.0)
 
+        // Check if this GIF has been made before
         val hash = sha256(quiggles.map { jsonMapper.writeValueAsString(it) }.sorted().joinToString())
         val cachedPath = sharedPreferences.getString(hash, null)
         if (cachedPath != null && File(cachedPath).exists()) {
@@ -97,9 +105,9 @@ class GifActivity : CommonActivity() {
         val gifDrawable = GifDrawable(path)
         runOnUiThread {
             gifPreview.setImageDrawable(gifDrawable)
-            gifPreview.visibility = VISIBLE
-            gifProgress.visibility = INVISIBLE
-            buttons.visibility = VISIBLE
+            gifPreview.visible = true
+            gifProgress.visible = false
+            buttons.visible = true
 
             addButton(
                 "Share",
@@ -111,15 +119,11 @@ class GifActivity : CommonActivity() {
                     "${applicationContext.packageName}.provider",
                     File(path)
                 )
-                val intent = Intent(Intent.ACTION_SEND).apply {
+                share("Share GIF") {
                     type = "image/gif"
                     putExtra(Intent.EXTRA_STREAM, uri)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
-                startActivity(
-                    Intent.createChooser(intent, "Share GIF")
-                )
-
             }
         }
     }

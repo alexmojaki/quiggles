@@ -18,12 +18,9 @@ class Drawing(val scenter: Point) {
     var packing: Packing? = null
     var tutorialQuiggle: TutorialQuiggle? = null
     val tutorial: Tutorial?
-        get() {
-            if (::activity.isInitialized && activity is MainActivity) {
-                return (activity as MainActivity).tutorial
-            }
-            return null
-        }
+        get() =
+            if (!::activity.isInitialized) null
+            else (activity as? MainActivity)?.tutorial
     var starField: StarField? = null
     var maxQuiggles = 10
     var allGlow = false

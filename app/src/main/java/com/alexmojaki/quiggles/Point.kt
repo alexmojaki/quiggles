@@ -11,7 +11,7 @@ import kotlin.math.roundToInt
     "xi",
     "yi"
 )
-data class Point(val x: Double, val y: Double) : TwoComponents<Double, Double> {
+data class Point(val x: Double, val y: Double) {
     constructor(x: Float, y: Float) : this(x.toDouble(), y.toDouble())
     constructor(x: Int, y: Int) : this(x.toDouble(), y.toDouble())
 
@@ -37,15 +37,14 @@ data class Point(val x: Double, val y: Double) : TwoComponents<Double, Double> {
     operator fun times(f: Double) = Point(x * f, y * f)
     operator fun div(f: Double) = Point(x / f, y / f)
 
-    fun translate(canvas: Canvas) = spreadF(canvas::translate)
-    fun translate(matrix: Matrix) = spreadF(matrix::postTranslate)
+    fun translate(canvas: Canvas) = canvas.translate(xf, yf)
+    fun translate(matrix: Matrix) = matrix.postTranslate(xf, yf)
 
     fun rotate(canvas: Canvas, radians: Double) = canvas.rotate(
         Math.toDegrees(radians).toFloat(),
         xf, yf
     )
 
-    fun scale(canvas: Canvas, scale: Float) = canvas.scale(scale, scale, xf, yf)
     fun scale(matrix: Matrix, scale: Float) = matrix.postScale(scale, scale, xf, yf)
 
     fun toFloat() = FloatPoint(xf, yf)
@@ -70,4 +69,4 @@ fun Matrix.transform(point: FloatPoint): FloatPoint {
     return FloatPoint(array)
 }
 
-data class IntPoint(val x: Int, val y: Int) : TwoComponents<Int, Int>
+data class IntPoint(val x: Int, val y: Int)

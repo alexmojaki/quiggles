@@ -1,6 +1,5 @@
 package com.alexmojaki.quiggles
 
-import android.content.Context
 import android.widget.RelativeLayout
 import android.widget.RelativeLayout.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -41,9 +40,8 @@ class Tutorial(val activity: MainActivity) {
             }
             params.addRule(value.position.verb)
 
-            with(prefs.edit()) {
+            prefs.edit {
                 putBoolean(value.prefsKey(), true)
-                apply()
             }
         }
 

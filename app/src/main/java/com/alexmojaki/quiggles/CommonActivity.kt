@@ -191,24 +191,28 @@ abstract class CommonActivity : AppCompatActivity() {
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     ) == PackageManager.PERMISSION_GRANTED
 
-    fun shareApp() = startActivity(
-        Intent.createChooser(
-            Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(
-                    Intent.EXTRA_SUBJECT,
-                    "Quiggles app"
-                )
-                putExtra(
-                    Intent.EXTRA_TEXT,
-                    "Try out the Quiggles app from the Play Store! " +
-                            playStoreHttpLink
-                )
-
-            },
-            "Choose how to share the app"
+    fun share(title: String, intentBlock: Intent.() -> Unit) {
+        startActivity(
+            Intent.createChooser(
+                Intent(Intent.ACTION_SEND).apply(intentBlock),
+                title
+            )
         )
-    )
+    }
+
+    fun shareApp() = share("Share the app") {
+        type = "text/plain"
+        putExtra(
+            Intent.EXTRA_SUBJECT,
+            "Quiggles app"
+        )
+        putExtra(
+            Intent.EXTRA_TEXT,
+            "Try out the Quiggles app from the Play Store! " +
+                    playStoreHttpLink
+        )
+
+    }
 
     fun rateApp() {
         try {

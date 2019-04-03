@@ -21,9 +21,9 @@ import kotlin.math.roundToInt
 
 class MainActivity : CommonActivity() {
 
-    val drawing: Drawing
+    inline val drawing: Drawing
         get() = paintView.drawing
-    val scenter: Point
+    inline val scenter: Point
         get() = drawing.scenter
 
     lateinit var tutorial: Tutorial
