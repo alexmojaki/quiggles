@@ -333,8 +333,10 @@ open class Quiggle {
         index = (index + 1) % points.size
     }
 
+    private fun copy() = jsonMapper.readValue<Quiggle>(jsonMapper.writeValueAsString(this))
+
     fun copyForGif(drawing: Drawing, duration: Double, scale: Double) =
-        jsonMapper.readValue<Quiggle>(jsonMapper.writeValueAsString(this)).apply {
+        copy().apply {
             this.drawing = drawing
             val newPoints = points * scale
             points.clear()
@@ -362,6 +364,14 @@ open class Quiggle {
 
             // Decrease thickness by scale, but not too much
             thickness = max(min(2f, thickness), thickness * scale.toFloat())
+        }
+
+    fun duplicate() =
+        copy().apply {
+            drawing = this@Quiggle.drawing
+            usualScale *= 0.9
+            restore()
+            rotationAnimation = this@Quiggle.rotationAnimation
         }
 
     fun isLongEnough() = points.size >= 5

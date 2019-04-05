@@ -152,6 +152,15 @@ class MainActivity : CommonActivity() {
             }
         })
 
+        addButton("Copy", R.drawable.content_copy, {
+            with(drawing) {
+                val copy = selectedQuiggle!!.duplicate()
+                quiggles.add(copy)
+                selectOne(copy)
+                editSelectedQuiggleInContext()
+            }
+        })
+
         addButton("Grow", R.drawable.wave, {
             drawing.editSelectedQuiggleInContext()
             with(drawing.selectedQuiggle!!) {
@@ -197,6 +206,24 @@ class MainActivity : CommonActivity() {
                     }
                 )
             }
+        })
+
+        addButton("To front", R.drawable.arrange_bring_to_front, {
+            with(drawing) {
+                selectedQuiggleEdited = true
+                quiggles.remove(selectedQuiggle!!)
+                quiggles.add(selectedQuiggle!!)
+            }
+            toast("Quiggle brought to front/top")
+        })
+
+        addButton("To back", R.drawable.arrange_send_to_back, {
+            with(drawing) {
+                selectedQuiggleEdited = true
+                quiggles.remove(selectedQuiggle!!)
+                quiggles.add(0, selectedQuiggle!!)
+            }
+            toast("Quiggle sent to back/bottom")
         })
 
         addButton("Delete", R.drawable.delete, {
