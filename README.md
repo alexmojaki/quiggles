@@ -1,5 +1,7 @@
 # Quiggles
 
+[![Join the chat at https://gitter.im/alexmojaki/quiggles](https://badges.gitter.im/alexmojaki/quiggles.svg)](https://gitter.im/alexmojaki/quiggles?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [Google Play store](https://play.google.com/store/apps/details?id=com.alexmojaki.quiggles)
 
 ![Screenshot](https://i.imgur.com/wcmYlLu.png)
