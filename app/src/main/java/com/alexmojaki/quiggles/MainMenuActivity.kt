@@ -93,9 +93,8 @@ class MainMenuActivity : CommonActivity() {
             return
         }
 
-        val can = hasWritePermission()
-        loadButton.isEnabled = can && saveFileDir().list().isNotEmpty()
-        loadUnsavedButton.isEnabled = can && unsavedFile().exists()
+        loadButton.visible = hasWritePermission() && saveFileDir().list().isNotEmpty()
+        loadUnsavedButton.visible = unsavedFile().exists()
     }
 
     fun makeLinkClickable(strBuilder: SpannableStringBuilder, span: URLSpan, callback: () -> Unit) {

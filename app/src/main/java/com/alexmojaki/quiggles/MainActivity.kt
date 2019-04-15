@@ -52,7 +52,7 @@ class MainActivity : CommonActivity() {
         }
 
         tutorial = Tutorial(this)
-        tutorial.state = DrawOne
+        if (!DrawOne.visited) tutorial.state = DrawOne
 
         var buttonsGroup = editQuiggleButtonsLayout
 

@@ -84,7 +84,7 @@ fun <T> Iterable<T>.forEachApply(action: T.() -> Unit) {
 var View.visible: Boolean
     get() = visibility == View.VISIBLE
     set(value) {
-        visibility = if (value) View.VISIBLE else View.INVISIBLE
+        visibility = if (value) View.VISIBLE else View.GONE
     }
 
 fun SharedPreferences.edit(block: SharedPreferences.Editor.() -> Unit) {
