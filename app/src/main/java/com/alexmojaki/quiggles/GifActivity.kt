@@ -14,6 +14,8 @@ import kotlin.math.roundToInt
 
 class GifActivity : CommonActivity() {
 
+    var cancelled = false
+
     override fun onCreate() {
         setContentView(R.layout.activity_gif)
 
@@ -79,6 +81,8 @@ class GifActivity : CommonActivity() {
 
         Thread {
             for (i in 1..frames) {
+                if (cancelled) break
+
                 drawing.draw(canvas)
                 clock.tick()
                 gifEncoder.encodeFrame(
@@ -91,12 +95,19 @@ class GifActivity : CommonActivity() {
 //                    val copy = Bitmap.createBitmap(bitmap)
 //                    runOnUiThread { gifPreview.setImageBitmap(copy) }
             }
-            gifEncoder.close()
-            sharedPreferences.edit {
-                putString(hash, path)
-            }
 
-            complete(path)
+            if (cancelled) {
+                try {
+                    File(path).delete()
+                } catch (e: Throwable) {
+                }
+            } else {
+                gifEncoder.close()
+                sharedPreferences.edit {
+                    putString(hash, path)
+                }
+                complete(path)
+            }
 
         }.start()
     }
@@ -130,6 +141,7 @@ class GifActivity : CommonActivity() {
 
     override fun finish() {
         super.finish()
+        cancelled = true
         clock = SystemClock()
     }
 
