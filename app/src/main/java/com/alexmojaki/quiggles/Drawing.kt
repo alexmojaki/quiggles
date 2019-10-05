@@ -3,6 +3,7 @@ package com.alexmojaki.quiggles
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
+import android.view.View
 import com.alexmojaki.quiggles.Tutorial.State.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -253,7 +254,7 @@ class Drawing(val scenter: Point) {
 
     fun updateButtons() {
         with(activity as MainActivity) {
-            editQuiggleButtons.visible = selectedQuiggle != null
+            editQuiggleButtons.visibility = if (selectedQuiggle != null) View.VISIBLE else View.INVISIBLE
             editCanvasButtons.visible = false
             seekBar.visible = false
             resetButtons()
