@@ -3,7 +3,7 @@ package com.alexmojaki.quiggles
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.support.v4.content.FileProvider
+import androidx.core.content.FileProvider
 import com.waynejo.androidndkgif.GifEncoder
 import kotlinx.android.synthetic.main.activity_gif.*
 import pl.droidsonroids.gif.GifDrawable
