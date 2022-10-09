@@ -4,7 +4,7 @@ import android.graphics.Path
 
 class QuadraticPath {
 
-    lateinit var previous: Point
+    private lateinit var previous: Point
     val path = Path()
 
     fun start(point: Point) {

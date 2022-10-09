@@ -8,17 +8,18 @@ import com.alexmojaki.quiggles.Tutorial.State.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.absoluteValue
+import kotlin.math.ceil
 import kotlin.math.min
 
 class Drawing(val scenter: Point) {
 
     var filename: String? = null
     val quiggles = ArrayList<Quiggle>()
-    var selectedQuiggles: List<Quiggle> = emptyList()
+    private var selectedQuiggles: List<Quiggle> = emptyList()
     var selectedQuiggle: Quiggle? = null
-    var packing: Packing? = null
+    private var packing: Packing? = null
     var tutorialQuiggle: TutorialQuiggle? = null
-    val tutorial: Tutorial?
+    private val tutorial: Tutorial?
         get() =
             if (!::activity.isInitialized) null
             else (activity as? MainActivity)?.tutorial
@@ -80,7 +81,7 @@ class Drawing(val scenter: Point) {
     }
 
     /** One quiggle is currently selected. Return to the previous selection state. */
-    fun unselectOne() {
+    private fun unselectOne() {
         if (selectedQuiggles.size > 1 && !selectedQuiggleEdited) {
             selectMany(selectedQuiggles)
         } else {
@@ -101,7 +102,7 @@ class Drawing(val scenter: Point) {
         tutorial?.state = SelectedOne
     }
 
-    fun selectMany(selection: List<Quiggle>) {
+    private fun selectMany(selection: List<Quiggle>) {
         selectedQuiggles = selection
 
         val n = selectedQuiggles.size
@@ -146,8 +147,8 @@ class Drawing(val scenter: Point) {
             val permutations: Iterable<IntArray> = Permutations(n)
             newCenters = permutations.asSequence().map { it.map { i -> newCenters[i] } }.minBy {
                 val distances = it.zip(oldCenters).map { (newC, oldC) -> newC.distance(oldC) }
-                distances.average() * distances.max()!!
-            }!!
+                distances.average() * distances.max()
+            }
         }
 
         // Apply packing transformation to reposition quiggles
@@ -161,7 +162,7 @@ class Drawing(val scenter: Point) {
         }
 
         // Dim non-selected quiggles in background
-        for (quiggle in quiggles - selectedQuiggles) {
+        for (quiggle in quiggles - selectedQuiggles.toSet()) {
             quiggle.setBrightness(0.3, period)
         }
 
@@ -198,7 +199,7 @@ class Drawing(val scenter: Point) {
                         && point.x <= activity.dp(50f)
                         && point.y <= activity.dp(50f)
                 ->
-                    activity.onBackPressed()
+                    activity.onBackPressedDispatcher.onBackPressed()
 
                 // Tried to select one or more quiggles from all of them
                 selectedQuiggles.isEmpty() -> {
@@ -252,7 +253,7 @@ class Drawing(val scenter: Point) {
         }
     }
 
-    fun updateButtons() {
+    private fun updateButtons() {
         with(activity as MainActivity) {
             editQuiggleButtons.visibility = if (selectedQuiggle != null) View.VISIBLE else View.INVISIBLE
             editCanvasButtons.visible = false
@@ -329,7 +330,7 @@ class Drawing(val scenter: Point) {
         fun switchOne(part: List<Quiggle>, visibility: Double) {
             part
                 .sortedBy { it.visibilityAnimation.startTime }
-                .take(Math.ceil(part.size / 2.0).toInt())
+                .take(ceil(part.size / 2.0).toInt())
                 .shuffled()[0]
                 .setVisibility(
                     visibility,

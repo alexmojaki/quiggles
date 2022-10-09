@@ -3,7 +3,7 @@ package com.alexmojaki.quiggles
 import android.graphics.Canvas
 import android.graphics.Matrix
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 @JsonIgnoreProperties(
     "xf",
@@ -17,19 +17,19 @@ data class Point(val x: Double, val y: Double) {
 
     val xf: Float get() = x.toFloat()
     val yf: Float get() = y.toFloat()
-    val xi: Int get() = x.roundToInt()
-    val yi: Int get() = y.roundToInt()
+    private val xi: Int get() = x.roundToInt()
+    private val yi: Int get() = y.roundToInt()
 
     fun direction(other: Point) =
-        Math.atan2(other.y - y, other.x - x)
+        atan2(other.y - y, other.x - x)
 
     fun distance(other: Point) =
-        Math.hypot(other.y - y, other.x - x)
+        hypot(other.y - y, other.x - x)
 
     fun pointInDirection(direction: Double, distance: Double) =
         Point(
-            x + distance * Math.cos(direction),
-            y + distance * Math.sin(direction)
+            x + distance * cos(direction),
+            y + distance * sin(direction)
         )
 
     operator fun minus(other: Point) = Point(x - other.x, y - other.y)

@@ -76,7 +76,7 @@ class MainMenuActivity : CommonActivity() {
         }
     }
 
-    fun startMain(intentCallback: (Intent.() -> Unit)? = null) {
+    private fun startMain(intentCallback: (Intent.() -> Unit)? = null) {
         val intent = intent(MainActivity::class)
         intentCallback?.invoke(intent)
         startActivity(intent)
@@ -97,7 +97,7 @@ class MainMenuActivity : CommonActivity() {
         loadUnsavedButton.visible = unsavedFile().exists()
     }
 
-    fun makeLinkClickable(strBuilder: SpannableStringBuilder, span: URLSpan, callback: () -> Unit) {
+    private fun makeLinkClickable(strBuilder: SpannableStringBuilder, span: URLSpan, callback: () -> Unit) {
         val start = strBuilder.getSpanStart(span)
         val end = strBuilder.getSpanEnd(span)
         val flags = strBuilder.getSpanFlags(span)
@@ -110,7 +110,8 @@ class MainMenuActivity : CommonActivity() {
         strBuilder.removeSpan(span)
     }
 
-    fun setTextViewHTML(textView: TextView, html: String) {
+    @Suppress("SameParameterValue")
+    private fun setTextViewHTML(textView: TextView, html: String) {
         // https://stackoverflow.com/questions/12418279/android-textview-with-clickable-links-how-to-capture-clicks/19989677
         val sequence = fromHtml(html)
         val strBuilder = SpannableStringBuilder(sequence)

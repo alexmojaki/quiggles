@@ -3,10 +3,10 @@ package com.alexmojaki.quiggles
 import android.graphics.*
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.readValue
-import java.lang.Math.pow
 import java.util.*
 import kotlin.math.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 @JsonIgnoreProperties(
     "drawing",
     "scenter",
@@ -134,8 +134,8 @@ open class Quiggle {
         )
 
         val distances = points.asSequence().map { it.distance(center) }
-        outerRadius = distances.max()!!
-        innerRadius = distances.min()!!
+        outerRadius = distances.max()
+        innerRadius = distances.min()
     }
 
     fun finishDrawing() {
@@ -144,7 +144,7 @@ open class Quiggle {
         numPaths--
         update()
 
-        setAngle(Math.abs(points[points.size - 2].direction(points.last()) - points[0].direction(points[1])))
+        setAngle(abs(points[points.size - 2].direction(points.last()) - points[0].direction(points[1])))
 
         startRotation()
 
@@ -213,23 +213,17 @@ open class Quiggle {
                  */
                 val initialRatio = initial / (usualScale - lower())
                 if (it < initialRatio)
-                    1 - pow(
-                        cos(
-                            PI / 2 *
-                                    // Speed up initial shrinkage
-                                    it / initialRatio
-                        ),
-                        4.0
-                    )
+                    1 - cos(
+                        PI / 2 *
+                                // Speed up initial shrinkage
+                                it / initialRatio
+                    ).pow(4.0)
                 else
-                    1 - pow(
-                        cos(
-                            PI / 2 *
-                                    // Shift to match speed up of initial shrinkage
-                                    (it - initialRatio + 1)
-                        ),
-                        4.0
-                    ) *
+                    1 - cos(
+                        PI / 2 *
+                                // Shift to match speed up of initial shrinkage
+                                (it - initialRatio + 1)
+                    ).pow(4.0) *
                             // Scale back up to max size (usualScale) instead of initial
                             usualScale / (initial - lower())
             }
@@ -283,7 +277,7 @@ open class Quiggle {
 
         val matrix = Matrix()
 
-        if (state != Quiggle.State.Drawing && this !is TutorialQuiggle) {
+        if (state != State.Drawing && this !is TutorialQuiggle) {
             (centerAnimation.currentValue() - center).translate(canvas)
             center.scale(matrix, scaleAnimation.currentValue().toFloat())
             center.rotate(canvas, rotationAnimation.currentValue())
@@ -299,7 +293,7 @@ open class Quiggle {
         canvas.drawPath(matrix * partialPath.path, paint)
         canvas.restore()
 
-        if (drawRings && state != Quiggle.State.Drawing) {
+        if (drawRings && state != State.Drawing) {
             val scale = scaleAnimation.currentValue().toFloat()
             val c = centerAnimation.currentValue().toFloat()
             with(paint) {

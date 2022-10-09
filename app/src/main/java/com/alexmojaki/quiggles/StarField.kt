@@ -4,14 +4,14 @@ import android.graphics.Canvas
 import android.graphics.Color
 import kotlin.math.min
 
-class StarField(val scenter: Point) {
-    var points = (0..130).map { makeStar() }
-    val paint = makePaint().apply {
+class StarField(private val scenter: Point) {
+    private var points = (0..130).map { makeStar() }
+    private val paint = makePaint().apply {
         color = Color.WHITE
         strokeWidth = 4f
     }
 
-    fun makeStar() = Star(
+    private fun makeStar() = Star(
         Point(
             randRange(0f, scenter.xf * 2),
             randRange(0f, scenter.yf * 2)

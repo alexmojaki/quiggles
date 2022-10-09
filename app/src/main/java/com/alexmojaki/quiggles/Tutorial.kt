@@ -5,7 +5,7 @@ import android.widget.RelativeLayout.*
 import kotlinx.android.synthetic.main.activity_main.*
 import com.alexmojaki.quiggles.Tutorial.State.*
 
-class Tutorial(val activity: MainActivity) {
+class Tutorial(private val activity: MainActivity) {
     var state: State = Hidden
         set(value) {
             if (field == value) return
@@ -34,7 +34,7 @@ class Tutorial(val activity: MainActivity) {
             val textView = activity.tutorial_text!!
             textView.text = value.text
 
-            val params = textView.layoutParams as RelativeLayout.LayoutParams
+            val params = textView.layoutParams as LayoutParams
             TextPosition.values().forEach {
                 params.removeRule(it.verb)
             }
@@ -45,7 +45,7 @@ class Tutorial(val activity: MainActivity) {
             }
         }
 
-    val prefs
+    private val prefs
         get() = activity.sharedPreferences
 
     init {

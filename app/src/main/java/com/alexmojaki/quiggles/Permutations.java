@@ -6,8 +6,8 @@ import java.util.Iterator;
 
 public class Permutations implements Iterator<int[]>, Iterable<int[]> {
     private int numProduced;
-    private int total;
-    private int[] array;
+    private final int total;
+    private final int[] array;
     private boolean firstReady = false;
 
     Permutations(int n) {

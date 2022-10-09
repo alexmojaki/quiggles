@@ -35,7 +35,7 @@ abstract class CommonActivity : AppCompatActivity() {
 
     val metrics = DisplayMetrics()
 
-    var permissionCallback: (() -> Unit)? = null
+    private var permissionCallback: (() -> Unit)? = null
 
     val sharedPreferences
         get() = getPreferences(Context.MODE_PRIVATE)!!
@@ -188,7 +188,7 @@ abstract class CommonActivity : AppCompatActivity() {
 
     fun intent(cls: KClass<*>) = Intent(this, cls.java)
 
-    fun hasWritePermission() = newStorageMethod || ContextCompat.checkSelfPermission(
+    private fun hasWritePermission() = newStorageMethod || ContextCompat.checkSelfPermission(
         this,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     ) == PackageManager.PERMISSION_GRANTED

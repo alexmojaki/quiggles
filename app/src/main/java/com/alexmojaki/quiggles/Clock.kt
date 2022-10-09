@@ -13,8 +13,8 @@ class SystemClock : Clock {
 
 }
 
-class ControlledClock(val tickLength: Int) : Clock {
-    var now = clock.now()
+class ControlledClock(private val tickLength: Int) : Clock {
+    private var now = clock.now()
     override fun tick() {
         now += tickLength
     }

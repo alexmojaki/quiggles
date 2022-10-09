@@ -1,6 +1,5 @@
 package com.alexmojaki.quiggles
 
-import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.graphics.Matrix
 import android.graphics.Paint
@@ -53,9 +52,10 @@ operator fun File.div(name: String) = File(this, name)
 
 fun currentTime(): Date = Calendar.getInstance().time
 
-@SuppressLint("SimpleDateFormat")
-fun isoFormat(dt: Date) = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(dt)!!
+fun isoFormat(dt: Date): String =
+    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).format(dt)
 
+@Suppress("unused")
 fun time(block: () -> Unit) {
     val start = System.currentTimeMillis()
     block()

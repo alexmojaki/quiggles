@@ -314,7 +314,7 @@ class MainActivity : CommonActivity() {
         if (doTutorial) tutorial.state = MoveSlider
     }
 
-    private fun showMenu() {
+    fun showMenu() {
         class Item(val text: String, val icon: Int, val action: () -> Unit) {
             override fun toString(): String {
                 return text

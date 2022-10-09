@@ -4,7 +4,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.sign
 
 class Animated<T>(
-    val startValue: T,
+    private val startValue: T,
     val endValue: T,
     val period: Double,
     val easingFunction: (Double) -> Double = ::s2
@@ -17,7 +17,7 @@ class Animated<T>(
         else
             (clock.now() - startTime) / (period * 1000)
 
-    fun easedRatio(): Double {
+    private fun easedRatio(): Double {
         if (period == 0.0) return 1.0
         val elapsed = elapsedRatio()
 

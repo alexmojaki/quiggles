@@ -5,10 +5,10 @@ import kotlin.math.sqrt
 
 data class Packing(val centers: List<Point>) {
     val n = centers.size
-    val minx = centers.asSequence().map { it.x }.min()!! - 1
-    val maxx = centers.asSequence().map { it.x }.max()!! + 1
-    val miny = centers.asSequence().map { it.y }.min()!! - 1
-    val maxy = centers.asSequence().map { it.y }.max()!! + 1
+    private val minx = centers.asSequence().map { it.x }.min() - 1
+    private val maxx = centers.asSequence().map { it.x }.max() + 1
+    private val miny = centers.asSequence().map { it.y }.min() - 1
+    private val maxy = centers.asSequence().map { it.y }.max() + 1
     val boxCenter = Point((minx + maxx) / 2, (miny + maxy) / 2)
     val width = maxx - minx
     val height = maxy - miny
@@ -143,7 +143,7 @@ o o o o
                 require(packing.n.oneOf(n, n + 1))
                 n = packing.n
                 packings.getOrPut(n) { ArrayList() }.add(packing)
-                indices.put(n, 0)
+                indices[n] = 0
             }
 
         }

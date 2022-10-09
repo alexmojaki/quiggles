@@ -20,7 +20,7 @@ fun star(angle: Double): Pair<Double, Int> {
     } else {
         val lo = angleToPoints.lowerKey(angle)
         val hi = angleToPoints.higherKey(angle)
-        listOf(lo, hi).minBy { Math.abs(angle - (it ?: 1000.0)) }!!
+        listOf(lo, hi).minBy { abs(angle - (it ?: 1000.0)) }!!
     }
     return Pair(bestAngle, angleToPoints[bestAngle]!!)
 }
@@ -34,9 +34,9 @@ fun randRange(min: Float, max: Float) = min + rand.nextFloat() * (max - min)
 
 const val tau = 2 * PI
 
-fun linear(x: Double) = Math.min(1.0, x)
+fun linear(x: Double) = min(1.0, x)
 
-fun s2(x: Double) = Math.min(1.0, x - Math.sin(tau * x) / tau)
+fun s2(x: Double) = min(1.0, x - sin(tau * x) / tau)
 
 fun s2Line(x: Double) = if (x < 0.25) s2(x) else x - 0.25 + s2(0.25)
 
