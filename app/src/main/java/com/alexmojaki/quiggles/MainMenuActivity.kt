@@ -35,7 +35,7 @@ class MainMenuActivity : CommonActivity() {
 
         loadButton.setOnClickListener {
             val filenames = saveFileDir().list()
-            filenames.sort()
+            filenames!!.sort()
             dialog {
                 setItems(filenames) { _, which ->
                     startMain {
@@ -93,7 +93,7 @@ class MainMenuActivity : CommonActivity() {
             return
         }
 
-        loadButton.visible = hasWritePermission() && saveFileDir().list().isNotEmpty()
+        loadButton.visible = saveFileDir().list()?.isNotEmpty() == true
         loadUnsavedButton.visible = unsavedFile().exists()
     }
 

@@ -417,13 +417,11 @@ class MainActivity : CommonActivity() {
     }
 
     private fun save(callback: () -> Unit = {}) {
-        withWritePermission {
-            if (drawing.filename == null) {
-                saveAsDialog(drawing, callback)
-            } else {
-                saveWithName(drawing)
-                callback()
-            }
+        if (drawing.filename == null) {
+            saveAsDialog(drawing, callback)
+        } else {
+            saveWithName(drawing)
+            callback()
         }
     }
 
