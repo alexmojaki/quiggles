@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import com.alexmojaki.quiggles.Tutorial.State.*
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
@@ -21,9 +22,9 @@ import kotlin.math.roundToInt
 
 class MainActivity : CommonActivity() {
 
-    inline val drawing: Drawing
+    private inline val drawing: Drawing
         get() = paintView.drawing
-    inline val scenter: Point
+    private inline val scenter: Point
         get() = drawing.scenter
 
     lateinit var tutorial: Tutorial
@@ -272,7 +273,7 @@ class MainActivity : CommonActivity() {
             if (isInstant) {
                 editCanvas()
             } else {
-                onBackPressed()
+                showMenu()
             }
         }
         if (showMenuButton == null) {
@@ -282,9 +283,18 @@ class MainActivity : CommonActivity() {
 
         startedMain = true
 
+        if (!isInstant) {
+            onBackPressedDispatcher.addCallback(this,
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        showMenu()
+                    }
+                }
+            )
+        }
     }
 
-    fun showSeekBar(progress: Int, onChange: (Int) -> Unit, max: Int = 100, doTutorial: Boolean = true) {
+    private fun showSeekBar(progress: Int, onChange: (Int) -> Unit, max: Int = 100, doTutorial: Boolean = true) {
         seekBar.visibility = VISIBLE
         seekBar.max = max
         seekBar.progress = progress
@@ -304,11 +314,7 @@ class MainActivity : CommonActivity() {
         if (doTutorial) tutorial.state = MoveSlider
     }
 
-    override fun onBackPressed() {
-        if (isInstant) {
-            return super.onBackPressed()
-        }
-
+    private fun showMenu() {
         class Item(val text: String, val icon: Int, val action: () -> Unit) {
             override fun toString(): String {
                 return text
@@ -429,7 +435,7 @@ class MainActivity : CommonActivity() {
         }
     }
 
-    fun isChanged(): Boolean {
+    private fun isChanged(): Boolean {
         if (drawing.quiggles.isEmpty()) {
             return false
         }
