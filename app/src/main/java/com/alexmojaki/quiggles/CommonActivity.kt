@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import androidx.core.app.ActivityCompat
@@ -27,6 +28,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.reflect.KClass
+
+val newStorageMethod = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
 abstract class CommonActivity : AppCompatActivity() {
 
@@ -99,6 +102,7 @@ abstract class CommonActivity : AppCompatActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 99 &&
             grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
         ) {
@@ -110,9 +114,7 @@ abstract class CommonActivity : AppCompatActivity() {
 
     private fun quigglesDir(dir: File) = (dir / "Quiggles").apply { mkdir() }
 
-    fun saveFileDir() = quigglesDir(
-        Environment.getExternalStorageDirectory()
-    )
+    fun saveFileDir() = quigglesDir(filesDir)
 
     fun picsDir() = quigglesDir(
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
@@ -186,7 +188,7 @@ abstract class CommonActivity : AppCompatActivity() {
 
     fun intent(cls: KClass<*>) = Intent(this, cls.java)
 
-    fun hasWritePermission() = ContextCompat.checkSelfPermission(
+    fun hasWritePermission() = newStorageMethod || ContextCompat.checkSelfPermission(
         this,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     ) == PackageManager.PERMISSION_GRANTED

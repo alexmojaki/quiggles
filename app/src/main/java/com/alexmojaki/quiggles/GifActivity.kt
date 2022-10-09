@@ -1,22 +1,31 @@
 package com.alexmojaki.quiggles
 
+import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
 import androidx.core.content.FileProvider
 import com.waynejo.androidndkgif.GifEncoder
 import kotlinx.android.synthetic.main.activity_gif.*
 import pl.droidsonroids.gif.GifDrawable
-import java.io.File
+import java.io.OutputStream
 import kotlin.math.absoluteValue
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 
+private const val TAG = "GifActivity"
+
 class GifActivity : CommonActivity() {
 
-    var cancelled = false
+    private var cancelled = false
 
     override fun onCreate() {
+        Log.i(TAG, "Starting")
         setContentView(R.layout.activity_gif)
 
         val fps = 24
@@ -26,7 +35,7 @@ class GifActivity : CommonActivity() {
         // The drawing is scaled down to reduce file size and encoding time
         // It should be at least twice as small as before,
         // and the width should be at most 1000 pixels
-        val scale = Math.min(0.5, 1000 / (gifDrawing!!.scenter.x * 2))
+        val scale = min(0.5, 1000 / (gifDrawing!!.scenter.x * 2))
 
         val scenter = gifDrawing!!.scenter * scale
         val drawing = Drawing(scenter)
@@ -42,15 +51,19 @@ class GifActivity : CommonActivity() {
                         quiggles.map { it.rotationPeriod / it.numVertices })
             .map { it.absoluteValue }
             .filter { it.isFinite() }
-            .max()!!
+            .max()
             .toNearest(delay / 1000.0)
 
         // Check if this GIF has been made before
-        val hash = sha256(quiggles.map { jsonMapper.writeValueAsString(it) }.sorted().joinToString())
-        val cachedPath = sharedPreferences.getString(hash, null)
-        if (cachedPath != null && File(cachedPath).exists()) {
-            complete(cachedPath)
-            return
+        val hash =
+            sha256(quiggles.map { jsonMapper.writeValueAsString(it) }.sorted().joinToString())
+        val cachedUriString = sharedPreferences.getString(hash, null)
+        if (cachedUriString != null) {
+            val cachedUri = Uri.parse(cachedUriString)
+            if (canReadUri(cachedUri)) {
+                complete(cachedUri)
+                return
+            }
         }
 
         drawing.quiggles.addAll(quiggles.map { it.copyForGif(drawing, duration, scale) })
@@ -65,55 +78,103 @@ class GifActivity : CommonActivity() {
         prn("duration", duration)
         prn("frames", frames)
 
+        Log.i(TAG, "Preparing encoding")
         val gifEncoder = GifEncoder()
-        val path = (picsDir() /
-                "${gifDrawing!!.filename ?: "untitled"} ${isoFormat(currentTime())}.gif"
-                    .replace(Regex("""["*/:<>?\\|]"""), "_")
-                ).absolutePath
-
+        val tempFile = filesDir / "gif"
         gifEncoder.init(
             scaledWidth, scaledHeight,
-            path, GifEncoder.EncodingType.ENCODING_TYPE_SIMPLE_FAST
+            tempFile.absolutePath, GifEncoder.EncodingType.ENCODING_TYPE_SIMPLE_FAST
         )
 
         val bitmap = Bitmap.createBitmap(scaledWidth, scaledHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
         Thread {
-            for (i in 1..frames) {
-                if (cancelled) break
+            try {
+                for (i in 1..frames) {
+                    if (cancelled) break
 
-                drawing.draw(canvas)
-                clock.tick()
-                gifEncoder.encodeFrame(
-                    bitmap,
-                    delay
-                )
-                gifProgress.progress = i
+                    drawing.draw(canvas)
+                    clock.tick()
+                    gifEncoder.encodeFrame(
+                        bitmap,
+                        delay
+                    )
+                    gifProgress.progress = i
 
-                // Shows each frame in ImageView preview
+                    // Shows each frame in ImageView preview
 //                    val copy = Bitmap.createBitmap(bitmap)
 //                    runOnUiThread { gifPreview.setImageBitmap(copy) }
-            }
+                }
 
-            if (cancelled) {
-                try {
-                    File(path).delete()
-                } catch (e: Throwable) {
-                }
-            } else {
+                if (cancelled) return@Thread
+
                 gifEncoder.close()
-                sharedPreferences.edit {
-                    putString(hash, path)
+                val displayName =
+                    "${gifDrawing!!.filename ?: "untitled"} ${isoFormat(currentTime())}"
+                        .replace(Regex("""["*/:<>?\\|]"""), "_")
+
+                fun copyFileToStream(outputStream: OutputStream) {
+                    outputStream.use {
+                        tempFile.inputStream().use {
+                            it.copyTo(outputStream)
+                        }
+                    }
                 }
-                complete(path)
+
+                val uri = if (newStorageMethod) {
+                    val contentValues = ContentValues().apply {
+                        put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
+                        put(MediaStore.MediaColumns.MIME_TYPE, "image/gif")
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                            throw Error("newStorageMethod is wrong")
+                        }
+                        put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/Quiggles")
+                    }
+
+                    val resolver = applicationContext.contentResolver
+                    val uri = resolver.insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        contentValues
+                    )!!
+
+                    copyFileToStream(resolver.openOutputStream(uri)!!)
+                    uri
+                } else {
+                    val outFile = picsDir() / "$displayName.gif"
+                    copyFileToStream(outFile.outputStream())
+                    FileProvider.getUriForFile(
+                        this,
+                        "${applicationContext.packageName}.provider",
+                        outFile
+                    )
+                }
+
+                sharedPreferences.edit {
+                    putString(hash, uri.toString())
+                }
+                complete(uri)
+            } finally {
+                try {
+                    tempFile.delete()
+                } catch (_: Throwable) {
+                }
             }
 
         }.start()
     }
 
-    private fun complete(path: String) {
-        val gifDrawable = GifDrawable(path)
+    private fun canReadUri(uri: Uri): Boolean {
+        try {
+            applicationContext.contentResolver.openInputStream(uri)!!.close()
+        } catch (e: Throwable) {
+            return false
+        }
+        return true
+    }
+
+    private fun complete(uri: Uri) {
+        val gifDrawable = GifDrawable(applicationContext.contentResolver, uri)
         runOnUiThread {
             gifPreview.setImageDrawable(gifDrawable)
             gifPreview.visible = true
@@ -125,11 +186,6 @@ class GifActivity : CommonActivity() {
                 R.drawable.share_variant,
                 buttonsLayout
             ) {
-                val uri = FileProvider.getUriForFile(
-                    this,
-                    "${applicationContext.packageName}.provider",
-                    File(path)
-                )
                 share("Share GIF") {
                     type = "image/gif"
                     putExtra(Intent.EXTRA_STREAM, uri)
