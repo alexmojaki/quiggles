@@ -73,6 +73,12 @@ class MainMenuActivity : CommonActivity() {
 <p>- <a href="#rate">Rating and reviewing</a> on the Play Store</p>
 <p>- Sending feedback to <a href="mailto:alex.mojaki@gmail.com">alex.mojaki@gmail.com</a></p>
 <p>- Contributing code on <a href="http://github.com/alexmojaki/quiggles">GitHub</a></p>
+
+<p>
+    You can read the
+    <a href="https://raw.githubusercontent.com/alexmojaki/quiggles/master/PRIVACY.md">
+    privacy policy here</a> if you're into that kind of thing.
+</p>
 """
                 )
             }
