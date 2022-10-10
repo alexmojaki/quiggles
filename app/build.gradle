@@ -35,7 +35,7 @@ dependencies {
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8"
     implementation 'io.github.waynejo:androidndkgif:1.0.1'
-    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.16'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.25'
     implementation 'com.google.android.instantapps:instantapps:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
