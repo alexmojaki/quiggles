@@ -60,16 +60,19 @@ class MainMenuActivity : CommonActivity() {
                 setTextViewHTML(
                     textView,
                     """
-<p>You can save children's lives while thanking me for making this app and encouraging more work on it by donating to
-    the <a href="https://www.againstmalaria.com/Fundraiser.aspx?FundraiserID=8190">Against Malaria Foundation here</a>.
+<p>
+    This app is 100% free and open source. No ads or locked content!
+    If this makes you happy and you want to support me doing this kind of work,
+    check out my main project <a href="http://futurecoder.io/">futurecoder</a>:
+    a 100% free and interactive course to learn programming from scratch.
 </p>
 
-<p>You can also help the app spread and lead others to donate by:</p>
+<p>You can also help the app spread by:</p>
 
-<p>- <a href="#share">Sharing</a> the app with your friends.</p>
-<p>- <a href="#rate">Rating and reviewing</a> on the Play Store.</p>
-<p>- Sending feedback to <a href="mailto:alex.mojaki@gmail.com">alex.mojaki@gmail.com</a>.</p>
-<p>- Contributing code on <a href="http://github.com/alexmojaki/quiggles">GitHub</a>.</p>
+<p>- <a href="#share">Sharing</a> the app with your friends</p>
+<p>- <a href="#rate">Rating and reviewing</a> on the Play Store</p>
+<p>- Sending feedback to <a href="mailto:alex.mojaki@gmail.com">alex.mojaki@gmail.com</a></p>
+<p>- Contributing code on <a href="http://github.com/alexmojaki/quiggles">GitHub</a></p>
 """
                 )
             }
