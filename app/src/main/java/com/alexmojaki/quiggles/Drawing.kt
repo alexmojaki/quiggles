@@ -37,7 +37,7 @@ class Drawing(val scenter: Point) {
     fun draw(canvas: Canvas) {
         canvas.drawColor(Color.BLACK)
         starField?.draw(canvas)
-        for (quiggle in quiggles.sortedBy { it.brightness() }) {
+        for (quiggle in quiggles.sortedBySafe { it.brightness() }) {
             quiggle.draw(canvas, tutorial?.state == Select)
         }
         tutorialQuiggle?.draw(canvas)
@@ -329,7 +329,7 @@ class Drawing(val scenter: Point) {
          */
         fun switchOne(part: List<Quiggle>, visibility: Double) {
             part
-                .sortedBy { it.visibilityAnimation.startTime }
+                .sortedBySafe { it.visibilityAnimation.startTime }
                 .take(ceil(part.size / 2.0).toInt())
                 .shuffled()[0]
                 .setVisibility(

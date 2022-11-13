@@ -102,3 +102,14 @@ fun fromHtml(source: String): Spanned {
         Html.fromHtml(source)
     }
 }
+
+/**
+ * Like sortedBy, but only calls the selector once for each element.
+ * Prevents errors if the selector value changes mid-sorting.
+ */
+fun <T, R : Comparable<R>> Iterable<T>.sortedBySafe(selector: (T) -> R): List<T> {
+    return this
+        .map { Pair(it, selector(it)) }
+        .sortedBy { it.second }
+        .map { it.first }
+}
