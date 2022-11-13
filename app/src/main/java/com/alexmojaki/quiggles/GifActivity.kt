@@ -32,6 +32,11 @@ class GifActivity : CommonActivity() {
         val delay = 1000 / fps
         clock = ControlledClock(delay)
 
+        if (gifDrawing == null) {
+            // This apparently happens based on a crash report
+            finish()
+        }
+
         // The drawing is scaled down to reduce file size and encoding time
         // It should be at least twice as small as before,
         // and the width should be at most 1000 pixels
