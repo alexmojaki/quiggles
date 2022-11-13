@@ -51,7 +51,7 @@ class MainActivity : CommonActivity() {
         }
 
         if (intent.getBooleanExtra("LOAD_UNSAVED", false)) {
-            fileToJson<SaveFile>(unsavedFile()).restore(drawing)
+            loadUnsaved().restore(drawing)
         }
 
         tutorial = Tutorial(this)

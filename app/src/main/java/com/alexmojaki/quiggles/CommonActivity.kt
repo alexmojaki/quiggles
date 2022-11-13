@@ -122,6 +122,16 @@ abstract class CommonActivity : AppCompatActivity() {
 
     fun unsavedFile(): File = filesDir / "unsaved"
 
+    fun loadUnsaved() = fileToJson<SaveFile>(unsavedFile())
+
+    fun hasUnsaved(): Boolean = unsavedFile().exists() && try {
+        loadUnsaved()
+        true
+    } catch (_: Exception) {
+        // If loading the unsaved file somehow fails, treat that as it not existing
+        false
+    }
+
     inline fun <reified T> jsonToFile(file: File, value: T) {
         try {
             FileOutputStream(file).use {

@@ -103,7 +103,7 @@ class MainMenuActivity : CommonActivity() {
         }
 
         loadButton.visible = saveFileDir().list()?.isNotEmpty() == true
-        loadUnsavedButton.visible = unsavedFile().exists()
+        loadUnsavedButton.visible = hasUnsaved()
     }
 
     private fun makeLinkClickable(strBuilder: SpannableStringBuilder, span: URLSpan, callback: () -> Unit) {
