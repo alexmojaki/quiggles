@@ -27,7 +27,7 @@ class MainActivity : CommonActivity() {
     private inline val scenter: Point
         get() = drawing.scenter
     private inline val selectedQuiggle: Quiggle
-        get() = drawing.selectedQuiggle ?: throw NoSelectedQuiggle()
+        get() = drawing.selectedQuiggleChecked
 
     lateinit var tutorial: Tutorial
 
@@ -459,5 +459,3 @@ class MainActivity : CommonActivity() {
 var showMenuButton: Boolean? = null
 const val HIDE_MENU_COUNT = "hideMenuCount"
 var startedMain = false
-
-class NoSelectedQuiggle : RuntimeException()

@@ -16,7 +16,7 @@ class Drawing(val scenter: Point) {
     var filename: String? = null
     val quiggles = ArrayList<Quiggle>()
     private var selectedQuiggles: List<Quiggle> = emptyList()
-    var selectedQuiggle: Quiggle? = null
+    private var selectedQuiggle: Quiggle? = null
     private var packing: Packing? = null
     var tutorialQuiggle: TutorialQuiggle? = null
     private val tutorial: Tutorial?
@@ -26,6 +26,8 @@ class Drawing(val scenter: Point) {
     var starField: StarField? = null
     var maxQuiggles = 10
     var allGlow = false
+    val selectedQuiggleChecked: Quiggle
+        get() = selectedQuiggle ?: throw NoSelectedQuiggle()
 
     lateinit var activity: CommonActivity
 
@@ -179,8 +181,8 @@ class Drawing(val scenter: Point) {
         selectedQuiggleEdited = true
 
         val period = 0.7
-        resetQuigglePosition(selectedQuiggle!!, period)
-        for (quiggle in quiggles - selectedQuiggle!!) {
+        resetQuigglePosition(selectedQuiggleChecked, period)
+        for (quiggle in quiggles - selectedQuiggleChecked) {
             quiggle.setBrightness(0.5, period)
             resetQuigglePosition(quiggle, 0.0)
         }
@@ -372,3 +374,5 @@ class Drawing(val scenter: Point) {
         }
     }
 }
+
+class NoSelectedQuiggle : RuntimeException()
