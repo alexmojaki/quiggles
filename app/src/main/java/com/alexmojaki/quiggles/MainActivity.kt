@@ -26,6 +26,8 @@ class MainActivity : CommonActivity() {
         get() = paintView.drawing
     private inline val scenter: Point
         get() = drawing.scenter
+    private inline val selectedQuiggle: Quiggle
+        get() = drawing.selectedQuiggle ?: throw NoSelectedQuiggle()
 
     lateinit var tutorial: Tutorial
 
@@ -69,7 +71,14 @@ class MainActivity : CommonActivity() {
                 if (highlight) {
                     button!!.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#B1cddc39"))
                 }
-                onClick.invoke(button!!)
+
+                try {
+                    onClick.invoke(button!!)
+                } catch (_: NoSelectedQuiggle) {
+                    // Crash reports show that sometimes drawing.selectedQuiggle is null,
+                    // presumably some race condition of clicking the button interleaved with
+                    // exiting the selection. Ignore this.
+                }
             }
 
             buttonsList.add(button)
@@ -77,7 +86,7 @@ class MainActivity : CommonActivity() {
 
         addButton("Size", R.drawable.scale, {
             drawing.editSelectedQuiggleInContext()
-            with(drawing.selectedQuiggle!!) {
+            with(selectedQuiggle) {
                 val original = outerRadius / (scenter.y) * 100
                 showSeekBar(
                     max((usualScale * original).roundToInt(), 1) - 1,
@@ -93,7 +102,7 @@ class MainActivity : CommonActivity() {
             drawing.selectedQuiggleEdited = true
             seekBar.visibility = INVISIBLE
 
-            val quiggle = drawing.selectedQuiggle!!
+            val quiggle = selectedQuiggle
 
             ColorPickerDialogBuilder.with(this)
                 .initialColor(quiggle.color)
@@ -113,7 +122,7 @@ class MainActivity : CommonActivity() {
 
         addButton("Glow", R.drawable.rainbow, {
             drawing.editSelectedQuiggleInContext()
-            with(drawing.selectedQuiggle!!) {
+            with(selectedQuiggle) {
                 val maxPeriod = 200.0
                 showSeekBar(
                     unstretchProgress(maxPeriod / huePeriod) + 100,
@@ -130,7 +139,7 @@ class MainActivity : CommonActivity() {
         addButton("Shape", R.drawable.star, {
             drawing.selectedQuiggleEdited = true
             val angles = angleToPoints.navigableKeySet().toList()
-            with(drawing.selectedQuiggle!!) {
+            with(selectedQuiggle) {
                 drawing.selectOne(this)
                 showSeekBar(
                     angles.indexOf(idealAngle),
@@ -154,8 +163,8 @@ class MainActivity : CommonActivity() {
         })
 
         addButton("Copy", R.drawable.content_copy, {
+            val copy = selectedQuiggle.duplicate()
             with(drawing) {
-                val copy = selectedQuiggle!!.duplicate()
                 quiggles.add(copy)
                 selectOne(copy)
                 editSelectedQuiggleInContext()
@@ -164,7 +173,7 @@ class MainActivity : CommonActivity() {
 
         addButton("Grow", R.drawable.wave, {
             drawing.editSelectedQuiggleInContext()
-            with(drawing.selectedQuiggle!!) {
+            with(selectedQuiggle) {
                 val maxPeriod = 50.0
                 showSeekBar(
                     unstretchProgress(maxPeriod / oscillationPeriod),
@@ -178,7 +187,7 @@ class MainActivity : CommonActivity() {
 
         addButton("Spin", R.drawable.rotate_right, {
             drawing.editSelectedQuiggleInContext()
-            with(drawing.selectedQuiggle!!) {
+            with(selectedQuiggle) {
                 val maxPeriod = 50.0
                 showSeekBar(
                     unstretchProgress(maxPeriod / rotationPeriod) + 100,
@@ -197,7 +206,7 @@ class MainActivity : CommonActivity() {
 
         addButton("Thicken", R.drawable.thickness, {
             drawing.editSelectedQuiggleInContext()
-            with(drawing.selectedQuiggle!!) {
+            with(selectedQuiggle) {
                 val min = 0.5
                 val max = 200
                 showSeekBar(
@@ -210,19 +219,21 @@ class MainActivity : CommonActivity() {
         })
 
         addButton("To front", R.drawable.arrange_bring_to_front, {
+            val quiggle = selectedQuiggle
             with(drawing) {
                 selectedQuiggleEdited = true
-                quiggles.remove(selectedQuiggle!!)
-                quiggles.add(selectedQuiggle!!)
+                quiggles.remove(quiggle)
+                quiggles.add(quiggle)
             }
             toast("Quiggle brought to front/top")
         })
 
         addButton("To back", R.drawable.arrange_send_to_back, {
+            val quiggle = selectedQuiggle
             with(drawing) {
                 selectedQuiggleEdited = true
-                quiggles.remove(selectedQuiggle!!)
-                quiggles.add(0, selectedQuiggle!!)
+                quiggles.remove(quiggle)
+                quiggles.add(0, quiggle)
             }
             toast("Quiggle sent to back/bottom")
         })
@@ -448,3 +459,5 @@ class MainActivity : CommonActivity() {
 var showMenuButton: Boolean? = null
 const val HIDE_MENU_COUNT = "hideMenuCount"
 var startedMain = false
+
+class NoSelectedQuiggle : RuntimeException()
