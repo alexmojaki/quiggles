@@ -35,6 +35,7 @@ class GifActivity : CommonActivity() {
         if (gifDrawing == null) {
             // This apparently happens based on a crash report
             finish()
+            return
         }
 
         // The drawing is scaled down to reduce file size and encoding time
@@ -47,11 +48,15 @@ class GifActivity : CommonActivity() {
 
         // Only include quiggles which are currently fully visible
         // There will be no visibility changes in the GIF
-        val quiggles = gifDrawing!!.nonTransitioning(includeCompleting = true).second
-
+        var quiggles = gifDrawing!!.nonTransitioning(includeCompleting = true).second
         if (quiggles.isEmpty()) {
-            // This apparently happens based on a crash report
-            finish()
+            // If there aren't any (can happen when maxQuiggles=1) then just take whatever
+            quiggles = gifDrawing!!.quiggles.take(gifDrawing!!.maxQuiggles)
+            if (quiggles.isEmpty()) {
+                // Give up
+                finish()
+                return
+            }
         }
 
         // Find the longest effective period for a perfect loop
