@@ -58,7 +58,7 @@ class Drawing(val scenter: Point) {
     }
 
     fun touchMove(point: Point) {
-        if (selectedQuiggle != null)
+        if (selectedQuiggle != null || quiggles.isEmpty())
             return
         val quiggle = quiggles.last()
         quiggle.addPoint(point)
@@ -189,6 +189,9 @@ class Drawing(val scenter: Point) {
     }
 
     fun touchUp(point: Point) {
+        if (quiggles.isEmpty())
+            return
+
         val quiggle = quiggles.last()
 
         // User tapped rather than drawing a proper quiggle
@@ -247,6 +250,9 @@ class Drawing(val scenter: Point) {
     }
 
     fun touchCancel() {
+        if (quiggles.isEmpty())
+            return
+
         // This can happen e.g. when taking a screenshot
         // A quiggle may have started being drawn but touchUp is never called
         val quiggle = quiggles.last()
