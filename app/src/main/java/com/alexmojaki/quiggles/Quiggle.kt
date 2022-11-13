@@ -115,7 +115,10 @@ open class Quiggle {
     }
 
     fun addPoint(point: Point) {
-        require(state == State.Drawing)
+        if (state != State.Drawing) {
+            return
+        }
+
         if (point.distance(points.last()) >= 8) {
             fullPath.add(point)
             points.add(point)
