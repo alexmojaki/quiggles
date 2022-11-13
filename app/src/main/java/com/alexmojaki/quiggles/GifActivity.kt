@@ -49,6 +49,11 @@ class GifActivity : CommonActivity() {
         // There will be no visibility changes in the GIF
         val quiggles = gifDrawing!!.nonTransitioning(includeCompleting = true).second
 
+        if (quiggles.isEmpty()) {
+            // This apparently happens based on a crash report
+            finish()
+        }
+
         // Find the longest effective period for a perfect loop
         val duration = (
                 quiggles.map { it.oscillationPeriod * 2 } +
