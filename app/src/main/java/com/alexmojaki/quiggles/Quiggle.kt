@@ -142,6 +142,8 @@ open class Quiggle {
     }
 
     fun finishDrawing() {
+        if (state != State.Drawing) return
+
         fullPath.complete()
         state = State.Completing
         numPaths--
@@ -250,6 +252,7 @@ open class Quiggle {
     }
 
     fun setPosition(position: Point, scale: Double, period: Double) {
+        finishDrawing()
         scaleAnimation = scaleAnimation.change(scale, period, easingFunction = ::s2)
         centerAnimation = centerAnimation.change(position, period)
     }
