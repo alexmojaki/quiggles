@@ -10,8 +10,8 @@ android {
         applicationId "com.alexmojaki.quiggles"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 11
-        versionName "public_7"
+        versionCode 12
+        versionName "public_8"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
