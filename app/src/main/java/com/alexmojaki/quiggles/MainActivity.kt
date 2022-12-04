@@ -15,6 +15,7 @@ import com.alexmojaki.quiggles.Tutorial.State.*
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.FileNotFoundException
 import kotlin.math.PI
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -450,7 +451,11 @@ class MainActivity : CommonActivity() {
         }
         val filename = drawing.filename ?: return true
         val current = jsonMapper.readTree(jsonMapper.writeValueAsString(SaveFileV1(drawing)))
-        val onDisk = jsonMapper.readTree(saveFilename(filename))
+        val onDisk = try {
+            jsonMapper.readTree(saveFilename(filename))
+        } catch (_: FileNotFoundException) {
+            null
+        }
         return onDisk != current
     }
 
