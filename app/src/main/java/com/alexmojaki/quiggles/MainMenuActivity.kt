@@ -71,7 +71,7 @@ class MainMenuActivity : CommonActivity() {
 
 <p>- <a href="#share">Sharing</a> the app with your friends</p>
 <p>- <a href="#rate">Rating and reviewing</a> on the Play Store</p>
-<p>- Sending feedback to <a href="mailto:alex.mojaki@gmail.com">alex.mojaki@gmail.com</a></p>
+<p>- Sending feedback to <a href="mailto:alex.mojaki+quiggles@gmail.com">alex.mojaki@gmail.com</a></p>
 <p>- Contributing code on <a href="http://github.com/alexmojaki/quiggles">GitHub</a></p>
 
 <p>
